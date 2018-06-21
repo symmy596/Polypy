@@ -9,7 +9,7 @@ import Read as rd
 import TrajectoryAnalysis as ta
 import Write as wr
 
-def MSDPlot(Time, MSD, XMSD, YMSD, ZMSD):
+def msd_plot(Time, MSD, XMSD, YMSD, ZMSD):
     '''
     MSDPlot - Plot MSD 
     
@@ -45,7 +45,7 @@ def MSDPlot(Time, MSD, XMSD, YMSD, ZMSD):
     plt.ylabel("MSD", fontsize=15)
     plt.savefig("MSD.png", dpi=600)
 
-def MSDOutput(MSD, XMSD, YMSD, ZMSD, Time):
+def msd_output(MSD, XMSD, YMSD, ZMSD, Time):
     '''
     MSDOutput - Writes out the values of MSD calc to a file
     
@@ -76,7 +76,7 @@ def MSDOutput(MSD, XMSD, YMSD, ZMSD, Time):
     np.savetxt("MSD.txt", A, delimiter=',')
             
     
-def DiffusionOutput(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo):
+def diffusion_output(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo):
     '''
     DiffusionOutput - Write out diffusion coefficients to a file
     
@@ -107,7 +107,7 @@ def DiffusionOutput(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo):
     Output.write("2D Z Diffusion Coefficient: " + ZDiffusionCo + " m^2/s (10^-9)\n")
     Output.close()    
 
-def PMSDPlot(Average, Diffusion):
+def pmsd_plot(Average, Diffusion):
     '''
     PMSDPlot - Plot for PMSD function
     
@@ -133,7 +133,7 @@ def PMSDPlot(Average, Diffusion):
     plt.ylabel("Diffusion Coefficient", fontsize=15)
     plt.savefig("PMSD.png", dpi=600)
     
-def PMSDAvPlot(Bins, Diffusion, Coef):
+def pmsd_average_plot(Bins, Diffusion, Coef):
     '''
     PMSDAvPlot - Plot for PMSD in bins
     
@@ -158,7 +158,7 @@ def PMSDAvPlot(Bins, Diffusion, Coef):
     plt.savefig("PMSDAv.png", dpi=600)
     
     
-def LinePlot(X, Y, XLab, YLab):
+def line_plot(X, Y, XLab, YLab):
     '''
     LinePlot - Simple line plot
     
@@ -184,7 +184,7 @@ def LinePlot(X, Y, XLab, YLab):
     plt.savefig("LinePlot.png", dpi=600)
     
 
-def ContourPlot(X, Y, Z):
+def contour_plot(X, Y, Z):
     '''
     CountourPlot - Contour plotting tool
     

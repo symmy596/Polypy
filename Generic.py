@@ -10,7 +10,7 @@ import TrajectoryAnalysis as ta
 from scipy import stats
 from scipy.constants import codata
 
-def PBC(r_new, r_old, Vec):
+def pbc(r_new, r_old, Vec):
     '''
     PBC - Periodic boundary conditions
     
@@ -42,7 +42,7 @@ def PBC(r_new, r_old, Vec):
     
     return Cross, r_new
 
-def BinChoose(X, Y):
+def bin_choose(X, Y):
     '''
     BinChoose - Calculate the number of bins depending on a box size and a bin thickness
     

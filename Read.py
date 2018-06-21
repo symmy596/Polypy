@@ -14,7 +14,7 @@ from scipy.constants import codata
 
      
 
-def ReadHistory(File, Atom):
+def read_history(File, Atom):
     '''
     ReadHistory - Read a DL_POLY HISTORY file
     
