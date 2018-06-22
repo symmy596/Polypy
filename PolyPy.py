@@ -20,15 +20,6 @@ os.environ['QT_QPA_PLATFORM']='offscreen'
 import time
 start_time = time.time()
 
-
-Vec = np.array([27.32, 27.32, 27.32])
-Atom = "F"
-Runs = 5
-Bin = 5
-Box = 0.1
-UL = 15.0
-LL = -5.0
-
 Vec = np.array([27.32, 27.32, 27.32])
 Atom = "BR"
 Runs = 5

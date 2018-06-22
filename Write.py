@@ -107,6 +107,37 @@ def diffusion_output(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo):
     Output.write("2D Z Diffusion Coefficient: " + ZDiffusionCo + " m^2/s (10^-9)\n")
     Output.close()    
 
+def plane_msd_output(Diffusion, UL, LL):
+    '''
+    plane_msd_output - Write out the diffusion coefficient for a region of a configuration to a file
+   
+    Parameters
+    ----------
+    first  : numpy object
+             Diffusion coefficient 
+    second : float
+             upper limit of bin
+    third  : float
+             lower limit of bin
+            
+    Return 
+    ------
+    text file
+   
+  
+    '''
+    UL = str(UL)
+    LL = str(LL)
+    M = str("-")
+    Name = LL + M + UL
+    D = np.average(Diffusion)
+    D = str(D)
+    Output = open(Name, "w")
+    
+    Output.write("Diffusion Coefficient within region spanning " + LL + " - " + UL + " : " + D +  " m^2/s (10^-9)\n")
+    Output.close()
+    
+    
 def pmsd_plot(Average, Diffusion):
     '''
     PMSDPlot - Plot for PMSD function

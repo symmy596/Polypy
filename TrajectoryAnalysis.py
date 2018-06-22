@@ -592,9 +592,8 @@ def plane_msd(Coords, NConfigs, NAtoms, UL, LL, Vec):
     for i in range(0, (NAtoms)):
         DiffusionCo = check_trajectory(NConfigs, XCoords[:,i], Coords[:,i], UL, LL, Vec)
         Diffusion = np.append(Diffusion, DiffusionCo)
-    print(np.average(Diffusion))
-    print(Diffusion)
-    
+    wr.plane_msd_output(Diffusion, UL, LL)
+
     
     
 def pmsd(Coords, Vec, NConfigs, NAtoms, Bin):
