@@ -131,10 +131,13 @@ def plane_msd_output(Diffusion, UL, LL):
     M = str("-")
     Name = LL + M + UL
     D = np.average(Diffusion)
+    NT = Diffusion.size
+    NT = str(NT)
     D = str(D)
     Output = open(Name, "w")
     
     Output.write("Diffusion Coefficient within region spanning " + LL + " - " + UL + " : " + D +  " m^2/s (10^-9)\n")
+    Output.write("Number of Trajectories used: " + NT) 
     Output.close()
     
     
@@ -239,4 +242,4 @@ def contour_plot(X, Y, Z):
     plt.ylabel("Y Coordinate", fontsize=15)
     plt.colorbar()
     plt.savefig("Heatmap.png", dpi=600)
-    
+    plt.show()
