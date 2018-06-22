@@ -14,12 +14,19 @@ When this was committed only I and God himself understood how it worked.
 As a first step you need to read in the trajectory that you want for a given atom. This will 
 return the number of atoms, number of timesteps and the trajectories. 
 
-Natoms, NConfigs, Coords = rd.ReadHistory("Filename", "Atom")
+Natoms, NConfigs, Coords = rd.ReadHistory("Filename", "Atom")  
+  
+Filename - Name of History file  
+Atom - Atom of interest  
 
-Once the coordinates are read in then they can be fed into the various other bits of functionality. 
+Natoms - Number of Atoms  
+NConfigs - Number of Timesteps
+Coords - Trajectories  
+
+Once the coordinates are read in then they can be fed into the various other bits of functionality.  
 
 
-#### 1 dimensional density plot
+#### 1 dimensional density plot  
 
 ta.one_dimensional_density(Coords, NAtoms, NConfigs, Vec, Bin, "x")
 
