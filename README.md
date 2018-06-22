@@ -1,8 +1,9 @@
-# PolyPy - Official Version 1
+# PolyPy 
 
+A short program to analyse the outputs from DL_POLY MD simultations.
 
-Author : Adam Symington 
-Date   : 21/06/2018
+Author : Adam Symington   
+Date   : 21/06/2018  
 
 
 When this was committed only I and God himself understood how it worked. 
