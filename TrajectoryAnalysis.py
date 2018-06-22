@@ -575,7 +575,7 @@ def smooth_msd(Coords, Vec, Runs, NConfigs, NAtoms):
     wr.msd_plot(STime, SMSD, SXMSD, SYMSD, SZMSD)
 
 
-def plane_msd(Coords, NConfigs, NAtoms, UL, LL, Vec):
+def plane_msd(Coords, NConfigs, NAtoms, UL, LL, Vec, Direction):
     '''
     PlaneMSD - Calculate an MSD value within a area of a structure 
     
@@ -584,8 +584,14 @@ def plane_msd(Coords, NConfigs, NAtoms, UL, LL, Vec):
     first  : 
     
     '''
+    if Direction == "x":
+        Val = 0
+    elif Direction == "y":
+        Val = 1
+    elif Direction == "z":
+        Val = 2
     
-    XCoords = np.reshape(Coords[:,0], ((NConfigs), NAtoms))
+    XCoords = np.reshape(Coords[:,Val], ((NConfigs), NAtoms))
     Coords = np.split(Coords, NConfigs)
     Coords = np.asarray(Coords)
     Diffusion = np.array([])
