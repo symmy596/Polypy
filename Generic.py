@@ -10,9 +10,15 @@ import TrajectoryAnalysis as ta
 from scipy import stats
 from scipy.constants import codata
 
-def pbc(r_new, r_old, Vec, c):
+def pbc(r_new, r_old, Vec):
     '''
-    PBC - Periodic boundary conditions
+    unfold_trajectory -  Imagine a scenario where an atom travels from box a to box a+1. In our simulation it has reapperared on 
+    the other side of box a, but in reality it is in its current positon * the lenght of that lattice vector. Because in an MSD
+    calculation we are interested in the distance between the current position and some reference position, we need to ensure that
+    the new position remains in it "real" position. So we shift it with PBC. This algorythm calculates the difference between the 
+    position at r_old and the new position r_new. If this distance is greater than the lenght of half the cell vector then the 
+    particle has moved across a boundary and needs to be shifted back. So its new position is updated by shifting it back by the 
+    lenght of the lattice vector * the box it should be in. 
     
     Parameters
     ----------
@@ -21,7 +27,8 @@ def pbc(r_new, r_old, Vec, c):
     second : float
              Value of previous atomic position
     third  : float
-             Lattice vector
+             Lattice vector at that timestep
+    
     
     Return
     ------
@@ -46,15 +53,8 @@ def pbc(r_new, r_old, Vec, c):
         elif -(r_new - r_old) > Vec * 0.5:
             r_new = r_new + Vec  
             Cross = True
-        
- #       if Cross == False and c == 1:
-    #        print(r_new)
-  #      elif Cross == True and c == 1:
- #           print("r_old - ", r_old, "r_new pre correction - ", r, "r_new - ", r_new, "correction - ", val, "coord - ", c, "vector -", Vec)
-   
+         
     else:
- #       if c == 1:
- #           print("using multi-box correction")
         r = r_new
         if (r_new - r_old) > Vec * 0.5:
             r_new = r_new - (Vec * val)                    
@@ -63,8 +63,6 @@ def pbc(r_new, r_old, Vec, c):
         elif -(r_new - r_old) > Vec * 0.5:
             r_new = r_new + (Vec * val)  
             Cross = True
-      #  if c == 1:
-          #  print("r_old - ", r_old, "r_new pre correction - ", r, "r_new - ", r_new, "correction - ", val, "coord - ", c, "vector -", Vec)
     
     return Cross, r_new
 
