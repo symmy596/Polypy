@@ -10,7 +10,7 @@ import TrajectoryAnalysis as ta
 from scipy import stats
 from scipy.constants import codata
 
-def pbc(r_new, r_old, Vec):
+def pbc(r_new, r_old, vec):
     '''
     unfold_trajectory -  Imagine a scenario where an atom travels from box a to box a+1. In our simulation it has reapperared on 
     the other side of box a, but in reality it is in its current positon * the lenght of that lattice vector. Because in an MSD
@@ -37,34 +37,32 @@ def pbc(r_new, r_old, Vec):
     second : float
              New position
     '''
-    check = False
-    val = abs((r_old - r_new) / Vec)
-    val = round(val, 0)
-    val = int(val)
+    shift = abs((rold - rnew) / vec)
+    shift = round(shift, 0)
+    shift = int(shift)
 
-    Cross = False
-    if val < 2:
-        r = r_new
+    cross = False
+    if shift < 2:
 
-        if (r_new - r_old) > Vec * 0.5:
-            r_new = r_new - Vec                    
-            Cross = True
+        if (rnew - rold) > vec * 0.5:
+            rnew = rnew - vec                    
+            cross = True
         
-        elif -(r_new - r_old) > Vec * 0.5:
-            r_new = r_new + Vec  
-            Cross = True
+        elif -(rnew - rold) > vec * 0.5:
+            rnew = rnew + vec  
+            cross = True
          
     else:
-        r = r_new
-        if (r_new - r_old) > Vec * 0.5:
-            r_new = r_new - (Vec * val)                    
-            Cross = True
         
-        elif -(r_new - r_old) > Vec * 0.5:
-            r_new = r_new + (Vec * val)  
-            Cross = True
+        if (rnew - rold) > vec * 0.5:
+            rnew = rnew - (vec * shift)                    
+            cross = True
+        
+        elif -(rnew - rold) > vec * 0.5:
+            rnew = rnew + (vec * shift)  
+            cross = True
     
-    return Cross, r_new
+    return cross, rnew
 
 
 def bin_choose(X, Y):
