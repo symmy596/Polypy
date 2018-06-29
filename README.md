@@ -42,14 +42,15 @@ Bin - Bin size - default = 0.1
 "x" = Direction - default = "x"  
 output - output file name - default = 1D-Density.png  
 
-
+  
+Returns a plot showing atomic number density relative to the position within the cell.   
 <p align="center">
   <img width="460" height="300" src="https://github.com/symmy596/PolyPy/blob/master/Plots/1D-Density.png">
 </p>
 
 #### 2) Two dimensional density plot
 
-This function does a simple two dimensional density calculation for a given atom and returns a heatmap of positions occupied by the atom.
+This function does a simple two dimensional density calculation for a given atom.
 
 ta.two_dimensional_density(Coords, NAtoms, NConfigs, lv, Box, 'z', output)
 
@@ -60,7 +61,9 @@ lv - Lattice Vectors
 Box - Box size - default = 0.1  
 "x" - Direction normal to the boxes - default = "x"  
 output - output file name - default = 2D-Density.png   
-
+  
+Returns a heatmap of atomic positions in 2D. 
+  
 <p align="center">
   <img width="460" height="300" src="https://github.com/symmy596/PolyPy/blob/master/Plots/2D-Density.png">
 </p>
