@@ -32,12 +32,12 @@ Once the coordinates are read in then they can be fed into the various other bit
 
 This function does a simple one dimensional density calculation for a given atom. 
 
-ta.one_dimensional_density(Coords, NAtoms, NConfigs, Vec, Bin, "x", output)
+ta.one_dimensional_density(Coords, NAtoms, NConfigs, lv, Bin, "x", output)
 
 Coords - Trajectories   
 NAtoms - Number of Atoms  
 NConfigs - Number of timesteps  
-Vec - Lattice Vectors  
+lv - Lattice Vectors  
 Bin - Bin size - default = 0.1  
 "x" = Direction - default = "x"  
 output - output file name - default = 1D-Density.png  
@@ -51,12 +51,12 @@ output - output file name - default = 1D-Density.png
 
 This function does a simple two dimensional density calculation for a given atom and returns a heatmap of positions occupied by the atom.
 
-ta.two_dimensional_density(Coords, NAtoms, NConfigs, Vec, Box, 'z', output)
+ta.two_dimensional_density(Coords, NAtoms, NConfigs, lv, Box, 'z', output)
 
 Coords - Trajectories  
 NAtoms - Number of Atoms  
 NConfigs - Number of timesteps  
-Vec - Lattice Vectors  
+lv - Lattice Vectors  
 Box - Box size - default = 0.1  
 "x" - Direction normal to the boxes - default = "x"  
 output - output file name - default = 2D-Density.png   
@@ -68,11 +68,23 @@ output - output file name - default = 2D-Density.png
 
 #### 3) Single MSD run
 
-ta.msd(Coords, Vec, NConfigs, NAtoms)
+ta.msd(Coords, lv, NConfigs, NAtoms)
+
+Coords - Trajectories  
+NAtoms - Number of Atoms  
+NConfigs - Number of timesteps  
+lv - Lattice Vectors  
+
+[Link to my blog post on MSD](http://people.bath.ac.uk/ars44/blog_posts/post_1.html)
+
+<p align="center">
+  <img width="460" height="300" src="https://github.com/symmy596/PolyPy/blob/master/Plots/MSD.png">
+</p>
+
 
 
 #### 4) MSD within a specific region of the system
-- This needs work
+
 
 ta.plane_msd(Coords, NConfigs, NAtoms, UL, LL, Vec)
 
