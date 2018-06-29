@@ -10,7 +10,7 @@ import TrajectoryAnalysis as ta
 from scipy import stats
 from scipy.constants import codata
 
-def pbc(r_new, r_old, vec):
+def pbc(rnew, rold, vec):
     '''
     unfold_trajectory -  Imagine a scenario where an atom travels from box a to box a+1. In our simulation it has reapperared on 
     the other side of box a, but in reality it is in its current positon * the lenght of that lattice vector. Because in an MSD

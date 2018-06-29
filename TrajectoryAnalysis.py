@@ -71,11 +71,10 @@ def one_dimensional_density(Coords, NAtoms, NConfigs, Vec, Bin=None, Direction=N
         Val = 1
     elif Direction == "z":
         Val = 2
-    Vec = Vec[Val]
     Total = []
                    
     C = Coords[:,Val]
-    C = C + ( Vec / 2 ) 
+    C = C + (np.average(Vec[:,Val]) / 2 ) 
 
     x = (C.size)
     X = C.tolist()
@@ -93,10 +92,10 @@ def one_dimensional_density(Coords, NAtoms, NConfigs, Vec, Bin=None, Direction=N
         Bin_array[Plane] = Bin_array[Plane] + 1       
 
     X = np.arange( 0, ( Bin_array.size ) )
-    X = ((X * Bin)  - ( Vec / 2 ))
+    X = ((X * Bin)  - ( (np.average(Vec[:,Val]) / 2 )))
     Y = ( Bin_array / NConfigs)
         
-    wr.line_plot(X, Y, "XCoordinate", "Number Density", filename)
+    wr.line_plot(X, Y, "XCoordinate (" r'$\AA$' ")", "Number Density", filename)
     
 def two_dimensional_density(Coords, NAtoms, NConfigs, Vec, Box=None, Direction=None, output=None):
     
@@ -157,9 +156,9 @@ def two_dimensional_density(Coords, NAtoms, NConfigs, Vec, Box=None, Direction=N
         Val = [0, 1]
     Total = []
     XCoords = Coords[:,Val[0]]
-    XCoords = XCoords + ( Vec[Val[0]] / 2 )             
+    XCoords = XCoords + ( np.average(Vec[:,[Val[0]]]) / 2 )             
     YCoords = Coords[:,Val[1]]
-    YCoords = YCoords + ( Vec[Val[1]] / 2 ) 
+    YCoords = YCoords + ( np.average(Vec[:,[Val[1]]]) / 2 ) 
 
     x = (XCoords.size)
     XCoords = XCoords.tolist()
@@ -297,7 +296,7 @@ def square_distance(Distance, N):
 
     return MSD_new
 
-def run_msd(Coords, Vec, Start, NConfigs, NAtoms, lv, timestep):
+def run_msd(Coords, Start, NConfigs, NAtoms, lv, timestep):
     '''
     
     MSD calculator - Common to all the various funcitons that do some sort of MSD
@@ -356,7 +355,7 @@ def run_msd(Coords, Vec, Start, NConfigs, NAtoms, lv, timestep):
             N = 1
             for k in range(0, x):
                 for i in range(0, 3):
-                    Cross, r_new = ge.pbc(r1[k,i], rOd[k,i], Vec[i], i)
+                    Cross, r_new = ge.pbc(r1[k,i], rOd[k,i], Vec[i])
                     if Cross == True:
                         r1[k,i] = r_new
                         Distance_new[k,i] = r_new - r0[k,i]
@@ -369,7 +368,7 @@ def run_msd(Coords, Vec, Start, NConfigs, NAtoms, lv, timestep):
             Distance_new = Distance_new.flatten()
             for i in range(0, 3):
                 
-                Cross, r_new = ge.pbc(r1[i], rOd[i], Vec[i], i)
+                Cross, r_new = ge.pbc(r1[i], rOd[i], Vec[i])
                 if Cross == True:
                     r1[i] = r_new
                     Distance_new[i] = r_new - r0[i]
@@ -472,7 +471,7 @@ def diffusion_coefficient(DDiffusion, XDiffusion, YDiffusion, ZDiffusion):
     ZDiffusion = ((np.average(ZDiffusion)) / 2) * 10
     return DDiffusion, XDiffusion, YDiffusion, ZDiffusion
 
-def check_trajectory(NConfigs, XCoords, Coords, UL, LL, Vec, Runs, lv, timestep):
+def check_trajectory(NConfigs, XCoords, Coords, UL, LL, Runs, lv, timestep):
     '''
     
     Check Trajectory - From an assigned bin determine if any part of a trajectory crosses the bin
@@ -524,7 +523,7 @@ def check_trajectory(NConfigs, XCoords, Coords, UL, LL, Vec, Runs, lv, timestep)
                 DO = np.array([])
                 for i in range(0, Runs):
                     Start = i + 5
-                    MSD, XMSD, YMSD, ZMSD, Time, PMSD = ta.run_msd(Trajectory, Vec, Start, Count, 1, vecs, timestep)
+                    MSD, XMSD, YMSD, ZMSD, Time, PMSD = ta.run_msd(Trajectory, Start, Count, 1, vecs, timestep)
                     D, XD, YD, ZD = ta.msd_stats(MSD, XMSD, YMSD, ZMSD, Time)
                     D, XD, YD, ZD = ta.diffusion_coefficient(D, XD, YD, ZD)
                     DO = np.append(DO, D)
@@ -547,7 +546,7 @@ def check_trajectory(NConfigs, XCoords, Coords, UL, LL, Vec, Runs, lv, timestep)
 
         for i in range(0, Runs):
             Start = i + 5
-            MSD, XMSD, YMSD, ZMSD, Time, PMSD = ta.run_msd(Trajectory, Vec, Start, Count, 1, vecs, timestep)
+            MSD, XMSD, YMSD, ZMSD, Time, PMSD = ta.run_msd(Trajectory, Start, Count, 1, vecs, timestep)
             D, XD, YD, ZD = ta.msd_stats(MSD, XMSD, YMSD, ZMSD, Time)
             D, XD, YD, ZD = ta.diffusion_coefficient(D, XD, YD, ZD)
             DO = np.append(DO, D)
@@ -557,7 +556,7 @@ def check_trajectory(NConfigs, XCoords, Coords, UL, LL, Vec, Runs, lv, timestep)
     return DiffusionCo
 
 
-def msd(Coords, Vec, NConfigs, NAtoms, timestep, lv):
+def msd(Coords, NConfigs, NAtoms, timestep, lv):
     
     '''
     MSD Launcher
@@ -581,14 +580,14 @@ def msd(Coords, Vec, NConfigs, NAtoms, timestep, lv):
     X = np.array([])
     Start = 1
 
-    MSD, XMSD, YMSD, ZMSD, Time, PMSD = run_msd(Coords, Vec, Start, NConfigs, NAtoms, lv, timestep)
+    MSD, XMSD, YMSD, ZMSD, Time, PMSD = run_msd(Coords, Start, NConfigs, NAtoms, lv, timestep)
     DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo = msd_stats(MSD, XMSD, YMSD, ZMSD, Time)    
     DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo = diffusion_coefficient(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo)
     wr.diffusion_output(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo)
     wr.msd_output(MSD, XMSD, YMSD, ZMSD, Time)
     wr.msd_plot(Time, MSD, XMSD, YMSD, ZMSD)
 
-def smooth_msd(Coords, Vec, Runs, NConfigs, NAtoms, lv, timestep):
+def smooth_msd(Coords, Runs, NConfigs, NAtoms, lv, timestep):
     
     '''
     MSD Launcher for a Smoothed MSD calc
@@ -628,7 +627,7 @@ def smooth_msd(Coords, Vec, Runs, NConfigs, NAtoms, lv, timestep):
     for i in range(1, Runs):
         Start = i * 10
         print("Starting Run", i, "of", Runs)
-        MSD, XMSD, YMSD, ZMSD, Time, PMSD = run_msd(Coords, Vec, Start, NConfigs, NAtoms, lv, timestep)
+        MSD, XMSD, YMSD, ZMSD, Time, PMSD = run_msd(Coords, Start, NConfigs, NAtoms, lv, timestep)
         DDiffusion, XDiffusion, YDiffusion, ZDiffusion = msd_stats(MSD, XMSD, YMSD, ZMSD, Time)    
         
         DiffusionCo = np.append(DiffusionCo, DDiffusion)
@@ -647,7 +646,7 @@ def smooth_msd(Coords, Vec, Runs, NConfigs, NAtoms, lv, timestep):
     wr.msd_plot(STime, SMSD, SXMSD, SYMSD, SZMSD)
 
 
-def plane_msd(Coords, NConfigs, NAtoms, UL, LL, Vec, Direction, Runs, lv, timestep):
+def plane_msd(Coords, NConfigs, NAtoms, UL, LL, Direction, Runs, lv, timestep):
     '''
     PlaneMSD - Calculate an MSD value within a area of a structure 
     
@@ -668,13 +667,13 @@ def plane_msd(Coords, NConfigs, NAtoms, UL, LL, Vec, Direction, Runs, lv, timest
     Coords = np.asarray(Coords)
     Diffusion = np.array([])
     for i in range(0, (NAtoms)):
-        DiffusionCo = check_trajectory(NConfigs, XCoords[:,i], Coords[:,i], UL, LL, Vec, Runs, lv, timestep)
+        DiffusionCo = check_trajectory(NConfigs, XCoords[:,i], Coords[:,i], UL, LL, Runs, lv, timestep)
         Diffusion = np.append(Diffusion, DiffusionCo)
     wr.plane_msd_output(Diffusion, UL, LL)
 
     
     
-def pmsd(Coords, Vec, NConfigs, NAtoms, Bin):
+def pmsd(Coords, lv, NConfigs, NAtoms, timestep, Bin=None, Direction=None):
     '''
     MSD Launcher, will return the diffusion coefficient of every atom in the trajectory. 
     
@@ -696,6 +695,24 @@ def pmsd(Coords, Vec, NConfigs, NAtoms, Bin):
     None
     
     '''
+    if Bin:
+        Bin = Bin
+    else:
+        Bin = 5.0
+        
+    if Direction:
+        Direction = Direction
+    else:
+        Direction = "x"
+        
+          
+    if Direction == "x":
+        Val = 0
+    elif Direction == "y":
+        Val = 1
+    elif Direction == "z":
+        Val = 2
+    
     XCoords = np.reshape(Coords[:,0], ((NConfigs), NAtoms))
     Coords = np.split(Coords, NConfigs)
 
@@ -704,14 +721,14 @@ def pmsd(Coords, Vec, NConfigs, NAtoms, Bin):
 
     Start = 1
     
-    MSD, XMSD, YMSD, ZMSD, Time, PMSD = run_msd(Coords, Vec, Start, NConfigs, NAtoms)
+    MSD, XMSD, YMSD, ZMSD, Time, PMSD = run_msd(Coords, Start, NConfigs, NAtoms, lv, timestep)
 
     PMSD = np.reshape(PMSD, ((NConfigs - 1), NAtoms)) 
     for p in range(0, (NAtoms)):
         DDiffusion, DDintercept, DDr_value, DDp_value, DDstd_err = stats.linregress(Time, PMSD[:,p])
         Diffusion = np.append(Diffusion, DDiffusion)
 
-    Vec = Vec[0]
+    Vec = np.average(lv[:,[Val]])
     Average = average_position(XCoords, NConfigs, NAtoms, Vec)
     LL = 0
     UL = 0
@@ -735,5 +752,5 @@ def pmsd(Coords, Vec, NConfigs, NAtoms, Bin):
         else:
             BinDiffTot = np.append(BinDiffTot, (np.average(BinDiff))) 
     
-    wr.pmsd_average_plot(Diff, BinDiffTot, Coef)
-    wr.pmsd_plot(Average, Diffusion)
+    wr.pmsd_average_plot(Diff, BinDiffTot, Coef, Direction)
+    wr.pmsd_plot(Average, Diffusion, Direction)

@@ -143,7 +143,7 @@ def plane_msd_output(Diffusion, UL, LL):
     Output.close()
     
     
-def pmsd_plot(Average, Diffusion):
+def pmsd_plot(Average, Diffusion, Direction):
     '''
     PMSDPlot - Plot for PMSD function
     
@@ -159,17 +159,18 @@ def pmsd_plot(Average, Diffusion):
     matplotlib plot
     
     '''
+    Label = Direction + "-Coordinate" +  " (" r'$\AA$' ")"
     YMax = np.amax(Diffusion)
     XMax = np.amax(Average)
     XMin = np.amin(Average)
     plt.ylim(ymin=0, ymax=YMax)
     plt.xlim(xmin=XMin, xmax=XMax)
     plt.scatter(Average, Diffusion, color="crimson", label="MSD", s=5)
-    plt.xlabel("Distance from Interface", fontsize=15)
+    plt.xlabel(Label, fontsize=15)
     plt.ylabel("Diffusion Coefficient", fontsize=15)
     plt.savefig("PMSD.png", dpi=600)
     
-def pmsd_average_plot(Bins, Diffusion, Coef):
+def pmsd_average_plot(Bins, Diffusion, Coef, Direction):
     '''
     PMSDAvPlot - Plot for PMSD in bins
     
@@ -187,9 +188,10 @@ def pmsd_average_plot(Bins, Diffusion, Coef):
     matplotlib plot
     
     '''
+    Label = Direction + "-Coordinate" +  " (" r'$\AA$' ")"
     plt.axhline(y=Coef, ls='dashed', color='grey')
     plt.scatter(Bins, Diffusion, color="crimson", label="MSD", s=5)
-    plt.xlabel("Distance from Interface", fontsize=15)
+    plt.xlabel(Label, fontsize=15)
     plt.ylabel("Diffusion Coefficient", fontsize=15)
     plt.savefig("PMSDAv.png", dpi=600)
     
@@ -242,8 +244,8 @@ def contour_plot(X, Y, Z, output):
     '''
    
     plt.contourf(X, Y, Z, cmap="hot", norm = colors.LogNorm(vmin=Z.min(), vmax=Z.max()))
-    plt.xlabel("X Coordinate", fontsize=15)
-    plt.ylabel("Y Coordinate", fontsize=15)
-    plt.colorbar()
+    plt.xlabel("X Coordinate (" r'$\AA$' ")", fontsize=15)
+    plt.ylabel("Y Coordinate (" r'$\AA$' ")", fontsize=15)
+#    plt.colorbar()
     plt.savefig(output, dpi=600)
     plt.show()
