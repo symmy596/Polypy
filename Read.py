@@ -33,6 +33,8 @@ def read_history(File, Atom):
              Number of timesteps
     third  : numpy array
              Atomic coordinates
+    fourth : numpy array
+             Numpy array containing the lattice vectors at each timestep
     
     '''
     if os.path.isfile(File):
@@ -46,7 +48,6 @@ def read_history(File, Atom):
         lv = []
         for line in History:
             if c == 3:
-        #        lv.append(line.split())
                 c = 0
                 tstep = False
             if c < 3 and tstep == True:
