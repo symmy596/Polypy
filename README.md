@@ -38,6 +38,10 @@ ta.one_dimensional_density(Coords, NAtoms, NConfigs, Vec, Bin, "x")
 
 ta.two_dimensional_density(Coords, NAtoms, NConfigs, Vec, Box, 'z')
 
+<p align="center">
+  <img width="460" height="300" src="https://github.com/symmy596/PolyPy/blob/master/Plots/2D-Density.png">
+</p>
+
 
 #### Single MSD run
 
