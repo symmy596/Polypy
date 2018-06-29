@@ -182,6 +182,9 @@ def system_volume(lv, NConfigs, timestep):
         Vec = np.prod(Vec)
         volume = np.append(volume, Vec)
         time = np.append(time, (i * timestep))
+        
+    wr.line_plot(time, volume, "Time", "System Volume")
+
     return volume, time
 
 def average_position(Coord, NConfigs, NAtoms, Vec):
