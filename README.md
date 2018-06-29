@@ -30,7 +30,7 @@ Once the coordinates are read in then they can be fed into the various other bit
 
 ta.one_dimensional_density(Coords, NAtoms, NConfigs, Vec, Bin, "x")
 
-![alt text](https://github.com/symmy596/PolyPy/tree/master/Plots/1D-Density.png) "1D-Density Plot"
+![alt text](https://github.com/symmy596/PolyPy/tree/master/Plots/1D-Density.png?raw=True) 
 
 #### 2 dimensional density plot
 
