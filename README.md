@@ -25,8 +25,9 @@ Coords - Trajectories
 
 Once the coordinates are read in then they can be fed into the various other bits of functionality.  
 
+### Functionality
 
-#### 1 dimensional density plot  
+####1) 1 dimensional density plot  
 
 ta.one_dimensional_density(Coords, NAtoms, NConfigs, Vec, Bin, "x")
 
@@ -34,7 +35,7 @@ ta.one_dimensional_density(Coords, NAtoms, NConfigs, Vec, Bin, "x")
   <img width="460" height="300" src="https://github.com/symmy596/PolyPy/blob/master/Plots/1D-Density.png">
 </p>
 
-#### 2 dimensional density plot
+####2) 2 dimensional density plot
 
 ta.two_dimensional_density(Coords, NAtoms, NConfigs, Vec, Box, 'z')
 
@@ -43,25 +44,28 @@ ta.two_dimensional_density(Coords, NAtoms, NConfigs, Vec, Box, 'z')
 </p>
 
 
-#### Single MSD run
+####3) Single MSD run
 
 ta.msd(Coords, Vec, NConfigs, NAtoms)
 
 
-#### MSD within a specific region of the system
+####4) MSD within a specific region of the system
 - This needs work
 
 ta.plane_msd(Coords, NConfigs, NAtoms, UL, LL, Vec)
 
 
-#### Smoothed MSD
+####5) Smoothed MSD
 
 ta.smooth_msd(Coords, Vec, Runs, NConfigs, NAtoms)
 
 
-#### MSD that plots diffusion coefficient of each atom against its average position 
+####6) MSD that plots diffusion coefficient of each atom against its average position 
 
 ta.pmsd(Coords, Vec, NConfigs, NAtoms, Bin)
 
+####7) System Volume
+
+volume, time = ta.system_volume(lv, NConfigs, timestep)
 
 
