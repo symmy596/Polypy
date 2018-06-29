@@ -19,8 +19,8 @@ Filename - Name of History file
 Atom - Atom of interest  
 
 natoms - Number of Atoms  
-timesteps - Number of Timesteps
-trajectories - Trajectories  
+timesteps - Number of Timesteps   
+trajectories - Trajectories   
 lv = Lattice vectors at each timestep
 
 Once the coordinates are read in then they can be fed into the various other bits of functionality.  
@@ -35,10 +35,10 @@ ta.one_dimensional_density(trajectories, natoms, timesteps, lv, bin, "x", output
 
 trajectories - Trajectories   
 natoms - Number of Atoms  
-timesteps - Number of timesteps  
-lv - Lattice Vectors  
-bin - Bin size - default = 0.1  
-"x" - Direction - default = "x"  
+timesteps - Number of timesteps     
+lv - Lattice Vectors    
+bin - Bin size - default = 0.1     
+"x" - Direction - default = "x"    
 output - output file name - default = 1D-Density.png  
 
   
@@ -53,13 +53,13 @@ This function does a simple two dimensional density calculation for a given atom
 
 ta.two_dimensional_density(trajectories, natoms, timesteps, lv, box, 'z', output)
 
-trajectories - Trajectories
-natoms - Number of Atoms
-timesteps - Number of timesteps
-lv - Lattice Vectors
-box - Box size - default = 0.1
-"x" - Direction normal to the boxes - default = "x"  
-output - output file name - default = 2D-Density.png   
+trajectories - Trajectories  
+natoms - Number of Atoms  
+timesteps - Number of timesteps  
+lv - Lattice Vectors   
+box - Box size - default = 0.1   
+"x" - Direction normal to the boxes - default = "x"     
+output - output file name - default = 2D-Density.png     
   
 Returns a heatmap of atomic positions in 2D. 
   
@@ -85,9 +85,9 @@ lv - Lattice Vectors
 
 #### 4) System Volume
 
-Simple function to read the lattice vectors at each timestep and calculate the cell volume.  
+Simple function to read the lattice vectors at each timestep and calculate the cell volume.    
 
-volume, time = ta.system_volume(lv, timesteps, timestep)
+volume, time = ta.system_volume(lv, timesteps, timestep)  
   
 
   
