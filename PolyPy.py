@@ -10,6 +10,7 @@ import Generic as ge
 import Read as rd
 import TrajectoryAnalysis as ta
 import Write as wr
+import Read_tes as rt
 
 from scipy import stats
 from scipy.constants import codata
@@ -20,38 +21,47 @@ os.environ['QT_QPA_PLATFORM']='offscreen'
 import time
 start_time = time.time()
 
-Vec = np.array([27.32, 27.32, 27.32])
-Atom = "BR"
+
+Atom = "F"
 Runs = 5
 Bin = 0.1
 Box = 0.1
-UL = 10.0
+UL = 8.0
 LL = 0.0
+timestep = 0.25
+
+NAtoms, NConfigs, Coords, lv = rd.read_history("../HISTORY_F", Atom)
+
+volume, time = ta.system_volume(lv, NConfigs, timestep)
 
 #1 dimensional density plot
 
-ta.one_dimensional_density(Coords, NAtoms, NConfigs, Vec, Bin, "x")
+ta.one_dimensional_density(Coords, NAtoms, NConfigs, lv, Bin, "x")
 
 #2 dimensional density plot
 
-ta.two_dimensional_density(Coords, NAtoms, NConfigs, Vec, Box, 'z')
+ta.two_dimensional_density(Coords, NAtoms, NConfigs, lv, Box, 'z')
 
 #Single MSD run
 
-ta.msd(Coords, Vec, NConfigs, NAtoms)
+ta.msd(Coords, NConfigs, NAtoms, timestep, lv)
 
 #MSD within a specific region of the system
-#- This needs work
 
-ta.plane_msd(Coords, NConfigs, NAtoms, UL, LL, Vec)
+ta.plane_msd(Coords, NConfigs, NAtoms, UL, LL, "x", Runs, lv, timestep)
 
 #Smoothed MSD
 
-ta.smooth_msd(Coords, Vec, Runs, NConfigs, NAtoms)
+ta.smooth_msd(Coords, Runs, NConfigs, NAtoms, lv, timestep)
 
 #MSD that plots diffusion coefficient of each atom against its average position 
 
-ta.pmsd(Coords, Vec, NConfigs, NAtoms, Bin)
+ta.pmsd(Coords, lv, NConfigs, NAtoms, timestep, Bin, "x")
 
 
 print("--- %s seconds ---" % (time.time() - start_time))
+
+
+
+
+
