@@ -84,25 +84,33 @@ lv - Lattice Vectors
   <img width="460" height="300" src="https://github.com/symmy596/PolyPy/blob/master/Plots/MSD.png">
 </p>
 
+#### 7) System Volume
+
+Simple function to read the lattice vectors at each timestep and calculate the cell volume.  
+
+volume, time = ta.system_volume(lv, NConfigs, timestep)
+  
+
+  
+<p align="center">
+  <img width="460" height="300" src="https://github.com/symmy596/PolyPy/blob/master/Plots/Volume.png">
+</p>
 
 
-#### 4) MSD within a specific region of the system
+#### 5) MSD within a specific region of the system
 
 
 ta.plane_msd(Coords, NConfigs, NAtoms, UL, LL, Vec)
 
 
-#### 5) Smoothed MSD
+#### 6) Smoothed MSD
 
 ta.smooth_msd(Coords, Vec, Runs, NConfigs, NAtoms)
 
 
-#### 6) MSD that plots diffusion coefficient of each atom against its average position 
+#### 7) MSD that plots diffusion coefficient of each atom against its average position 
 
 ta.pmsd(Coords, Vec, NConfigs, NAtoms, Bin)
 
-#### 7) System Volume
-
-volume, time = ta.system_volume(lv, NConfigs, timestep)
 
 
