@@ -179,7 +179,7 @@ def system_volume(lv, NConfigs, timestep):
     time = np.array([])
     for i in range(0, NConfigs):
         Vec = lv[i]
-        Vec = Vec.sum(axis=0)
+        Vec = np.prod(Vec)
         volume = np.append(volume, Vec)
         time = np.append(time, (i * timestep))
     return volume, time
