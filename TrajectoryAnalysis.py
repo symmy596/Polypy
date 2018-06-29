@@ -12,7 +12,7 @@ import Write as wr
 from scipy import stats
 from scipy.constants import codata
 
-def one_dimensional_density(Coords, NAtoms, NConfigs, Vec, Bin, Direction):
+def one_dimensional_density(Coords, NAtoms, NConfigs, Vec, Bin=None, Direction=None, output=None):
     
     '''
     1D Atomic Density Analysis
@@ -50,7 +50,21 @@ def one_dimensional_density(Coords, NAtoms, NConfigs, Vec, Bin, Direction):
     - Rewrite this into a class or something so that you just type "oxygen.two_dimensional_bin( BinSize, Direction)"
     
     '''
-    
+    if output:
+        filename = output + ".png"
+    else:
+        filename = "1D-Density.png"
+    if Bin:
+        Bin = Bin
+    else:
+        Bin = 0.1
+    if Direction:
+        Direction = Direction
+    else:
+        Direction = "x"
+        
+        
+        
     if Direction == "x":
         Val = 0
     elif Direction == "y":
@@ -82,9 +96,9 @@ def one_dimensional_density(Coords, NAtoms, NConfigs, Vec, Bin, Direction):
     X = ((X * Bin)  - ( Vec / 2 ))
     Y = ( Bin_array / NConfigs)
         
-    wr.line_plot(X, Y, "XCoordinate", "Number Density")
+    wr.line_plot(X, Y, "XCoordinate", "Number Density", filename)
     
-def two_dimensional_density(Coords, NAtoms, NConfigs, Vec, Box, Direction):
+def two_dimensional_density(Coords, NAtoms, NConfigs, Vec, Box=None, Direction=None, output=None):
     
     '''
     2D Atomic Density Analysis
@@ -121,7 +135,20 @@ def two_dimensional_density(Coords, NAtoms, NConfigs, Vec, Box, Direction):
     - Rewrite this into a class or something so that you just type "oxygen.two_dimensional_bin( BinSize, Direction)"
     
     '''
-    
+    if output:
+        filename = output + ".png"
+    else:
+        filename = "2D-Density.png"
+    if Box:
+        Box = Box
+    else:
+        Box = 0.1
+    if Direction:
+        Direction = Direction
+    else:
+        Direction = "x"
+        
+        
     if Direction == "x":
         Val = [1, 2]
     elif Direction == "y":
@@ -172,9 +199,15 @@ def two_dimensional_density(Coords, NAtoms, NConfigs, Vec, Box, Direction):
 
     Bin_array = Bin_array + 0.001
 
-    wr.contour_plot(X, Y, Bin_array)
+    wr.contour_plot(X, Y, Bin_array, filename)
 
-def system_volume(lv, NConfigs, timestep):
+def system_volume(lv, NConfigs, timestep, output=None):
+    
+    if output:
+        filename = output + ".png"
+    else:
+        filename = "Volume.png"
+    
     volume = np.array([])
     time = np.array([])
     for i in range(0, NConfigs):
@@ -183,7 +216,7 @@ def system_volume(lv, NConfigs, timestep):
         volume = np.append(volume, Vec)
         time = np.append(time, (i * timestep))
         
-    wr.line_plot(time, volume, "Time", "System Volume")
+    wr.line_plot(time, volume, "Time", "System Volume", filename)
 
     return volume, time
 

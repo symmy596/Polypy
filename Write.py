@@ -194,7 +194,7 @@ def pmsd_average_plot(Bins, Diffusion, Coef):
     plt.savefig("PMSDAv.png", dpi=600)
     
     
-def line_plot(X, Y, XLab, YLab):
+def line_plot(X, Y, XLab, YLab, output):
     '''
     LinePlot - Simple line plot
     
@@ -214,14 +214,15 @@ def line_plot(X, Y, XLab, YLab):
     matplotlib plot
     
     '''
+        
     plt.plot(X, Y, color="crimson")
     plt.xlabel(XLab, fontsize=13)
     plt.ylabel(YLab, fontsize=13)
-    plt.savefig("LinePlot.png", dpi=600)
+    plt.savefig(output, dpi=600)
     plt.show()
     
 
-def contour_plot(X, Y, Z):
+def contour_plot(X, Y, Z, output):
     '''
     CountourPlot - Contour plotting tool
     
@@ -240,9 +241,9 @@ def contour_plot(X, Y, Z):
     
     '''
    
-    plt.contourf(X, Y, Z, cmap="summer", norm = colors.LogNorm(vmin=Z.min(), vmax=Z.max()))
+    plt.contourf(X, Y, Z, cmap="hot", norm = colors.LogNorm(vmin=Z.min(), vmax=Z.max()))
     plt.xlabel("X Coordinate", fontsize=15)
     plt.ylabel("Y Coordinate", fontsize=15)
     plt.colorbar()
-    plt.savefig("Heatmap.png", dpi=600)
+    plt.savefig(output, dpi=600)
     plt.show()
