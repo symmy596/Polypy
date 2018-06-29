@@ -41,9 +41,17 @@ def read_history(File, Atom):
         History = open(File, 'r')
         Name = False
         Count = 0
-
-        
+        tstep = False
+        c = 0
+        lv = []
         for line in History:
+            if c == 3:
+        #        lv.append(line.split())
+                c = 0
+                tstep = False
+            if c < 3 and tstep == True:
+                lv.append(line.split())
+                c = c + 1
             if Name:
                 Name = False
                 Coords.append(line.split()) 
@@ -52,11 +60,18 @@ def read_history(File, Atom):
                 Count = Count + 1
             if line[0] =="t":
                 NConfigs = NConfigs + 1
-            
+                tstep = True
         Coords = np.asarray(Coords, dtype=float)
-
+        lv = np.asarray(lv, dtype=float)
         NAtoms = Count / NConfigs
         NAtoms = int(NAtoms)
+        vec = np.array([])
+        lv = np.split(lv, NConfigs)
+
+        for i in range(0, NConfigs):
+            vec = np.append(vec, (lv[i].sum(axis=0)))
+        lv = np.reshape(vec, (NConfigs, 3))
+
 
     else:
         print("File cannot be found")
@@ -68,7 +83,7 @@ def read_history(File, Atom):
         
     History.close() 
         
-    return NAtoms, NConfigs, Coords
+    return NAtoms, NConfigs, Coords, lv
 
 
 

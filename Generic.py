@@ -10,7 +10,7 @@ import TrajectoryAnalysis as ta
 from scipy import stats
 from scipy.constants import codata
 
-def pbc(r_new, r_old, Vec):
+def pbc(r_new, r_old, Vec, c):
     '''
     PBC - Periodic boundary conditions
     
@@ -30,17 +30,44 @@ def pbc(r_new, r_old, Vec):
     second : float
              New position
     '''
-    
+    check = False
+    val = abs((r_old - r_new) / Vec)
+    val = round(val, 0)
+    val = int(val)
+
     Cross = False
-    if (r_new - r_old) > Vec * 0.5:
-        r_new = r_new - Vec                    
-        Cross = True
+    if val < 2:
+        r = r_new
+
+        if (r_new - r_old) > Vec * 0.5:
+            r_new = r_new - Vec                    
+            Cross = True
         
-    elif -(r_new - r_old) > Vec * 0.5:
-        r_new = r_new + Vec  
-        Cross = True
+        elif -(r_new - r_old) > Vec * 0.5:
+            r_new = r_new + Vec  
+            Cross = True
+        
+ #       if Cross == False and c == 1:
+    #        print(r_new)
+  #      elif Cross == True and c == 1:
+ #           print("r_old - ", r_old, "r_new pre correction - ", r, "r_new - ", r_new, "correction - ", val, "coord - ", c, "vector -", Vec)
+   
+    else:
+ #       if c == 1:
+ #           print("using multi-box correction")
+        r = r_new
+        if (r_new - r_old) > Vec * 0.5:
+            r_new = r_new - (Vec * val)                    
+            Cross = True
+        
+        elif -(r_new - r_old) > Vec * 0.5:
+            r_new = r_new + (Vec * val)  
+            Cross = True
+      #  if c == 1:
+          #  print("r_old - ", r_old, "r_new pre correction - ", r, "r_new - ", r_new, "correction - ", val, "coord - ", c, "vector -", Vec)
     
     return Cross, r_new
+
 
 def bin_choose(X, Y):
     '''

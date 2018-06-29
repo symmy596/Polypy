@@ -3,6 +3,7 @@ import sys as sys
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
+import math as mt
 
 import Generic as ge
 import Read as rd
@@ -44,6 +45,7 @@ def msd_plot(Time, MSD, XMSD, YMSD, ZMSD):
     plt.xlabel("Timestep (ps)", fontsize=15)
     plt.ylabel("MSD", fontsize=15)
     plt.savefig("MSD.png", dpi=600)
+    plt.show()
 
 def msd_output(MSD, XMSD, YMSD, ZMSD, Time):
     '''
@@ -216,6 +218,7 @@ def line_plot(X, Y, XLab, YLab):
     plt.xlabel(XLab, fontsize=13)
     plt.ylabel(YLab, fontsize=13)
     plt.savefig("LinePlot.png", dpi=600)
+    plt.show()
     
 
 def contour_plot(X, Y, Z):
@@ -237,7 +240,7 @@ def contour_plot(X, Y, Z):
     
     '''
    
-    plt.contourf(X, Y, Z, cmap="hot", norm = colors.LogNorm(vmin=Z.min(), vmax=Z.max()))
+    plt.contourf(X, Y, Z, cmap="summer", norm = colors.LogNorm(vmin=Z.min(), vmax=Z.max()))
     plt.xlabel("X Coordinate", fontsize=15)
     plt.ylabel("Y Coordinate", fontsize=15)
     plt.colorbar()
