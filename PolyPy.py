@@ -52,7 +52,7 @@ ta.plane_msd(Coords, NConfigs, NAtoms, UL, LL, "x", Runs, lv, timestep)
 
 #Smoothed MSD
 
-ta.smooth_msd(Coords, Runs, NConfigs, NAtoms, lv, timestep)
+ta.smooth_msd(Coords, NConfigs, NAtoms, lv, timestep, Runs)
 
 #MSD that plots diffusion coefficient of each atom against its average position 
 
