@@ -18,7 +18,7 @@ sys.path.append('Path to Files')
 ## Documentation  
   
 A small guide is included within this repository - [Guide](https://github.com/symmy596/PolyPy/blob/master/Guide.md)  
-Guide is currently a version behind the current version.
+Guide is currently a version behind.
 
 ## Author
  * **Adam Symington** 
