@@ -78,7 +78,7 @@ def msd_output(MSD, XMSD, YMSD, ZMSD, Time):
     np.savetxt("MSD.txt", A, delimiter=',')
             
     
-def diffusion_output(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo):
+def diffusion_output(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo, conductivity=None):
     '''
     DiffusionOutput - Write out diffusion coefficients to a file
     
@@ -107,7 +107,14 @@ def diffusion_output(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo):
     Output.write("2D X Diffusion Coefficient: " + XDiffusionCo + " m^2/s (10^-9)\n")
     Output.write("2D Y Diffusion Coefficient: " + YDiffusionCo + " m^2/s (10^-9)\n")
     Output.write("2D Z Diffusion Coefficient: " + ZDiffusionCo + " m^2/s (10^-9)\n")
-    Output.close()    
+    if conductivity:
+        con = str(conductivity)
+        Output.write("Conductivity: " + con + "(S/cm)")
+        c = np.log(conductivity)
+        c = str(c)
+        Output.write("Log of Conductivity: " + c + "log (S/cm)")
+    else:       
+        Output.close()    
 
 def plane_msd_output(Diffusion, UL, LL, nt, conductivity=None):
     '''

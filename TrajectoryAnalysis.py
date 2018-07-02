@@ -319,7 +319,7 @@ def system_volume(lv, NConfigs, timestep, output=None):
 
     return volume, time
 
-def conductivity(NConfigs, plane, lv, UL, LL, area, diff, temperature):
+def conductivity(NConfigs, plane, volume, diff, temperature):
     '''
     conductivity - Calculate the ionic conductivity 
     
@@ -331,12 +331,6 @@ def conductivity(NConfigs, plane, lv, UL, LL, area, diff, temperature):
               Total number of charge carriers
     third   : numpy
               lattice vectors
-    fourth  : float
-              Upper Bin value
-    filth   :  float
-              Lower Bin value
-    sixth   : list
-              area
     seventh : float
               diffusion coefficient
     eight   : int
@@ -347,8 +341,7 @@ def conductivity(NConfigs, plane, lv, UL, LL, area, diff, temperature):
     first   : float
               Conductivity
     '''
-    width = UL - LL
-    volume = width * (np.average(lv[:,[area[0]]])) * (np.average(lv[:,[area[1]]]))
+
     volume = volume * (10 ** -30)
     diff = diff * (10 ** -9)
     conc = plane / volume
@@ -697,7 +690,7 @@ def check_trajectory(NConfigs, XCoords, Coords, UL, LL, Runs, lv, timestep):
     return DiffusionCo
 
 
-def msd(Coords, NConfigs, NAtoms, timestep, lv, con=None):
+def msd(Coords, NConfigs, NAtoms, timestep, lv, temperature=None, con=None):
     
     '''
     MSD Launcher
@@ -721,6 +714,11 @@ def msd(Coords, NConfigs, NAtoms, timestep, lv, con=None):
         con = True
     else:
         con = False
+    if temperature:
+        temperature = temperature
+    else:
+        temperature
+        
     Coords = np.split(Coords, NConfigs)
     X = np.array([])
     Start = 1
@@ -730,15 +728,15 @@ def msd(Coords, NConfigs, NAtoms, timestep, lv, con=None):
     DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo = diffusion_coefficient(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo)
     
     if con == True:
-        
-        plane = ta.one_dimensional_density_sb(C, NAtoms, NConfigs, UL=UL, LL=LL, Direction="x")
-        plane = plane / NConfigs
-        conductivity = ta.conductivity(NConfigs, plane, lv, UL, LL, area, Diffusion, temperature)
-        wr.plane_msd_output(Diffusion, UL, LL, nt, conductivity)
-    
-    wr.diffusion_output(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo)
-    wr.msd_output(MSD, XMSD, YMSD, ZMSD, Time)
-    wr.msd_plot(Time, MSD, XMSD, YMSD, ZMSD)
+       
+        volume = (np.average(lv[:,0])) *  (np.average(lv[:,1])) * (np.average(lv[:,2]))
+        conductivity = ta.conductivity(NConfigs, NAtoms, volume, DiffusionCo, temperature)
+        wr.diffusion_output(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo, conductivity)
+
+    else:
+        wr.diffusion_output(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo)
+        wr.msd_output(MSD, XMSD, YMSD, ZMSD, Time)
+        wr.msd_plot(Time, MSD, XMSD, YMSD, ZMSD)
 
 def smooth_msd(Coords, NConfigs, NAtoms, lv, timestep, Runs=None):
     
@@ -849,10 +847,11 @@ def plane_msd(Coords, NConfigs, NAtoms, UL, LL, Direction, Runs, lv, timestep, c
     Diffusion = np.average(Diffusion)
     
     if con == True:
-        
+        width = UL - LL
+        volume = width * (np.average(lv[:,[area[0]]])) * (np.average(lv[:,[area[1]]]))
         plane = ta.one_dimensional_density_sb(C, NAtoms, NConfigs, UL=UL, LL=LL, Direction="x")
         plane = plane / NConfigs
-        conductivity = ta.conductivity(NConfigs, plane, lv, UL, LL, area, Diffusion, temperature)
+        conductivity = ta.conductivity(NConfigs, plane, volume, Diffusion, temperature)
         wr.plane_msd_output(Diffusion, UL, LL, nt, conductivity)
 
     else:
