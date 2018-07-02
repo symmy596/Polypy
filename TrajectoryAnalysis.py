@@ -35,6 +35,11 @@ def one_dimensional_density_sb(Coords, NAtoms, NConfigs, UL=None, LL=None, Direc
              lower bin limit
     sixth  : str
              Direction normal to slice
+    
+    Returns
+    -------
+    first  : Int
+             Number of atomic species within bin
     '''
     
     if UL:
@@ -111,12 +116,6 @@ def one_dimensional_density(Coords, NAtoms, NConfigs, Vec, Bin=None, Direction=N
     "Conc.txt" - single column of concentrations in each bin
     "Heatmap.png" - Contour plot - xy grid of total of atoms within each box
     
-    To Do
-    ------------------
-    
-    - Further Functionalise
-    - Rewrite this into a class or something so that you just type "oxygen.two_dimensional_bin( BinSize, Direction)"
-    
     '''
     if output:
         filename = output + ".png"
@@ -178,19 +177,20 @@ def two_dimensional_density(Coords, NAtoms, NConfigs, Vec, Box=None, Direction=N
     Parameters
     ----------
     
-    first  : 2D numpy array
-             Atomic Coordinates - (Number of Atoms * Number of Timesteps) x 3
-    second : integer
-             Number of Atoms
-    third  : integer
-             Number of timesteps
-    fourth : 1D numpy array
-             Lattice Vectors
-    filth  : float
-             Box Value
-    sixth  : string
-             Direction normal to the box
-        
+    first   : 2D numpy array
+              Atomic Coordinates - (Number of Atoms * Number of Timesteps) x 3
+    second  : integer
+              Number of Atoms
+    third   : integer
+              Number of timesteps
+    fourth  : 1D numpy array
+              Lattice Vectors
+    filth   : float
+              Box Value
+    sixth   : string
+              Direction normal to the box
+    seventh : boolean
+              True for log plot, False for no log
     
     Returns
     -------
@@ -738,7 +738,7 @@ def msd(Coords, NConfigs, NAtoms, timestep, lv, temperature=None, con=None):
         wr.msd_output(MSD, XMSD, YMSD, ZMSD, Time)
         wr.msd_plot(Time, MSD, XMSD, YMSD, ZMSD)
 
-def smooth_msd(Coords, NConfigs, NAtoms, lv, timestep, Runs=None):
+def smooth_msd(Coords, NConfigs, NAtoms, lv, timestep, Runs=None, conductivity=None, temperature=None):
     
     '''
     MSD Launcher for a Smoothed MSD calc
@@ -761,7 +761,17 @@ def smooth_msd(Coords, NConfigs, NAtoms, lv, timestep, Runs=None):
     None
     
     '''
-        
+    if conductivity:
+        conductivity = True
+    else:
+        conductivity = False
+    if temperature:
+        temperature = temperature
+    else:
+        if conductivity == True:
+            print("Temperature not provided - Temperature is needed for conductivity calculation")
+            sys.exit(0)
+            
     if Runs:
         Runs = Runs
     else:
@@ -797,9 +807,15 @@ def smooth_msd(Coords, NConfigs, NAtoms, lv, timestep, Runs=None):
         STime = np.append(STime, Time)
 
     DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo = diffusion_coefficient(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo)
-    wr.diffusion_output(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo)
-    wr.msd_output(SMSD, SXMSD, SYMSD, SZMSD, STime)
-    wr.msd_plot(STime, SMSD, SXMSD, SYMSD, SZMSD)
+    
+    if conductivity == True:
+        volume = (np.average(lv[:,0])) *  (np.average(lv[:,1])) * (np.average(lv[:,2]))
+        conductivity = ta.conductivity(NConfigs, NAtoms, volume, DiffusionCo, temperature)
+        wr.diffusion_output(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo, conductivity)
+    else:
+        wr.diffusion_output(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo)
+        wr.msd_output(SMSD, SXMSD, SYMSD, SZMSD, STime)
+        wr.msd_plot(STime, SMSD, SXMSD, SYMSD, SZMSD)
 
 
 def plane_msd(Coords, NConfigs, NAtoms, UL, LL, Direction, Runs, lv, timestep, con=None, temperature=None):
