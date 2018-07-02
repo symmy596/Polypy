@@ -109,7 +109,7 @@ def diffusion_output(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo):
     Output.write("2D Z Diffusion Coefficient: " + ZDiffusionCo + " m^2/s (10^-9)\n")
     Output.close()    
 
-def plane_msd_output(Diffusion, UL, LL):
+def plane_msd_output(Diffusion, UL, LL, nt, conductivity=None):
     '''
     plane_msd_output - Write out the diffusion coefficient for a region of a configuration to a file
    
@@ -128,20 +128,40 @@ def plane_msd_output(Diffusion, UL, LL):
    
   
     '''
+    if conductivity:
+        conductivity = conductivity
+        con = True
+    else:
+        con = False
+    
     UL = str(UL)
     LL = str(LL)
     M = str("-")
     Name = LL + M + UL
-    D = np.average(Diffusion)
-    NT = Diffusion.size
-    NT = str(NT)
-    D = str(D)
+    D = str(Diffusion)
+    l = np.log(conductivity)
+    l = str(l)
+    C = str(conductivity)
+    nt = str(nt)
     Output = open(Name, "w")
     
-    Output.write("Diffusion Coefficient within region spanning " + LL + " - " + UL + " : " + D +  " m^2/s (10^-9)\n")
-    Output.write("Number of Trajectories used: " + NT) 
+    Output.write("Diffusion Coefficient within region spanning - " + LL + " - " + UL + " : " + D +  " m^2/s (10^-9)\n")
+    if con == True:
+            Output.write("Conductivity within region spanning - " + LL + " - " + UL + " : " + C +  " (S cm^-1) \n")
+            Output.write("Log of Conductivity within region spanning - " + LL + " - " + UL + " : " + l +  " (log S cm^-1) \n")
+
+
+    Output.write("Number of Trajectories used: " + nt) 
     Output.close()
+ 
+def one_dimensional_density_sb_output(plane, UL, LL, output):
     
+    UL = str(UL)
+    LL = str(LL)
+    plane = str(plane)
+    Output = open(output, "w")
+    Output.write("Total Number of species within region spanning - " + LL + " - " + UL + " : " + plane)
+    Output.close()
     
 def pmsd_plot(Average, Diffusion, Direction):
     '''
@@ -220,6 +240,7 @@ def line_plot(X, Y, XLab, YLab, output):
     plt.plot(X, Y, color="crimson")
     plt.xlabel(XLab, fontsize=13)
     plt.ylabel(YLab, fontsize=13)
+    plt.tight_layout()
     plt.savefig(output, dpi=600)
     plt.show()
     
