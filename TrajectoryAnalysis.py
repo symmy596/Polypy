@@ -18,7 +18,24 @@ ev = -ev
 
 
 def one_dimensional_density_sb(Coords, NAtoms, NConfigs, UL=None, LL=None, Direction=None):
+    '''
+    one_dimensional_density_sb - will return total number of species that spend a timestep within a bin range
     
+    Parameters
+    ----------
+    first  : numpy 
+             Atomic coordinates
+    second : Int
+             Total number of atoms
+    third  : Int
+             Total number of timesteps
+    fourth : float
+             Upper bin limit
+    filth  : float
+             lower bin limit
+    sixth  : str
+             Direction normal to slice
+    '''
     
     if UL:
         UL = UL
@@ -34,6 +51,7 @@ def one_dimensional_density_sb(Coords, NAtoms, NConfigs, UL=None, LL=None, Direc
         Direction = Direction
     else:
         Direction = "x"
+        print("No direction specified - Using default - x")
         
     if Direction == "x":
         Val = 0
@@ -108,11 +126,13 @@ def one_dimensional_density(Coords, NAtoms, NConfigs, Vec, Bin=None, Direction=N
         Bin = Bin
     else:
         Bin = 0.1
+        print("Bin Value not specified - Using Default - 0.1")
     if Direction:
         Direction = Direction
     else:
         Direction = "x"
-        
+        print("No direction specified - Using default - x")
+
         
         
     if Direction == "x":
@@ -133,6 +153,7 @@ def one_dimensional_density(Coords, NAtoms, NConfigs, Vec, Bin=None, Direction=N
     X = round(X, 0)
     X = int(X)
     
+   
     Bin_array = np.zeros((X))
     
     for j in range(0, x):
@@ -147,7 +168,7 @@ def one_dimensional_density(Coords, NAtoms, NConfigs, Vec, Bin=None, Direction=N
         
     wr.line_plot(X, Y, "XCoordinate (" r'$\AA$' ")", "Number Density", filename)
     
-def two_dimensional_density(Coords, NAtoms, NConfigs, Vec, Box=None, Direction=None, output=None):
+def two_dimensional_density(Coords, NAtoms, NConfigs, Vec, Box=None, Direction=None, output=None, log=None):
     
     '''
     2D Atomic Density Analysis
@@ -192,11 +213,16 @@ def two_dimensional_density(Coords, NAtoms, NConfigs, Vec, Box=None, Direction=N
         Box = Box
     else:
         Box = 0.1
+        print("No box size specified - Using Default - 0.1")
     if Direction:
         Direction = Direction
     else:
         Direction = "x"
-        
+        print("No direction specified - Using default - x")
+    if log == True:
+        log = True
+    else:
+        log = False
         
     if Direction == "x":
         Val = [1, 2]
@@ -248,9 +274,33 @@ def two_dimensional_density(Coords, NAtoms, NConfigs, Vec, Box=None, Direction=N
 
     Bin_array = Bin_array + 0.001
 
-    wr.contour_plot(X, Y, Bin_array, filename)
+    wr.contour_plot(X, Y, Bin_array, filename, log)
 
 def system_volume(lv, NConfigs, timestep, output=None):
+    '''
+    system volume - Calculate the volume at each timestep and return a volume as a function of time plot
+    
+    Parameters
+    ----------
+    first  : numpy
+             Lattice vectors
+    second : int
+             Total number of timesteps
+    third  : float
+             timestep between records
+    forth  : str
+             output file name
+            
+    
+    Returns
+    -------
+    first  : numpy
+             volume at each timestep
+    second : numpy
+             time
+    
+    '''
+    
     
     if output:
         filename = output + ".png"
@@ -270,12 +320,37 @@ def system_volume(lv, NConfigs, timestep, output=None):
     return volume, time
 
 def conductivity(NConfigs, plane, lv, UL, LL, area, diff, temperature):
+    '''
+    conductivity - Calculate the ionic conductivity 
     
+    Parameters
+    ----------
+    first   : int
+              Total number of timesteps
+    second  : int
+              Total number of charge carriers
+    third   : numpy
+              lattice vectors
+    fourth  : float
+              Upper Bin value
+    filth   :  float
+              Lower Bin value
+    sixth   : list
+              area
+    seventh : float
+              diffusion coefficient
+    eight   : int
+              Temperature
+              
+    Returns
+    -------
+    first   : float
+              Conductivity
+    '''
     width = UL - LL
     volume = width * (np.average(lv[:,[area[0]]])) * (np.average(lv[:,[area[1]]]))
     volume = volume * (10 ** -30)
     diff = diff * (10 ** -9)
-    plane = plane / NConfigs
     conc = plane / volume
     
     EV = ev ** 2
@@ -289,7 +364,7 @@ def average_position(Coord, NConfigs, NAtoms, Vec):
     
     '''
     Average position calculator
-    Last updated : 19/06/2018
+
     Parameters
     ----------
     first  : numpy 2D array
@@ -622,7 +697,7 @@ def check_trajectory(NConfigs, XCoords, Coords, UL, LL, Runs, lv, timestep):
     return DiffusionCo
 
 
-def msd(Coords, NConfigs, NAtoms, timestep, lv):
+def msd(Coords, NConfigs, NAtoms, timestep, lv, con=None):
     
     '''
     MSD Launcher
@@ -642,6 +717,10 @@ def msd(Coords, NConfigs, NAtoms, timestep, lv):
     -------
     None
     '''
+    if con == True:
+        con = True
+    else:
+        con = False
     Coords = np.split(Coords, NConfigs)
     X = np.array([])
     Start = 1
@@ -649,6 +728,14 @@ def msd(Coords, NConfigs, NAtoms, timestep, lv):
     MSD, XMSD, YMSD, ZMSD, Time, PMSD = run_msd(Coords, Start, NConfigs, NAtoms, lv, timestep)
     DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo = msd_stats(MSD, XMSD, YMSD, ZMSD, Time)    
     DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo = diffusion_coefficient(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo)
+    
+    if con == True:
+        
+        plane = ta.one_dimensional_density_sb(C, NAtoms, NConfigs, UL=UL, LL=LL, Direction="x")
+        plane = plane / NConfigs
+        conductivity = ta.conductivity(NConfigs, plane, lv, UL, LL, area, Diffusion, temperature)
+        wr.plane_msd_output(Diffusion, UL, LL, nt, conductivity)
+    
     wr.diffusion_output(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo)
     wr.msd_output(MSD, XMSD, YMSD, ZMSD, Time)
     wr.msd_plot(Time, MSD, XMSD, YMSD, ZMSD)
@@ -762,7 +849,9 @@ def plane_msd(Coords, NConfigs, NAtoms, UL, LL, Direction, Runs, lv, timestep, c
     Diffusion = np.average(Diffusion)
     
     if con == True:
+        
         plane = ta.one_dimensional_density_sb(C, NAtoms, NConfigs, UL=UL, LL=LL, Direction="x")
+        plane = plane / NConfigs
         conductivity = ta.conductivity(NConfigs, plane, lv, UL, LL, area, Diffusion, temperature)
         wr.plane_msd_output(Diffusion, UL, LL, nt, conductivity)
 

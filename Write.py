@@ -245,7 +245,7 @@ def line_plot(X, Y, XLab, YLab, output):
     plt.show()
     
 
-def contour_plot(X, Y, Z, output):
+def contour_plot(X, Y, Z, output, log):
     '''
     CountourPlot - Contour plotting tool
     
@@ -263,8 +263,10 @@ def contour_plot(X, Y, Z, output):
     matplotlib plot
     
     '''
-   
-    plt.contourf(X, Y, Z, cmap="hot", norm = colors.LogNorm(vmin=Z.min(), vmax=Z.max()))
+    if log == True:
+        plt.contourf(X, Y, Z, cmap="hot", norm = colors.LogNorm(vmin=Z.min(), vmax=Z.max()))
+    else:
+        plt.contourf(X, Y, Z, cmap="hot")
     plt.xlabel("X Coordinate (" r'$\AA$' ")", fontsize=15)
     plt.ylabel("Y Coordinate (" r'$\AA$' ")", fontsize=15)
 #    plt.colorbar()
