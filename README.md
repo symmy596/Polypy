@@ -2,7 +2,7 @@
 
 PolyPy is a small program that analyses DL_POLY outputs. Currently the functionality includes, 1/2D atomic density analysis, mean squared displacements and volume analysis. 
 
-https://buildstats.info/travisci/chart/symmy596/PolyPy
+[![Build history](https://buildstats.info/appveyor/chart/symmy596/PolyPy)](https://ci.appveyor.com/project/dustinmoris/ci-buildstats/history)
   
   
 
