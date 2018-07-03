@@ -12,9 +12,11 @@ import TrajectoryAnalysis as ta
 import Write as wr
 import Read_tes as rt
 
+
 from scipy import stats
 from scipy.constants import codata
 
+sys.path.append('Path')
 os.environ['QT_QPA_PLATFORM']='offscreen'
 
 
@@ -22,41 +24,49 @@ import time
 start_time = time.time()
 
 
-Atom = "F"
-Runs = 5
+Atom = "BR"
 Bin = 0.1
-Box = 0.1
-UL = 8.0
-LL = 0.0
+box = 0.1
+ul = 8.0
+ll = 0.01
 timestep = 0.25
 
-NAtoms, NConfigs, Coords, lv = rd.read_history("../HISTORY_F", Atom)
+# 1) Read Coordinates
 
-volume, time = ta.system_volume(lv, NConfigs, timestep)
+natoms, timesteps, trajectories, lv = rd.read_history("HISTORY_F", Atom)
 
-#1 dimensional density plot
+# 2) Volume Calculation
 
-ta.one_dimensional_density(Coords, NAtoms, NConfigs, lv, Bin, "x")
+volume, t = ta.system_volume(lv, timesteps, timestep)
 
-#2 dimensional density plot
+# 3) Total Number of Species within a given region
 
-ta.two_dimensional_density(Coords, NAtoms, NConfigs, lv, Box, 'z')
+plane = ta.one_dimensional_density_sb(trajectories, ul=ul, ll=ll, direction="x")
 
-#Single MSD run
+# 4) One Dimensional Density Plot
 
-ta.msd(Coords, NConfigs, NAtoms, timestep, lv)
+ta.one_dimensional_density(trajectories, timesteps, lv, Bin=0.1)
 
-#MSD within a specific region of the system
+# 5) Two Dimensional Density Plot
 
-ta.plane_msd(Coords, NConfigs, NAtoms, UL, LL, "x", Runs, lv, timestep)
+ta.two_dimensional_density(trajectories, timesteps, lv, box=box, direction='z', log=False)
 
-#Smoothed MSD
+# 6) MSD Calculation with One Trajectory Sweep
 
-ta.smooth_msd(Coords, NConfigs, NAtoms, lv, timestep, Runs)
+ta.msd(trajectories, lv, timesteps, natoms, timestep, conductivity=True, temperature=1500)
 
-#MSD that plots diffusion coefficient of each atom against its average position 
+# 7) MSD Calculation with Multiple Trajectory Sweeps
 
-ta.pmsd(Coords, lv, NConfigs, NAtoms, timestep, Bin, "x")
+ta.smooth_msd(trajectories, lv, timesteps, natoms, timestep, runs=10, conductivity=True, temperature=1500)
+
+# 8) MSD Calculation Within a Specific Region of the System
+
+ta.plane_msd(trajectories, lv, timesteps, natoms, timestep, runs=10, ul=ul, ll=ll, direction="x", conductivity=False)
+
+
+# 9) MSD Calculation - Returns Plot of Atomic Diffusion Coefficient vs Average Position 
+
+ta.pmsd(trajectories, lv, timesteps, natoms, timestep)
 
 
 print("--- %s seconds ---" % (time.time() - start_time))
