@@ -14,7 +14,7 @@ from scipy.constants import codata
 
      
 
-def read_history(File, Atom):
+def read_history(file, atom):
     '''
     ReadHistory - Read a DL_POLY HISTORY file
     
@@ -37,54 +37,54 @@ def read_history(File, Atom):
              Numpy array containing the lattice vectors at each timestep
     
     '''
-    if os.path.isfile(File):
-        Coords = []
-        NConfigs = 0
-        History = open(File, 'r')
-        Name = False
-        Count = 0
+    if os.path.isfile(file):
+        trajectories = []
+        timesteps = 0
+        history = open(file, 'r')
+        name = False
+        count = 0
         tstep = False
         c = 0
         lv = []
-        for line in History:
+        for line in history:
             if c == 3:
                 c = 0
                 tstep = False
             if c < 3 and tstep == True:
                 lv.append(line.split())
                 c = c + 1
-            if Name:
-                Name = False
-                Coords.append(line.split()) 
-            if line[0] == Atom[0]:
-                Name = True
-                Count = Count + 1
+            if name:
+                name = False
+                trajectories.append(line.split()) 
+            if line[0] == atom[0]:
+                name = True
+                count = count + 1
             if line[0] =="t":
-                NConfigs = NConfigs + 1
+                timesteps = timesteps + 1
                 tstep = True
-        Coords = np.asarray(Coords, dtype=float)
+        trajectories = np.asarray(trajectories, dtype=float)
         lv = np.asarray(lv, dtype=float)
-        NAtoms = Count / NConfigs
-        NAtoms = int(NAtoms)
+        natoms = count / timesteps
+        natoms = int(natoms)
         vec = np.array([])
-        lv = np.split(lv, NConfigs)
+        lv = np.split(lv, timesteps)
 
-        for i in range(0, NConfigs):
+        for i in range(0, timesteps):
             vec = np.append(vec, (lv[i].sum(axis=0)))
-        lv = np.reshape(vec, (NConfigs, 3))
+        lv = np.reshape(vec, (timesteps, 3))
 
 
     else:
         print("File cannot be found")
         sys.exit(0)
     
-    if NAtoms == 0:
+    if natoms == 0:
         print("No Atoms of specified type exist within the selected HISTORY file")
         sys.exit(0)
         
-    History.close() 
+    history.close() 
         
-    return NAtoms, NConfigs, Coords, lv
+    return natoms, timesteps, trajectories, lv
 
 
 

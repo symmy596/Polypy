@@ -46,6 +46,7 @@ def msd_plot(Time, MSD, XMSD, YMSD, ZMSD):
     plt.ylabel("MSD", fontsize=15)
     plt.savefig("MSD.png", dpi=600)
     plt.show()
+    plt.close()
 
 def msd_output(MSD, XMSD, YMSD, ZMSD, Time):
     '''
@@ -109,7 +110,7 @@ def diffusion_output(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo, cond
     Output.write("2D Z Diffusion Coefficient: " + ZDiffusionCo + " m^2/s (10^-9)\n")
     if conductivity:
         con = str(conductivity)
-        Output.write("Conductivity: " + con + "(S/cm)")
+        Output.write("Conductivity: " + con + "(S/cm)\n")
         c = np.log(conductivity)
         c = str(c)
         Output.write("Log of Conductivity: " + c + "log (S/cm)")
@@ -136,7 +137,11 @@ def plane_msd_output(Diffusion, UL, LL, nt, conductivity=None):
   
     '''
     if conductivity:
-        conductivity = conductivity
+        conductivity = conductivity 
+        l = np.log(conductivity)
+        l = str(l)
+        C = str(conductivity)
+
         con = True
     else:
         con = False
@@ -144,12 +149,11 @@ def plane_msd_output(Diffusion, UL, LL, nt, conductivity=None):
     UL = str(UL)
     LL = str(LL)
     M = str("-")
-    Name = LL + M + UL
+    
     D = str(Diffusion)
-    l = np.log(conductivity)
-    l = str(l)
-    C = str(conductivity)
     nt = str(nt)
+    Name = LL + M + UL
+    
     Output = open(Name, "w")
     
     Output.write("Diffusion Coefficient within region spanning - " + LL + " - " + UL + " : " + D +  " m^2/s (10^-9)\n")
@@ -196,7 +200,9 @@ def pmsd_plot(Average, Diffusion, Direction):
     plt.xlabel(Label, fontsize=15)
     plt.ylabel("Diffusion Coefficient", fontsize=15)
     plt.savefig("PMSD.png", dpi=600)
-    
+    plt.show()
+    plt.close()
+
 def pmsd_average_plot(Bins, Diffusion, Coef, Direction):
     '''
     PMSDAvPlot - Plot for PMSD in bins
@@ -221,7 +227,8 @@ def pmsd_average_plot(Bins, Diffusion, Coef, Direction):
     plt.xlabel(Label, fontsize=15)
     plt.ylabel("Diffusion Coefficient", fontsize=15)
     plt.savefig("PMSDAv.png", dpi=600)
-    
+    plt.show()
+    plt.close()
     
 def line_plot(X, Y, XLab, YLab, output):
     '''
@@ -250,7 +257,8 @@ def line_plot(X, Y, XLab, YLab, output):
     plt.tight_layout()
     plt.savefig(output, dpi=600)
     plt.show()
-    
+    plt.close()
+
 
 def contour_plot(X, Y, Z, output, log):
     '''
@@ -279,3 +287,4 @@ def contour_plot(X, Y, Z, output, log):
 #    plt.colorbar()
     plt.savefig(output, dpi=600)
     plt.show()
+    plt.close()
