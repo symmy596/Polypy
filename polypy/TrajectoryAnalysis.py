@@ -17,7 +17,7 @@ ev = codata.value('electron volt')
 ev = -ev
 
 
-def system_volume(lv, NConfigs, timestep=None, output=None):  
+def system_volume(lv, timesteps, timestep=None, output=None):  
     '''
     system volume - Calculate the volume at each timestep and return a volume as a function of time plot
     
@@ -42,23 +42,17 @@ def system_volume(lv, NConfigs, timestep=None, output=None):
     
     '''
     
-    if timestep:
-        timestep = timestep
-    else:
+    if timestep is None:
         print("No timestep provided - Exiting ")
         sys.exit(0)
         
-    if output:
-        filename = output + ".png"
-    else:
+    if output is None:
         filename = "Volume.png"
     
     volume = np.array([])
     time = np.array([])
-    for i in range(0, NConfigs):
-        Vec = lv[i]
-        Vec = np.prod(Vec)
-        volume = np.append(volume, Vec)
+    for i in range(0, timesteps):
+        volume = np.append(volume, (np.prod(lv[i])))
         time = np.append(time, (i * timestep))
         
     wr.line_plot(time, volume, "Timestep", "System Volume (" r'$\AA$' ")", filename)
@@ -212,20 +206,20 @@ def two_dimensional_density(trajectories, timesteps, lv, box=None, direction=Non
     Parameters
     ----------
     
-    first   : 2D numpy array
-              Atomic Coordinates - (Number of Atoms * Number of Timesteps) x 3
-    second  : int
-              number of timesteps
-    third  : 1D numpy array
-              Lattice Vectors
-    forth   : float
-              Box Value
-    filth   : string
-              Direction normal to the box
-    sixth   : str
-              output file name
+    first     : 2D numpy array
+                Atomic Coordinates - (Number of Atoms * Number of Timesteps) x 3
+    second    : int
+                number of timesteps
+    third     : 1D numpy array
+                Lattice Vectors
+    forth     : float
+                Box Value
+    filth     : string
+                Direction normal to the box
+    sixth     : str
+                output file name
     seventh   : boolean
-              True for log plot, False for no log
+                True for log plot, False for no log
     
     Returns
     -------
@@ -310,13 +304,13 @@ def conductivity(plane, volume, diff, temperature):
     Parameters
     ----------
     first  : int
-              Total number of charge carriers
-    second   : numpy
-              lattice vectors
-    third : float
-              diffusion coefficient
-    forth   : int
-              Temperature
+             Total number of charge carriers
+    second : numpy
+             lattice vectors
+    third  : float
+             diffusion coefficient
+    forth  : int
+             Temperature
               
     Returns
     -------
@@ -423,16 +417,18 @@ def run_msd(trajectories, lv, timesteps, natoms, start, timestep):
     
     Parameters
     ----------
-    first : 3D numpy array
-            atomic coordinates 
+    first  : 3D numpy array
+             atomic coordinates 
     second : 1D numpy array
              Lattive Vectors
     third  : Integer
-             Starting position for MSD - Smoothed MSD changes the starting position to increase statistics
-    fourth : Integer
-             Total number of Timesteps
-    filth  : Integer 
-             Total number of atoms
+             Total Number of Timesteps
+    forth  : Integer
+             Total Number of Atoms
+    filth  : Integer
+             Total number of trajectory loops
+    sixth  : Integer
+             Timestep of the simulation
              
     Return
     ------
@@ -602,18 +598,22 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
     
     Parameters
     ----------
-    first  : integer
-             Number of timesteps
-    second : 2D numpy array
-             Coordinates for one dimension - hard coded for x atm
-    third  : 3D array 
-             Coordinates
-    fourth : float
-             Upper limit of bin
-    filth  : float
-             Lower limit of bin
-    sixth  : numpy array
-             Lattice vectors
+    first   : numpy array
+              Trajectories
+    second  : 2D numpy array
+              Coordinates for one dimension
+    third   : numpy array
+              lattice vectors
+    fourth  : integer
+              Total Number of Timesteps
+    filth   : float
+              Timestep of simulation
+    sixth   : float
+              Upper Bin limit
+    seventh : float 
+              Lower Bin Limit
+    eight   : integer
+              Total number of trajectory loops
              
     Return
     ------
