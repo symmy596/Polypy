@@ -32,3 +32,21 @@ def test_system_volume():
 
     assert_almost_equal(expected_vol, a)
     assert_almost_equal(expected_time, b)
+
+def test_conductivity():
+    a = ta.conductivity(1, 2, 3, 4)
+    a = round(a, 0)
+    expected = 697219
+    assert_almost_equal(a, expected)
+    
+def test_square_distance():
+    data = np.genfromtxt("data/SD.txt", dtype="float")
+    a = ta.square_distance(data, 1)
+    b = ta.square_distance(np.array([1, 2, 3]), 0)
+    expected_a = np.array([102, 408, 918, 1632, 2550, 3672, 4998, 6528, 8262, 10200])
+    expected_b = 14
+    assert_almost_equal(a, expected_a)
+    assert b == expected_b
+
+    
+    
