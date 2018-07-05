@@ -159,7 +159,7 @@ def one_dimensional_density(trajectories, timesteps, lv, Bin=None, direction=Non
         print("No direction specified - Using default - x")
         
     if output is None:
-        filename = "1D-Density.png"
+        output = "1D-Density.png"
       
     
     if direction == "x":
@@ -193,7 +193,7 @@ def one_dimensional_density(trajectories, timesteps, lv, Bin=None, direction=Non
     x = ((x * Bin)  - ( (np.average(lv[:,val]) / 2 )))
     y = ( bin_array / timesteps)
         
-    wr.line_plot(x, y, "XCoordinate (" r'$\AA$' ")", "Number Density", filename)
+    wr.line_plot(x, y, "XCoordinate (" r'$\AA$' ")", "Number Density", output)
 
     
 def two_dimensional_density(trajectories, timesteps, lv, box=None, direction=None, output=None, log=None):
@@ -238,7 +238,7 @@ def two_dimensional_density(trajectories, timesteps, lv, box=None, direction=Non
         print("No direction specified - Using default - x")
         
     if output is None:
-        filename = "2D-Density.png"
+        output = "2D-Density.png"
   
     if log == True:
         log = True
@@ -294,7 +294,7 @@ def two_dimensional_density(trajectories, timesteps, lv, box=None, direction=Non
 
     bin_array = bin_array + 0.001
 
-    wr.contour_plot(x, y, bin_array, filename, log)
+    wr.contour_plot(x, y, bin_array, output, log)
 
 
 def conductivity(plane, volume, diff, temperature):
