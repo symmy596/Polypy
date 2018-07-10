@@ -18,3 +18,6 @@ Guide is currently several versions behind.
 
 ## Author
 **Adam Symington** 
+
+[![PyPI version](https://badge.fury.io/py/PolyPy.svg)](https://badge.fury.io/py/PolyPy)
+
