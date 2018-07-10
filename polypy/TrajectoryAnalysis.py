@@ -17,34 +17,24 @@ ev = codata.value('electron volt')
 ev = -ev
 
 
-def system_volume(lv, timesteps, timestep=None, output=None):  
+def system_volume(lv, timesteps, timestep, output=None):  
     '''
     system volume - Calculate the volume at each timestep and return a volume as a function of time plot
     
     Parameters
     ----------
-    first  : numpy
-             Lattice vectors
-    second : int
-             Total number of timesteps
-    third  : float
-             timestep between records
-    forth  : str
-             output file name
+    lv        : Lattice vectors            :    Numpy array
+    timesteps : Total number of timesteps  :    Integer
+    timestep  : Timestep of MD simulation  :    Float 
+    output    : Output file name           :    String         :   Default: Volume.png
             
     
     Returns
     -------
-    first  : numpy
-             volume at each timestep
-    second : numpy
-             time
+    volume    : Volume at each timestep   :    1D numpy array
+    time      : Time                      :    1D numpy array
     
     '''
-    
-    if timestep is None:
-        print("No timestep provided - Exiting ")
-        sys.exit(0)
         
     if output is None:
         filename = "Volume.png"
@@ -60,36 +50,24 @@ def system_volume(lv, timesteps, timestep=None, output=None):
     return volume, time
 
 
-def one_dimensional_density_sb(trajectories, ul=None, ll=None, direction=None):
+def one_dimensional_density_sb(trajectories, ul, ll, direction=None):
     '''
-    one_dimensional_density_sb - will return total number of species that spend a timestep within a bin range
+    one_dimensional_density_sb - Calculate the total number of a given species within a 1D slice of a structure
     
     Parameters
     ----------
-    first  : numpy 
-             Atomic coordinates
-    second : float
-             Upper bin limit
-    third  : float
-             lower bin limit
-    forth  : str
-             Direction normal to slice
+    trajectories : Atomic coordinates                      :    Numpy array
+    ul           : Upper bin limit                         :    Float
+    ll           : Lower bin limit                         :    Float
+    direction    : Direction normal to slice               :    String          : Default - x
     
     Returns
     -------
-    first  : Int
-             Number of atomic species within bin
+    plane        :   Number of atomic species within bin   :    Integer
     '''
-    
-    if ul is None:
-        print("No Upper Bin Limit provided - Please check and rerun")
-    
-    if ll is None:
-        print("No Lower Bin Limit provided - Please check and rerun")
     
     if direction is None:
         direction = "x"
-        print("No direction specified - Using default - x")
         
     if direction == "x":
         val = 0
@@ -99,19 +77,16 @@ def one_dimensional_density_sb(trajectories, ul=None, ll=None, direction=None):
         val = 2
         
     c = trajectories[:,val]
-    l = (c.size)
-    x = c.tolist()
+    c.tolist()
 
     plane = 0
     
-    for j in range(0, l):
+    for j in range(0, trajectories[:,val].size):
               
         if c[j] > ll and c[j] < ul:
             plane = plane + 1       
 
-    u = str(ul)
-    l = str(ll)
-    filename = "1D-Density-" + l + " - " + u             
+    filename = "1D-Density-" + (str(ul)) + " - " + (str(ll))            
          
     wr.one_dimensional_density_sb_output(plane, ul, ll, filename)   
     
