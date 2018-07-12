@@ -296,3 +296,20 @@ def contour_plot(X, Y, Z, output, log):
     plt.savefig(output, dpi=600)
     plt.show()
     plt.close()
+    
+def combined_density_plot(X, Y, Y2, Z, output, log):
+    
+    fig, ax1 = plt.subplots()
+    ax2 = ax1.twinx()
+    if log == True:
+        ax1.contourf(X, Y, Z, cmap="hot", norm = colors.LogNorm(vmin=Z.min(), vmax=Z.max()))
+    else:
+        ax1.contourf(X, Y, Z, cmap="hot")
+    ax1.set_xlabel("X Coordinate (" r'$\AA$' ")", fontsize=15)
+    ax1.set_ylabel("Y Coordinate (" r'$\AA$' ")", fontsize=15)
+    ax1.set_xlim([np.amin(X), np.amax(X)]) 
+    ax1.tick_params(labelsize=12)
+    ax2.plot(X, Y2, color="white")
+    ax2.set_ylabel("Number Density", fontsize=15)
+    ax2.tick_params(labelsize=12)
+    plt.show()

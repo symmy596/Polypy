@@ -87,3 +87,9 @@ def bin_choose(X, Y):
     Z = int(Z)
     Z = Z - 1
     return Z
+
+def get_integer(x, y):
+    z = x / y
+    z = round(z, 0)
+    z = int(z)
+    return z

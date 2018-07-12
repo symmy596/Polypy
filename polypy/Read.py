@@ -20,22 +20,15 @@ def read_history(file, atom):
     
     Parameters
     ----------
-    first  : file
-             HISTORY filename
-    second : str
-             Atom to be read
+    file   : HISTORY filename                         : String
+    atom   : Atom to be read                          : String
              
     Return
     ------
-    first  : int
-             Number of atoms
-    second : int
-             Number of timesteps
-    third  : numpy array
-             Atomic coordinates
-    fourth : numpy array
-             Numpy array containing the lattice vectors at each timestep
-    
+    data   : trajectories - Atomic trajectories       : Numpy array
+           : lv           - Lattice Vectors           : Numpy array
+           : timesteps    - Total number of timesteps : Integer
+           : natoms       - Tital number of atoms     : Integer
     '''
     if os.path.isfile(file):
         trajectories = []
@@ -73,7 +66,8 @@ def read_history(file, atom):
             vec = np.append(vec, (lv[i].sum(axis=0)))
         lv = np.reshape(vec, (timesteps, 3))
 
-
+        data = {'trajectories':trajectories, 'lv':lv, 'timesteps':timesteps, 'natoms':natoms}
+    
     else:
         print("File cannot be found")
         sys.exit(0)
@@ -83,8 +77,7 @@ def read_history(file, atom):
         sys.exit(0)
         
     history.close() 
-        
-    return natoms, timesteps, trajectories, lv
-
+    return data
+#
 
 
