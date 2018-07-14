@@ -10,7 +10,7 @@ import Read as rd
 import TrajectoryAnalysis as ta
 import Write as wr
 
-def msd_plot(Time, MSD, XMSD, YMSD, ZMSD):
+def msd_plot(msd_data):
     '''
     MSDPlot - Plot MSD 
     
@@ -33,14 +33,14 @@ def msd_plot(Time, MSD, XMSD, YMSD, ZMSD):
     
     '''
     
-    YMax = np.amax(MSD)
-    XMax = np.amax(Time)
+    YMax = np.amax(msd_data['msd'])
+    XMax = np.amax(msd_data['time'])
     plt.ylim(ymin=0, ymax=YMax)
     plt.xlim(xmin=0, xmax=XMax)
-    plt.scatter(Time, MSD, color="crimson", label="MSD", s=5)
-    plt.scatter(Time, XMSD, color="blue", label="XMSD",  s=5)
-    plt.scatter(Time, YMSD, color="black", label="YMSD",  s=5)
-    plt.scatter(Time, ZMSD, color="darkgreen", label="ZMSD",s=5)
+    plt.scatter(msd_data['time'], msd_data['msd'], color="crimson", label="MSD", s=5)
+    plt.scatter(msd_data['time'], msd_data['xmsd'], color="blue", label="XMSD",  s=5)
+    plt.scatter(msd_data['time'], msd_data['ymsd'], color="black", label="YMSD",  s=5)
+    plt.scatter(msd_data['time'], msd_data['zmsd'], color="darkgreen", label="ZMSD",s=5)
     plt.tick_params(labelsize=12)
     
     plt.xlabel("Timestep (ps)", fontsize=15)
@@ -48,37 +48,6 @@ def msd_plot(Time, MSD, XMSD, YMSD, ZMSD):
     plt.savefig("MSD.png", dpi=600)
     plt.show()
     plt.close()
-
-def msd_output(MSD, XMSD, YMSD, ZMSD, Time):
-    '''
-    MSDOutput - Writes out the values of MSD calc to a file
-    
-    Parameters 
-    ----------
-    first  : 1D array
-             Timesteps
-    second : 1D array
-             MSD values
-    third  : 1D array
-             XMSD values
-    fourth : 1D array
-             YMSD values
-    filth  : 1D array
-             ZMSD values
-    
-    Return
-    ------
-    text file
-    
-    '''
-    A = np.array([])
-    A = np.append(A, MSD)
-    A = np.append(A, XMSD)
-    A = np.append(A, YMSD)
-    A = np.append(A, ZMSD)
-    A = np.split(A, 4)
-    np.savetxt("MSD.txt", A, delimiter=',')
-            
     
 def diffusion_output(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo, conductivity=None):
     '''
@@ -175,66 +144,7 @@ def one_dimensional_density_sb_output(plane, UL, LL, output):
     Output.write("Total Number of species within region spanning - " + LL + " - " + UL + " : " + plane)
     Output.close()
     
-def pmsd_plot(Average, Diffusion, Direction):
-    '''
-    PMSDPlot - Plot for PMSD function
-    
-    Parameters 
-    ----------
-    first  : numpy array
-             Average positions
-    second : numpy array
-             Diffusion data
-             
-    Return
-    ------
-    matplotlib plot
-    
-    '''
-    Label = Direction + "-Coordinate" +  " (" r'$\AA$' ")"
-    YMax = np.amax(Diffusion)
-    XMax = np.amax(Average)
-    XMin = np.amin(Average)
-    plt.ylim(ymin=0, ymax=YMax)
-    plt.xlim(xmin=XMin, xmax=XMax)
-    plt.scatter(Average, Diffusion, color="crimson", label="MSD", s=5)
-    plt.xlabel(Label, fontsize=15)
-    plt.ylabel("Diffusion Coefficient", fontsize=15)
-    plt.tick_params(labelsize=12)
-
-    plt.savefig("PMSD.png", dpi=600)
-    plt.show()
-    plt.close()
-
-def pmsd_average_plot(Bins, Diffusion, Coef, Direction):
-    '''
-    PMSDAvPlot - Plot for PMSD in bins
-    
-    Parameters
-    ----------
-    first  : numpy array
-             Bins
-    second : numpy array
-             Diffusion data in each bin
-    third  : float
-             Overall diffusion value
-             
-    Return
-    ------
-    matplotlib plot
-    
-    '''
-    Label = Direction + "-Coordinate" +  " (" r'$\AA$' ")"
-    plt.axhline(y=Coef, ls='dashed', color='grey')
-    plt.scatter(Bins, Diffusion, color="crimson", label="MSD", s=5)
-    plt.xlabel(Label, fontsize=15)
-    plt.tick_params(labelsize=12)
-
-    plt.ylabel("Diffusion Coefficient", fontsize=15)
-    plt.savefig("PMSDAv.png", dpi=600)
-    plt.show()
-    plt.close()
-    
+   
 def line_plot(X, Y, XLab, YLab, output):
     '''
     LinePlot - Simple line plot
@@ -285,14 +195,13 @@ def contour_plot(X, Y, Z, output, log):
     
     '''
     if log == True:
-        plt.contourf(X, Y, Z, cmap="hot", norm = colors.LogNorm(vmin=Z.min(), vmax=Z.max()))
+        plt.contourf(X, Y, Z, cmap="Reds", norm = colors.LogNorm(vmin=Z.min(), vmax=Z.max()))
     else:
-        plt.contourf(X, Y, Z, cmap="hot")
+        plt.contourf(X, Y, Z, cmap="Reds")
     plt.xlabel("X Coordinate (" r'$\AA$' ")", fontsize=15)
     plt.ylabel("Y Coordinate (" r'$\AA$' ")", fontsize=15)
     plt.tick_params(labelsize=12)
 
-#    plt.colorbar()
     plt.savefig(output, dpi=600)
     plt.show()
     plt.close()

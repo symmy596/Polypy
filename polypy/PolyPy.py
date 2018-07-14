@@ -10,7 +10,6 @@ import Generic as ge
 import Read as rd
 import TrajectoryAnalysis as ta
 import Write as wr
-import Read_tes as rt
 
 
 from scipy import stats

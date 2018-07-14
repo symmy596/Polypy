@@ -4,12 +4,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 
+
 import matplotlib
 import Generic as ge
 import Read as rd
 import TrajectoryAnalysis as ta
 import Write as wr
 
+from mpl_toolkits.mplot3d import proj3d
 from mpl_toolkits.mplot3d import Axes3D
 
 from scipy import stats
@@ -22,7 +24,7 @@ ev = -ev
 class Density():
     '''
     The Density class will calculate the atomic density in one, two and both dimensions as well as within a specified plane. This
-    class is ideal for observing how atomic changes within a structure. 
+    class is ideal for observing how atomic density changes within a structure. 
     
     Parameters
     ----------
@@ -38,17 +40,17 @@ class Density():
        
         Parameters
         ----------
-
         Bin             : Bin Value                       : Float                : Default - 0.1
         direction       : Direction normal to the bin     : String               : Default - x
         output          : Output file name                : String               : Default - 1D-Density.png
         
         Returns
         -------
-        text file
-        matplolib plot
-        "Heatmap.png" - Contour plot - xy grid of total of atoms within each box
+        matplolib plot - Line graph showing atomic number density within each slice.
         
+        To Do
+        -----
+        Output a text file with the data so that the plots can be easily tweaked without having to rerun the program. 
         '''
         if Bin is None:
             Bin = 0.1
@@ -89,12 +91,10 @@ class Density():
     
     def two_dimensional_density(self, box=None, direction=None, output=None, log=False):
         '''
-        2D Atomic Density Analysis
-        Last updated : 19/06/2018
+        two_dimensional_density - 2D Atomic Density Analysis
 
         Parameters
         ----------
-
         box              : Box Value                             : Float                : Default : 0.1    
         direction        : Direction normal to the box           : String               : Default : x
         output           : output file name                      : String               : Default : 2D-Density.png
@@ -102,9 +102,11 @@ class Density():
                     
         Returns
         -------
+        matplolib plot - Contour plot - xy grid of total of atoms within each box
         
-        matplolib plot
-        "Heatmap.png" - Contour plot - xy grid of total of atoms within each box
+        To Do
+        -----
+        Output a text file with the data so that the plots can be easily tweaked without having to rerun the program. 
         '''
         
         if box is None:
@@ -198,10 +200,8 @@ class Density():
         return plane  
     def one_and_two_dimension_overlay(self, box=None, direction=None, output=None, log=False):
         '''
-        
         Parameters
         ----------
-
         box        : Box Value                             : Float        : Default : 0.1    
         direction  : Direction normal to the box           : String       : Default : x
         output     : output file name                      : String       : Default : 2D-Density.png
@@ -209,9 +209,7 @@ class Density():
                     
         Returns
         -------
-        
-        matplolib plot
-        "Heatmap.png" - Contour plot - xy grid of total of atoms within each box
+        matplolib plot - Contour plot of atomic number denisity within boxes and a line graph of 1D atomic density overlayed.
         '''
         
         if box is None:
@@ -267,7 +265,7 @@ class Density():
 
 
         wr.combined_density_plot(x, y, od_array, td_array, output, log)
-
+      
 def system_volume(data, timestep, output=None):  
     '''
     system volume - Calculate the volume at each timestep and return a volume as a function of time plot
@@ -323,34 +321,6 @@ def conductivity(plane, volume, diff, temperature):
     
     return conductivity
                                                       
-    
-def average_position(trajectory, timesteps, natoms, lv):
-    
-    '''
-    average_position - Average position calculator
-    
-    Parameters
-    ----------
-    trajectory  : Atomic Coorinates in one dimension         : Numpy 2D array
-    timesteps   : Total number of timesteps                  : Integer 
-    natoms      : Total number of atoms                      : Integer
-    lv          : Lattice vectors                            : Numpy 1D array
-                         
-    Returns
-    -------
-    average     : average position in 1D                     : Numpy 1D array
-    '''
-    
-    average = np.array([])
-    for i in range(0, natoms):
-        for j in range(1, timesteps):
-            cross, x_new = ge.pbc(trajectory[j,i], trajectory[(j-1),i], lv)
-            if cross == True:
-                trajectory[j,i] = x_new
-        average = np.append(average, (np.average(trajectory[:,i])))
-    return average
-
-
 def distances(r1, r0):
     ''' 
     Simple subtraction 
@@ -480,27 +450,16 @@ def run_msd(trajectories, lv, timesteps, natoms, start, timestep):
             ymsd = np.append(ymsd, (np.average((distance[1] ** 2))))
             zmsd = np.append(zmsd, (np.average((distance[2] ** 2))))
         
+    msd_data = {'msd':msd, 'xmsd':xmsd, 'ymsd':ymsd, 'zmsd':zmsd, 'time':time}
+    return msd_data, pmsd
 
-    return msd, xmsd, ymsd, zmsd, time, pmsd
 
-
-def msd_stats(msd, xmsd, ymsd, zmsd, time):
-    
+def msd_stats(msd_data):
     '''
     Linear Regression 
-    
     Parameters
     ----------
-    first  : 1D numpy array
-             MSD values
-    second : 1D numpy array
-             MSD values for the X direction
-    third  : 1D numpy array
-             MSD values for the y direction
-    fourth : 1D numpy array
-             MSD values for the z direction
-    filth  : 1D numpy array
-             Timesteps
+    msd_data : Dictionary containing nmpy arrays of msd, xmsd, ymsd, zmsd and time data.
              
     Return
     ------
@@ -514,10 +473,10 @@ def msd_stats(msd, xmsd, ymsd, zmsd, time):
              gradient for z
     '''
     
-    ddiffusion, dintercept, dr_value, dp_value, dstd_err = stats.linregress(time, msd)
-    xdiffusion, xintercept, xr_value, xp_value, xstd_err = stats.linregress(time, xmsd)
-    ydiffusion, yintercept, yr_value, yp_value, ystd_err = stats.linregress(time, ymsd)
-    zdiffusion, zintercept, zr_value, zp_value, zstd_err = stats.linregress(time, zmsd)
+    ddiffusion, dintercept, dr_value, dp_value, dstd_err = stats.linregress(msd_data['time'], msd_data['msd'])
+    xdiffusion, xintercept, xr_value, xp_value, xstd_err = stats.linregress(msd_data['time'], msd_data['xmsd'])
+    ydiffusion, yintercept, yr_value, yp_value, ystd_err = stats.linregress(msd_data['time'], msd_data['ymsd'])
+    zdiffusion, zintercept, zr_value, zp_value, zstd_err = stats.linregress(msd_data['time'], msd_data['zmsd'])
     
     return (ddiffusion, xdiffusion, ydiffusion, zdiffusion)
 
@@ -529,26 +488,17 @@ def diffusion_coefficient(ddiffusion, xdiffusion, ydiffusion, zdiffusion):
     
     Parameters
     ----------
-    first  : float
-             Overal gradient
-    second : float
-             gradient for X
-    third  : float
-             gradient for y
-    fourth : float
-             gradient for z
-    
+    ddiffusion : Line gradient of MSD vs time        : Float
+    xdiffusion : Line gradient of MSD in X vs time   : Float
+    ydiffusion : Line gradient of MSD in y vs time   : Float
+    zdiffusion : Line gradient of MSD in z vs time   : Float
     
     Return
     ------
-    first  : float
-             Overal Diffusion coefficient
-    second : float
-             Diffusion Coefficient for X
-    third  : float
-             Diffusion Coefficient for Y
-    fourth : float
-             Diffusion Coefficient for Z
+    ddiffusion  : Overal Diffusion coefficient       : float
+    xdffusion   : Diffusion Coefficient for X        : float
+    ydffusion   : Diffusion Coefficient for Y        : float
+    zdffusion   : Diffusion Coefficient for Z        : float
     '''
     
     ddiffusion = ((np.average(ddiffusion)) / 6) * 10
@@ -561,34 +511,21 @@ def diffusion_coefficient(ddiffusion, xdiffusion, ydiffusion, zdiffusion):
 
 def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
     '''
-    
-    Check Trajectory - From an assigned bin determine if any part of a trajectory crosses the bin
-    
+    Check Trajectory - From an assigned bin determine if any part of a trajectory crosses the bin - then send that to MSD calculator
     Parameters
     ----------
-    first   : numpy array
-              Trajectories
-    second  : 2D numpy array
-              Coordinates for one dimension
-    third   : numpy array
-              lattice vectors
-    fourth  : integer
-              Total Number of Timesteps
-    filth   : float
-              Timestep of simulation
-    sixth   : float
-              Upper Bin limit
-    seventh : float 
-              Lower Bin Limit
-    eight   : integer
-              Total number of trajectory loops
+    trajectory  : Trajectory of one atom            : numpy array
+    xc          : Coordinates for one dimension     : numpy array
+    lv          : lattice vectors                   : numpy array
+    timesteps   : Total Number of Timesteps         : Integer
+    timestep    : Timestep of simulation            : Float
+    ul          : Upper Bin limit                   : FLoat
+    ll          : Lower Bin Limit                   : Float
+    runs        : Total number of trajectory loops  : Integer
              
     Return
     ------
-    float
-        Diffusion Coefficient for a given atom within a given bin
-    
-    
+    diffusionco : Diffusion Coefficient for a given atom within a given bin : Float
     '''
         
     ib = False
@@ -620,8 +557,8 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
                 for i in range(0, runs):
                     start = i + 5
 
-                    msd, xmsd, ymsd, zmsd, time, pmsd = ta.run_msd(trajectory_slice, vecs, count, 1, start, timestep)
-                    d, xd, yd, zd = ta.msd_stats(msd, xmsd, ymsd, zmsd, time)
+                    msd_data, pmsd = ta.run_msd(trajectory_slice, vecs, count, 1, start, timestep)
+                    d, xd, yd, zd = ta.msd_stats(msd_data)
                     d, xd, yd, zd = ta.diffusion_coefficient(d, xd, yd, zd)
                     do = np.append(do, d)
                 
@@ -643,8 +580,8 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
 
         for i in range(0, runs):
             start = i + 5
-            msd, xmsd, ymsd, zmsd, time, pmsd = ta.run_msd(trajectory_slice, vecs, count, 1, start, timestep)
-            d, xd, yd, zd = ta.msd_stats(msd, xmsd, ymsd, zmsd, time)
+            msd_data, pmsd = ta.run_msd(trajectory_slice, vecs, count, 1, start, timestep)
+            d, xd, yd, zd = ta.msd_stats(msd_data)
             d, xd, yd, zd = ta.diffusion_coefficient(d, xd, yd, zd)
             do = np.append(do, d)
         diffusionco = np.append(diffusionco, np.average(do))
@@ -654,24 +591,18 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
 
 
 def msd(data, timestep, conductivity=None, temperature=None):
-    
     '''
-    MSD Launcher
-    
+    msd - Function that runs all of the parts of the MSD calcualtion
     Parameters
     ----------
-    first  : 2D numpy array
-             Atomic Coordinates 
-    second : 1D numpy array
-             Lattice vectors
-    third  : integer
-             total number of timesteps
-    forth  : integer 
-             total number of atoms
+    data          : Dictionary containing atomic trajectories ['trajectories'], lattice vectors ['lv'], timesteps ['timesteps'] and number                     of atoms['natoms']
+    timestep      : simulation timestep - float                                 : Float
+    conductivity  : True/False True - calculate conductivity                    : Bool
+    temperature   : Temperature of the simulation - needed for conductivity     : Integer
     
     Returns
     -------
-    None
+    Outputs diffusion info
     '''
     if conductivity is None:
         conductivity = False
@@ -683,8 +614,8 @@ def msd(data, timestep, conductivity=None, temperature=None):
     X = np.array([])
     start = 1
     
-    msd, xmsd, ymsd, zmsd, time, pmsd = run_msd(trajectories, data['lv'], data['timesteps'], data['natoms'], start, timestep)
-    d, xd, yd, zd = msd_stats(msd, xmsd, ymsd, zmsd, time)    
+    msd_data, pmsd = run_msd(trajectories, data['lv'], data['timesteps'], data['natoms'], start, timestep)
+    d, xd, yd, zd = msd_stats(msd_data)    
     d, xd, yd, zd = diffusion_coefficient(d, xd, yd, zd)
     
     if conductivity == True:
@@ -695,31 +626,23 @@ def msd(data, timestep, conductivity=None, temperature=None):
 
     else:
         wr.diffusion_output(d, xd, yd, zd)
-    wr.msd_output(msd, xmsd, ymsd, zmsd, time)
-    wr.msd_plot(time, msd, xmsd, ymsd, zmsd)
+    wr.msd_plot(msd_data)
 
     
 def smooth_msd(data, timestep, runs=None, conductivity=None, temperature=None):
-    
     '''
-    MSD Launcher for a Smoothed MSD calc
-    
+    smooth_msd - MSD Launcher for a Smoothed MSD calc
     Parameters
     ----------
-    first  : 2D numpy array
-             Atomic Coordinates 
-    second : 1D numpy array
-             Lattice vectors
-    third  : integer
-             Number of MSD sweeps to carry out
-    forth  : integer
-             total number of timesteps
-    filth  : integer 
-             total number of atoms
+    data          : Dictionary containing atomic trajectories ['trajectories'], lattice vectors ['lv'], timesteps ['timesteps'] and number                     of atoms['natoms']
+    timestep      : simulation timestep - float                                 : Float
+    runs          : How many sweeps across the trajectory                       : Integer
+    conductivity  : True/False True - calculate conductivity                    : Bool
+    temperature   : Temperature of the simulation - needed for conductivity     : Integer
     
     Returns
     -------
-    None
+    Outputs diffusion info
     
     '''
     if conductivity is None:
@@ -747,18 +670,18 @@ def smooth_msd(data, timestep, runs=None, conductivity=None, temperature=None):
     for i in range(1, runs):
         start = i * 10
         print("Starting Run", i, "of", runs)
-        msd, xmsd, ymsd, zmsd, time, pmsd = run_msd(trajectories, data['lv'], data['timesteps'], data['natoms'], start, timestep)
-        d, xd, yd, zd = msd_stats(msd, xmsd, ymsd, zmsd, time)    
+        msd_data, pmsd = run_msd(trajectories, data['lv'], data['timesteps'], data['natoms'], start, timestep)
+        d, xd, yd, zd = msd_stats(msd_data)    
         
         dc = np.append(dc, d)
         xdc = np.append(xdc, xd)
         ydc = np.append(ydc, yd)
         zdc = np.append(zdc, zd)
-        smsd = np.append(smsd, msd)
-        sxmsd = np.append(sxmsd, xmsd)
-        symsd = np.append(symsd, ymsd)
-        szmsd = np.append(szmsd, zmsd)
-        stime = np.append(stime, time)
+        smsd = np.append(smsd, msd_data['msd'])
+        sxmsd = np.append(sxmsd, msd_data['xmsd'])
+        symsd = np.append(symsd, msd_data['ymsd'])
+        szmsd = np.append(szmsd, msd_data['zmsd'])
+        stime = np.append(stime, msd_data['time'])
 
     d, xd, yd, zd = diffusion_coefficient(dc, xdc, ydc, zdc)
     
@@ -769,8 +692,8 @@ def smooth_msd(data, timestep, runs=None, conductivity=None, temperature=None):
         wr.diffusion_output(d, xd, yd, zd, cond)
     else:
         wr.diffusion_output(d, xd, yd, zd)
-    wr.msd_output(msd, sxmsd, symsd, szmsd, stime)
-    wr.msd_plot(stime, smsd, sxmsd, symsd, szmsd)
+    smsd_data = {'msd': smsd, 'xmsd':sxmsd, 'ymsd':symsd, 'zmsd':szmsd, 'time':stime}
+    wr.msd_plot(smsd_data)
 
         
 def plane_msd(data, timestep, runs=None, ul=None, ll=None, direction=None, conductivity=None, temperature=None):
@@ -779,8 +702,18 @@ def plane_msd(data, timestep, runs=None, ul=None, ll=None, direction=None, condu
     
     Parameters
     ----------
-    first  : 
+    data          : Dictionary containing atomic trajectories ['trajectories'], lattice vectors ['lv'], timesteps ['timesteps'] and number                     of atoms['natoms']    
+    timestep      : Simulation timestep                        : Float
+    runs          : Number of trajectory sweeps                : Integer
+    ul            : Upper bin limit                            : Float
+    ll            : Lower bin limit                            : Float
+    direction     : Direction normal to slices                 : str
+    conductivity  : True/False - True for conductivity calc    : Bool
+    temperature   : Temperature of simulation                  : Integer
     
+    Returns
+    -------
+    File containing the result of the calc
     '''
     if runs is None:
         runs = 1
@@ -836,79 +769,3 @@ def plane_msd(data, timestep, runs=None, ul=None, ll=None, direction=None, condu
         wr.plane_msd_output(diffusion, ul, ll, nt)
     
     
-def pmsd(data, timestep, Bin=None, direction=None):
-    '''
-    MSD Launcher, will return the diffusion coefficient of every atom in the trajectory. 
-    
-    Parameters
-    ----------
-    first  : 2D numpy array
-             Atomic Coordinates 
-    second : 1D numpy array
-             Lattice vectors
-    third  : integer
-             total number of timesteps
-    fourth : integer 
-             total number of atoms
-    filth  : float
-             Bin size for each plane
-             
-    Returns
-    -------
-    None
-    
-    '''
-    if Bin is None:
-        Bin = 5.0
-        
-    if direction is None:
-        direction = "x"
-          
-    if direction == "x":
-        val = 0
-    elif direction == "y":
-        val = 1
-    elif direction == "z":
-        val = 2
-    
-    xc = np.reshape(data['trajectories'][:,val], ((data['timesteps']), data['natoms']))
-    trajectories = np.split(data['trajectories'], data['timesteps'])
-
-    x = np.array([])
-    diffusion = np.array([])
-
-    start = 1
-    
-    msd, xmsd, ymsd, zmsd, time, pmsd = run_msd(trajectories, data['lv'], data['timesteps'], data['natoms'], start, timestep)
-
-    pmsd = np.reshape(pmsd, ((data['timesteps'] - 1), data['natoms'])) 
-    for p in range(0, (data['natoms'])):
-        slope, intercept, r_value, p_value, std_err = stats.linregress(time, pmsd[:,p])
-        diffusion = np.append(diffusion, slope)
-
-    vec = np.average(data['lv'][:,[val]])
-    average = average_position(xc, data['timesteps'], data['natoms'], vec)
-    ll = 0
-    ul = 0
-    coef = np.average(diffusion)
-    bins = ge.bin_choose(vec, Bin)
-    diff = np.array([])
-    z = average.size
-    slice_total = np.array([])
-
-    for i in range(0, bins):
-        ll = (i * Bin) - (vec * 0.5)
-        ul = (ll + Bin)
-        diff = np.append(diff, ((ul - (Bin / 2))))
-       
-        bin_diff = np.array([])
-        for j in range(0, z):
-            if average[j] > ll and average[j] < ul:
-                bin_diff = np.append(bin_diff, diffusion[j])
-        if bin_diff.size == 0:
-            slice_total = np.append(slice_total, 0)
-        else:
-            slice_total = np.append(slice_total, (np.average(bin_diff))) 
-    
-    wr.pmsd_average_plot(diff, slice_total, coef, direction)
-    wr.pmsd_plot(average, diffusion, direction)
