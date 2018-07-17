@@ -78,6 +78,56 @@ def read_history(file, atom):
         
     history.close() 
     return data
-#
+
+def read_config(file, atom):
+    '''
+    ReadHistory - Read a DL_POLY HISTORY file
+    
+    Parameters
+    ----------
+    file   : CONFIG  filename                         : String
+    atom   : Atom to be read                          : String
+             
+    Return
+    ------
+    data   : trajectories - Atomic trajectories       : Numpy array
+           : natoms       - Tital number of atoms     : Integer
+    '''
+    if os.path.isfile(file):
+        coords = []
+        config = open(file, 'r')
+        name = False
+        count = 0
+        lv = []
+        title = config.readline()
+        stuff = config.readline()
+        for i in range(0, 3):
+            l = config.readline()
+            lv.append(l.split())
+            
+        for line in config:
+            if name:
+                name = False
+                coords.append(line.split()) 
+            if line[0] == atom[0]:
+                name = True
+                count = count + 1
+        lv = np.asarray(lv, dtype=float)        
+        coords = np.asarray(coords, dtype=float)
+        natoms = int(count)
+        vec = lv.sum(axis=0)
+        print(vec)
+        data = {'trajectories':coords, 'lv':vec, 'timesteps':1, 'natoms':natoms}
+    
+    else:
+        print("File cannot be found")
+        sys.exit(0)
+    
+    if natoms == 0:
+        print("No Atoms of specified type exist within the selected CONFIG file")
+        sys.exit(0)
+        
+    config.close() 
+    return data
 
 
