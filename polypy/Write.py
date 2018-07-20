@@ -13,26 +13,14 @@ import Write as wr
 def msd_plot(msd_data):
     '''
     MSDPlot - Plot MSD 
-    
     Parameters 
     ----------
-    first  : 1D array
-             Timesteps
-    second : 1D array
-             MSD values
-    third  : 1D array
-             XMSD values
-    fourth : 1D array
-             YMSD values
-    filth  : 1D array
-             ZMSD values
-             
+    msd_data  : Dictionary {'msd': msd, 'xmsd': xmsd, 'ymsd': ymsd, 'zmsd': zmsd, 'time': time}
+
     Return
     ------
     matplotlib plot - png
-    
     '''
-    
     YMax = np.amax(msd_data['msd'])
     XMax = np.amax(msd_data['time'])
     plt.ylim(ymin=0, ymax=YMax)
@@ -48,26 +36,20 @@ def msd_plot(msd_data):
     plt.savefig("MSD.png", dpi=600)
     plt.show()
     plt.close()
-    
+       
 def diffusion_output(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo, conductivity=None):
     '''
     DiffusionOutput - Write out diffusion coefficients to a file
-    
     Parameters
     ----------
-    first  : float
-             Diffusion coefficient
-    second : float
-             Diffusion coefficient in x
-    third  : float
-             Diffusion coefficient in y
-    fourth : float
-             Diffusion coefficient in z
+    DiffuscionCo  : Diffusion coefficient        : Float
+    XDiffusionCo  : Diffusion coefficient in x   : Float
+    YDiffusionCo  : Diffusion coefficient in y   : Float
+    ZDiffusionCo  : Diffusion coefficient in z   : Float
     
     Return
     ------
     Text file
-    
     '''
     DiffusionCo = str(DiffusionCo)
     XDiffusionCo = str(XDiffusionCo)
@@ -87,24 +69,22 @@ def diffusion_output(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo, cond
     else:       
         Output.close()    
 
-def plane_msd_output(Diffusion, UL, LL, nt, conductivity=None):
+def plane_msd_output(Diffusion, xd, yd, zd, UL, LL, nt, conductivity=None):
     '''
     plane_msd_output - Write out the diffusion coefficient for a region of a configuration to a file
-   
     Parameters
     ----------
-    first  : numpy object
-             Diffusion coefficient 
-    second : float
-             upper limit of bin
-    third  : float
-             lower limit of bin
-            
+    Diffusion  : Diffusion coefficient 
+    xd         : DIffusion coefficient in x
+    yd         : DIffusion coefficient in y
+    zd         : DIffusion coefficient in z
+    UL         : upper limit of bin
+    LL         : lower limit of bin
+    nt         : Number of trajectories used
+    
     Return 
     ------
     text file
-   
-  
     '''
     if conductivity:
         conductivity = conductivity 
@@ -119,20 +99,28 @@ def plane_msd_output(Diffusion, UL, LL, nt, conductivity=None):
     UL = str(UL)
     LL = str(LL)
     M = str("-")
-    
+    X = str(xd)
+    Y = str(yd)
+    Z = str(zd)
+
+
     D = str(Diffusion)
     nt = str(nt)
     Name = LL + M + UL
     
     Output = open(Name, "w")
     
-    Output.write("Diffusion Coefficient within region spanning - " + LL + " - " + UL + " : " + D +  " m^2/s (10^-9)\n")
+    Output.write("Diffusion Coefficient within region spanning : " + LL + " - " + UL + " : " + D +  " m^2/s (10^-9)\n")
+    Output.write("Diffusion in the X Direction                 : " + X +  " m^2/s (10^-9)\n")
+    Output.write("Diffusion in the Y Direction                 : " + Y +  " m^2/s (10^-9)\n")
+    Output.write("Diffusion in the Z Direction                 : " + Z +  " m^2/s (10^-9)\n")
+   
     if con == True:
-            Output.write("Conductivity within region spanning - " + LL + " - " + UL + " : " + C +  " (S cm^-1) \n")
-            Output.write("Log of Conductivity within region spanning - " + LL + " - " + UL + " : " + l +  " (log S cm^-1) \n")
+        
+        Output.write("Conductivity within region spanning          : " + LL + " - " + UL + " : " + C +  " (S cm^-1) \n")
+        Output.write("Log of Conductivity within region spanning   : " + LL + " - " + UL + " : " + l +  " (log S cm^-1) \n")
 
-
-    Output.write("Number of Trajectories used: " + nt) 
+    Output.write("Number of Trajectories used                 : " + nt) 
     Output.close()
  
 def one_dimensional_density_sb_output(plane, UL, LL, output):
@@ -143,8 +131,7 @@ def one_dimensional_density_sb_output(plane, UL, LL, output):
     Output = open(output, "w")
     Output.write("Total Number of species within region spanning - " + LL + " - " + UL + " : " + plane)
     Output.close()
-    
-   
+
 def line_plot(X, Y, XLab, YLab, output):
     '''
     LinePlot - Simple line plot
@@ -175,7 +162,6 @@ def line_plot(X, Y, XLab, YLab, output):
     plt.show()
     plt.close()
 
-
 def contour_plot(X, Y, Z, output, log):
     '''
     CountourPlot - Contour plotting tool
@@ -201,7 +187,6 @@ def contour_plot(X, Y, Z, output, log):
     plt.xlabel("X Coordinate (" r'$\AA$' ")", fontsize=15)
     plt.ylabel("Y Coordinate (" r'$\AA$' ")", fontsize=15)
     plt.tick_params(labelsize=12)
-
     plt.savefig(output, dpi=600)
     plt.show()
     plt.close()

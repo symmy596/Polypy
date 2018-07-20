@@ -12,30 +12,17 @@ from scipy.constants import codata
 
 def pbc(rnew, rold, vec):
     '''
-    unfold_trajectory -  Imagine a scenario where an atom travels from box a to box a+1. In our simulation it has reapperared on 
-    the other side of box a, but in reality it is in its current positon * the lenght of that lattice vector. Because in an MSD
-    calculation we are interested in the distance between the current position and some reference position, we need to ensure that
-    the new position remains in it "real" position. So we shift it with PBC. This algorythm calculates the difference between the 
-    position at r_old and the new position r_new. If this distance is greater than the lenght of half the cell vector then the 
-    particle has moved across a boundary and needs to be shifted back. So its new position is updated by shifting it back by the 
-    lenght of the lattice vector * the box it should be in. 
-    
+    pbc - Periodic boundary conditions for an msd calculation
     Parameters
     ----------
-    first  : float
-             Value of current atomic position
-    second : float
-             Value of previous atomic position
-    third  : float
-             Lattice vector at that timestep
-    
+    rnew  : Value of current atomic position   : Float
+    rold  : Value of previous atomic position  : Float
+    vec   : Lattice vector at that timestep    : Float
     
     Return
     ------
-    first  : str
-             Result of PBC check - True if atom crosses the boundary
-    second : float
-             New position
+    cross  : Result of PBC check - True if atom crosses the boundary   : Bool
+    new    : New position                                              : Float
     '''
     shift = abs((rold - rnew) / vec)
     shift = round(shift, 0)
@@ -64,23 +51,17 @@ def pbc(rnew, rold, vec):
     
     return cross, rnew
 
-
 def bin_choose(X, Y):
     '''
     BinChoose - Calculate the number of bins depending on a box size and a bin thickness
-    
     Parameters
     ----------
-    first  : float
-             box length
-    second : float
-             bin thickness
+    X  : box length    : Float
+    Y  : bin thickness : Float
              
     Return
     ------
-    first : int
-            Number of bins
-            
+    Z  : Number of bins : Float
     '''
     Z = X / Y
     Z = round(Z, 0)

@@ -12,12 +12,9 @@ import TrajectoryAnalysis as ta
 from scipy import stats
 from scipy.constants import codata
 
-     
-
 def read_history(file, atom):
     '''
     ReadHistory - Read a DL_POLY HISTORY file
-    
     Parameters
     ----------
     file   : HISTORY filename                         : String
@@ -39,6 +36,7 @@ def read_history(file, atom):
         tstep = False
         c = 0
         lv = []
+
         for line in history:
             if c == 3:
                 c = 0
@@ -55,6 +53,7 @@ def read_history(file, atom):
             if line[0] =="t":
                 timesteps = timesteps + 1
                 tstep = True
+
         trajectories = np.asarray(trajectories, dtype=float)
         lv = np.asarray(lv, dtype=float)
         natoms = count / timesteps
@@ -63,11 +62,11 @@ def read_history(file, atom):
         lv = np.split(lv, timesteps)
 
         for i in range(0, timesteps):
-            vec = np.append(vec, (lv[i].sum(axis=0)))
-        lv = np.reshape(vec, (timesteps, 3))
 
+            vec = np.append(vec, (lv[i].sum(axis=0)))
+
+        lv = np.reshape(vec, (timesteps, 3))
         data = {'trajectories':trajectories, 'lv':lv, 'timesteps':timesteps, 'natoms':natoms}
-    
     else:
         print("File cannot be found")
         sys.exit(0)
@@ -81,8 +80,7 @@ def read_history(file, atom):
 
 def read_config(file, atom):
     '''
-    ReadHistory - Read a DL_POLY HISTORY file
-    
+    read_config - Read a DL_POLY CONFIG file
     Parameters
     ----------
     file   : CONFIG  filename                         : String
@@ -90,8 +88,7 @@ def read_config(file, atom):
              
     Return
     ------
-    data   : trajectories - Atomic trajectories       : Numpy array
-           : natoms       - Tital number of atoms     : Integer
+    data   : data = {'trajectories':coords, 'lv':vec, 'timesteps':1, 'natoms':natoms}
     '''
     if os.path.isfile(file):
         coords = []
@@ -101,6 +98,7 @@ def read_config(file, atom):
         lv = []
         title = config.readline()
         stuff = config.readline()
+
         for i in range(0, 3):
             l = config.readline()
             lv.append(l.split())
@@ -112,11 +110,11 @@ def read_config(file, atom):
             if line[0] == atom[0]:
                 name = True
                 count = count + 1
+                
         lv = np.asarray(lv, dtype=float)        
         coords = np.asarray(coords, dtype=float)
         natoms = int(count)
         vec = lv.sum(axis=0)
-        print(vec)
         data = {'trajectories':coords, 'lv':vec, 'timesteps':1, 'natoms':natoms}
     
     else:
