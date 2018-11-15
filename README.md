@@ -15,11 +15,6 @@ python setup.py build
 python setup.py install
 ```
 
-## Documentation  
-  
-A small guide is included within this repository - [Guide](https://github.com/symmy596/PolyPy/blob/master/Guide.md)  
-Guide is currently several versions behind.
-
 ## Author
 **Adam Symington** 
 
