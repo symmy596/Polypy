@@ -1,0 +1,37 @@
+Metadata-Version: 1.1
+Name: polypy
+Version: 0.2
+Summary: Molecular Dynamics analysis
+Home-page: https://github.com/symmy596/PolyPy
+Author: Adam R. Symington
+Author-email: ars44@bath.ac.uk
+License: MIT license
+Description: # PolyPy
+        
+        PolyPy is a small program that analyses DL_POLY outputs. Currently the functionality includes, 1/2D atomic density analysis, mean squared displacements and volume analysis. 
+        
+        
+        ### Installation
+        
+        Download or clone the repository and add Generic.py, Read.py, TrajectoryAnalysis.py and Write.py to your python path. Alternatively add the files to a folder on your machine and use the below arguement to link PolyPy.py to the modules.
+        
+        ```
+        sys.path.append('Path to Files')
+        ```
+        
+        ## Documentation  
+          
+        A small guide is included within this repository - [Guide](https://github.com/symmy596/PolyPy/blob/master/Guide.md)  
+        Guide is currently several versions behind.
+        
+        ## Author
+        **Adam Symington** 
+        
+        
+        
+Platform: UNKNOWN
+Classifier: Programming Language :: Python
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Science/Research
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Scientific/Engineering
