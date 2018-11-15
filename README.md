@@ -5,10 +5,12 @@ PolyPy is a small program that analyses DL_POLY outputs. Currently the functiona
 
 ### Installation
 
-Download or clone the repository and add Generic.py, Read.py, TrajectoryAnalysis.py and Write.py to your python path. Alternatively add the files to a folder on your machine and use the below arguement to link PolyPy.py to the modules.
+Download or clone the repository and using the command line type
 
 ```
-sys.path.append('Path to Files')
+python setup.py build
+
+python setup.py install
 ```
 
 ## Documentation  
