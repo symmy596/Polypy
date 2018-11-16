@@ -201,4 +201,5 @@ def combined_density_plot(X, Y, Y2, Z, output):
     ax2.plot(X, Y2, color="white")
     ax2.set_ylabel("Number Density", fontsize=15)
     ax2.tick_params(labelsize=12)
+    plt.savefig("Combined_Density.png", dpi=600)
     plt.show()

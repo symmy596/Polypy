@@ -22,7 +22,7 @@ if __name__ == "__main__":
         license='MIT license',
         packages=['polypy','tests'],
         zip_safe=False,
-        install_requires=['scipy','numpy','spglib'],
+        install_requires=['scipy','numpy'],
         classifiers=['Programming Language :: Python',
                      'Development Status :: 5 - Production/Stable',
                      'Intended Audience :: Science/Research',
