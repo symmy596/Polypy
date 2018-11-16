@@ -1,6 +1,6 @@
 # PolyPy
    
-[![DOI](https://zenodo.org/badge/138055040.svg)](https://zenodo.org/badge/latestdoi/138055040) [![PyPI version](https://badge.fury.io/py/polypy.svg)](https://badge.fury.io/py/polypy) ![gem](https://img.shields.io/badge/gem-0.2-blue.svg?maxAge=2592000) 
+[![DOI](https://zenodo.org/badge/138055040.svg)](https://zenodo.org/badge/latestdoi/138055040) [![PyPI version](https://badge.fury.io/py/polypy.svg)](https://badge.fury.io/py/polypy) ![Version](https://img.shields.io/badge/gem-0.2-blue.svg?maxAge=2592000) 
 
 PolyPy is a small program that analyses DL_POLY outputs. Currently the functionality includes, 1/2D atomic density analysis, mean squared displacements and volume analysis. 
 
