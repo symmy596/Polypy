@@ -17,9 +17,9 @@ python setup.py install
 
 Alternatively with pip - This is easiest for anaconda users. 
 
-'''
+```
 pip install polypy
-'''
+```
 
 ## Author
 **Adam Symington** 
