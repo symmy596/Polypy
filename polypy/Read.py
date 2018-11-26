@@ -32,6 +32,7 @@ def read_history(file, atom):
         lv = []
 
         for line in history:
+            x = line.split()
             if c == 3:
                 c = 0
                 tstep = False
@@ -41,10 +42,10 @@ def read_history(file, atom):
             if name:
                 name = False
                 trajectories.append(line.split()) 
-            if line[0] == atom[0]:
+            if x[0] == atom:
                 name = True
                 count = count + 1
-            if line[0] =="t":
+            if x[0] =="timestep":
                 timesteps = timesteps + 1
                 tstep = True
 
@@ -98,10 +99,11 @@ def read_config(file, atom):
             lv.append(l.split())
             
         for line in config:
+            x = line.split()
             if name:
                 name = False
                 coords.append(line.split()) 
-            if line[0] == atom[0]:
+            if x[0] == atom:
                 name = True
                 count = count + 1
                 

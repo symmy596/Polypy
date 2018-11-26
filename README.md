@@ -15,7 +15,7 @@ python setup.py build
 python setup.py install
 ```
 
-Alternatively with pip - This is easiest for anaconda users. 
+Alternatively with pip - This is easiest for anaconda users, simply type the following into anaconda prompt
 
 ```
 pip install polypy
