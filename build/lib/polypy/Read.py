@@ -6,7 +6,7 @@ import polypy as pp
 from scipy import stats
 from scipy.constants import codata
 
-def read_history(file, atom):
+def read_history(file, atom_list):
     '''
     ReadHistory - Read a DL_POLY HISTORY file
     Parameters
@@ -23,13 +23,17 @@ def read_history(file, atom):
     '''
     if os.path.isfile(file):
         trajectories = []
-        timesteps = 0
-        history = open(file, 'r')
-        name = False
-        count = 0
-        tstep = False
-        c = 0
+        atname = []
         lv = []
+
+        timesteps = 0
+        count = 0
+        c = 0
+
+        name = False
+        tstep = False
+
+        history = open(file, 'r')
 
         for line in history:
             x = line.split()
@@ -42,7 +46,8 @@ def read_history(file, atom):
             if name:
                 name = False
                 trajectories.append(line.split()) 
-            if x[0] == atom:
+            if x[0] in atom_list:
+                atname.append(x[0])
                 name = True
                 count = count + 1
             if x[0] =="timestep":
@@ -50,9 +55,12 @@ def read_history(file, atom):
                 tstep = True
 
         trajectories = np.asarray(trajectories, dtype=float)
+        atname = np.asarray(atname, dtype=str)
         lv = np.asarray(lv, dtype=float)
+
         natoms = count / timesteps
         natoms = int(natoms)
+        
         vec = np.array([])
         lv = np.split(lv, timesteps)
 
@@ -61,7 +69,11 @@ def read_history(file, atom):
             vec = np.append(vec, (lv[i].sum(axis=0)))
 
         lv = np.reshape(vec, (timesteps, 3))
-        data = {'trajectories':trajectories, 'lv':lv, 'timesteps':timesteps, 'natoms':natoms}
+        if len(atom_list) > 1:
+            data = {'atoms': {'label': atname, 'trajectories': trajectories}, 'lv':lv, 'timesteps':timesteps, 'natoms':natoms}
+        else:
+            data = {'label': atname, 'trajectories': trajectories, 'lv':lv, 'timesteps':timesteps, 'natoms':natoms}
+
     else:
         print("File cannot be found")
         sys.exit(0)
@@ -73,7 +85,7 @@ def read_history(file, atom):
     history.close() 
     return data
 
-def read_config(file, atom):
+def read_config(file, atom_list):
     '''
     read_config - Read a DL_POLY CONFIG file
     Parameters
@@ -91,6 +103,7 @@ def read_config(file, atom):
         name = False
         count = 0
         lv = []
+        atname = []
         title = config.readline()
         stuff = config.readline()
 
@@ -103,16 +116,22 @@ def read_config(file, atom):
             if name:
                 name = False
                 coords.append(line.split()) 
-            if x[0] == atom:
+            if x[0] in atom_list:
+                atname.append(x[0])
                 name = True
                 count = count + 1
                 
         lv = np.asarray(lv, dtype=float)        
         coords = np.asarray(coords, dtype=float)
+        atname = np.asarray(atname, dtype=str)
         natoms = int(count)
         vec = lv.sum(axis=0)
-        data = {'trajectories':coords, 'lv':vec, 'timesteps':1, 'natoms':natoms}
-    
+        if len(atom_list) > 1:
+            data = {'atoms': {'label': atname, 'trajectories':coords}, 'lv':vec, 'timesteps':1, 'natoms':natoms}
+        else:            
+            data = {'label': atname, 'trajectories':coords, 'lv':vec, 'timesteps':1, 'natoms':natoms}
+
+
     else:
         print("File cannot be found")
         sys.exit(0)
@@ -124,4 +143,17 @@ def read_config(file, atom):
     config.close() 
     return data
 
+def get_atom(data, atom):
 
+    coords = []
+    count = 0
+    for i in range(0, data['atoms']['label'].size):
+        if data['atoms']['label'][i] == atom:
+            coords.append(data['atoms']['trajectories'][i])
+            count = count + 1
+
+    coords = np.asarray(coords)
+    natoms = int(count / data['timesteps'])
+    atom_data = {'label': atom, 'trajectories': coords, 'lv': data['lv'], 'timesteps': data['timesteps'], 'natoms': natoms}
+
+    return atom_data
