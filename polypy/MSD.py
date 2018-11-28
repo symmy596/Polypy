@@ -242,24 +242,19 @@ def msd(data, timestep):
     Outputs diffusion info
     '''
      
-    trajectories = np.split(data['trajectories'], data['timesteps'])
+    if data['timesteps'] == 1:
+        print("ERROR: - Only one timestep has been found")
+    if data['timesteps'] < 100:
+        print("WARNING: Small number of timesteps - Poor statistics likely")
+    if len(np.unique(data['label'])) > 1:
+        print("ERROR: MSD can only handle one atom type. Exiting...")
+        sys.exit(0)
     
+
+    trajectories = np.split(data['trajectories'], data['timesteps'])
     msd_data = run_msd(trajectories, data['lv'], data['timesteps'], data['natoms'], 1, timestep)
 
     return msd_data
-
-#    d, xd, yd, zd = msd_stats(msd_data)    
-#    d, xd, yd, zd = diffusion_coefficient(d, xd, yd, zd)
-#    
-#    if conductivity == True:
-#       
-#        volume = (np.average(data['lv'][:,0])) *  (np.average(data['lv'][:,1])) * (np.average(data['lv'][:,2]))
-#        cond = ta.conductivity(data['natoms'], volume, d, temperature)
-#        wr.diffusion_output(d, xd, yd, zd, cond)
-
-#    else:
-#        wr.diffusion_output(d, xd, yd, zd)
-#    wr.msd_plot(msd_data)
 
 def smooth_msd(data, timestep, runs=None, conductivity=None, temperature=None):
     '''

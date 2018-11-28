@@ -69,10 +69,7 @@ def read_history(file, atom_list):
             vec = np.append(vec, (lv[i].sum(axis=0)))
 
         lv = np.reshape(vec, (timesteps, 3))
-        if len(atom_list) > 1:
-            data = {'atoms': {'label': atname, 'trajectories': trajectories}, 'lv':lv, 'timesteps':timesteps, 'natoms':natoms}
-        else:
-            data = {'label': atname, 'trajectories': trajectories, 'lv':lv, 'timesteps':timesteps, 'natoms':natoms}
+        data = {'label': atname, 'trajectories': trajectories, 'lv':lv, 'timesteps':timesteps, 'natoms':natoms}
 
     else:
         print("File cannot be found")
@@ -126,10 +123,8 @@ def read_config(file, atom_list):
         atname = np.asarray(atname, dtype=str)
         natoms = int(count)
         vec = lv.sum(axis=0)
-        if len(atom_list) > 1:
-            data = {'atoms': {'label': atname, 'trajectories':coords}, 'lv':vec, 'timesteps':1, 'natoms':natoms}
-        else:            
-            data = {'label': atname, 'trajectories':coords, 'lv':vec, 'timesteps':1, 'natoms':natoms}
+
+        data = {'label': atname, 'trajectories':coords, 'lv':vec, 'timesteps':1, 'natoms':natoms}
 
 
     else:
@@ -145,11 +140,14 @@ def read_config(file, atom_list):
 
 def get_atom(data, atom):
 
+    if len(np.unique(data['label'])) == 1:
+        return data
+
     coords = []
     count = 0
-    for i in range(0, data['atoms']['label'].size):
-        if data['atoms']['label'][i] == atom:
-            coords.append(data['atoms']['trajectories'][i])
+    for i in range(0, data['label'].size):
+        if data['label'][i] == atom:
+            coords.append(data['trajectories'][i])
             count = count + 1
 
     coords = np.asarray(coords)

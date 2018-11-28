@@ -1,6 +1,7 @@
 import numpy as np
 from polypy import Write as wr
 from polypy import Generic as ge
+from polypy import Read as rd
 
 class Density():
     '''
@@ -12,9 +13,15 @@ class Density():
     data : dictionary containing the atomic trajectories, lattice vectors, timesteps and number of atoms. 
     '''
 
-    def __init__(self, data):
+    def __init__(self, data, atom_type=None):
         self.data = data
-        
+        self.atom_type = atom_type
+        if len(np.unique(self.data['label'])) > 1 and self.atom_type is None:
+            print("WARNING: Multiple atom types detected - Splitting Coordinates")
+
+        elif len(np.unique(self.data['label'])) > 1:
+            self.data = rd.get_atom(self.data, self.atom_type)
+
     def one_dimensional_density(self, Bin=None, direction=None, output=None):
         '''
         one_dimensional_density - Calculate the atomic number density within one dimensional slices of a structure.
@@ -60,6 +67,7 @@ class Density():
         x = (x * Bin)  - b
         y = ( bin_array / self.data['timesteps'])
         wr.line_plot(x, y, "XCoordinate (" r'$\AA$' ")", "Number Density", output)
+        return x, y
     
     def two_dimensional_density(self, box=None, direction=None, output=None):
         '''
@@ -112,8 +120,10 @@ class Density():
         y = np.arange((y))
         x = ((x * box)) - (np.average(self.data['lv'][:,[val[0]]]) / 2 )
         y = ((y * box))
-        bin_array = bin_array + 0.001
-        wr.contour_plot(x, y, bin_array, output)
+        z = bin_array + 0.001
+        wr.contour_plot(x, y, z, output)
+
+        return x, y, z
 
     def one_dimensional_density_sb(self, ul=None, ll=None, direction=None):
         '''
