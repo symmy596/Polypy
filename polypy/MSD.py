@@ -155,11 +155,7 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
     count = 0
     trajectory_slice = np.array([])
     dco = np.array([])
-    xco = np.array([])
-    yco = np.array([])
-    zco = np.array([])
     vecs = np.array([])
-    
     for i in range(0, xc.size):
         if xc[i] > ll and xc[i] < ul:
             ib = True
@@ -173,24 +169,15 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
                 trajectory_slice = np.split(trajectory_slice, (trajectory_slice.size / 3))
                 vecs = np.reshape(vecs, (count, 3))
                 do = np.array([])
-                xo = np.array([])
-                yo = np.array([])
-                zo = np.array([])
 
                 for i in range(0, runs):
                     start = i + 5
-                    msd_data, pmsd = ta.run_msd(trajectory_slice, vecs, count, 1, start, timestep)
-                    d, xd, yd, zd = ta.msd_stats(msd_data)
-                    d, xd, yd, zd = ta.diffusion_coefficient(d, xd, yd, zd)
+                    msd_data = run_msd(trajectory_slice, vecs, count, 1, start, timestep)
+                    d = Ut.linear_regression(msd_data['time'], msd_data['msd'])
+                    d = Ut.three_d_diffusion_coefficient(d)
                     do = np.append(do, d)
-                    xo = np.append(xo, xd)
-                    yo = np.append(yo, yd)
-                    zo = np.append(zo, zd)
 
                 dco = np.append(dco, np.average(do))
-                xco = np.append(xco, np.average(xo))
-                yco = np.append(yco, np.average(yo))
-                zco = np.append(zco, np.average(zo))
 
                 count = 0
                 trajectory_slice = np.array([])
@@ -203,29 +190,20 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
     if count > 200 and ib == True:
 
         do = np.array([])
-        xo = np.array([])
-        yo = np.array([])
-        zo = np.array([])
         trajectory_slice = np.split(trajectory_slice, (trajectory_slice.size / 3))
         vecs = np.reshape(vecs, (count, 3))
 
         for i in range(0, runs):
             start = i + 5
-            msd_data, pmsd = ta.run_msd(trajectory_slice, vecs, count, 1, start, timestep)
-            d, xd, yd, zd = ta.msd_stats(msd_data)
-            d, xd, yd, zd = ta.diffusion_coefficient(d, xd, yd, zd)
+            msd_data = run_msd(trajectory_slice, vecs, count, 1, start, timestep)
+            d = Ut.linear_regression(msd_data['time'], msd_data['msd'])
+            d = Ut.three_d_diffusion_coefficient(d)
             do = np.append(do, d)
-            xo = np.append(xo, xd)
-            yo = np.append(yo, yd)
-            zo = np.append(zo, zd)
         
         dco = np.append(dco, np.average(do))
-        xco = np.append(xco, np.average(xo))
-        yco = np.append(yco, np.average(yo))
-        zco = np.append(zco, np.average(zo))
         count = 0
 
-    return dco, xco, yco, zco
+    return dco
 
 def msd(data, timestep):
     '''
@@ -374,17 +352,10 @@ def plane_msd(data, timestep, runs=None, ul=None, ll=None, direction=None, condu
 
     for i in range(0, (data['natoms'])):
 
-        dd, xd, yd, zd = check_trajectory(trajectories[:,i], xc[:,i], data['lv'], data['timesteps'], timestep, ul, ll, runs)
+        dd = check_trajectory(trajectories[:,i], xc[:,i], data['lv'], data['timesteps'], timestep, ul, ll, runs)
         d = np.append(d, dd)
-        x = np.append(x, xd) 
-        y = np.append(y, yd) 
-        z = np.append(z, zd) 
-
     nt = d.size
     diffusion = np.average(d)
-    xd = np.average(x)
-    yd = np.average(y)
-    zd = np.average(z)
 
     if conductivity == True:
 
@@ -396,4 +367,8 @@ def plane_msd(data, timestep, runs=None, ul=None, ll=None, direction=None, condu
         wr.plane_msd_output(diffusion, xd, yd, zd, ul, ll, nt, cond)
 
     else:
-        wr.plane_msd_output(diffusion, xd, yd, zd, ul, ll, nt)
+         diffusion = str(diffusion)
+         output = open("Bulk_Diffusion", "w")
+         output.write(diffusion)
+         output.close()
+#        wr.plane_msd_output(diffusion, xd, yd, zd, ul, ll, nt)

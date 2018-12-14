@@ -4,7 +4,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from polypy import Read as rd
-from polypy import TrajectoryAnalysis as ta
 from polypy import Density as Dens
 from polypy import Utils as Ut
 from polypy import Write as wr

@@ -2,7 +2,6 @@ import sys as sys
 import numpy as np
 
 from polypy import Read as rd
-from polypy import TrajectoryAnalysis as ta
 from polypy import Density as Dens
 from polypy import Write as wr
 from polypy import Generic as ge
