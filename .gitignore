@@ -4,7 +4,7 @@ build
 dist
 examples/.ipynb_checkpoints
 examples/Untitled.ipynb
-surfinpy.egg-info
-surfinpy/__pycache__
-surfinpy/tests/__pycache__
+polypy.egg-info
+polypy/__pycache__
+polypy/tests/__pycache__
 docs/build
