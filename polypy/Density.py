@@ -21,7 +21,7 @@ class Density():
 
         elif len(np.unique(self.data['label'])) > 1:
             self.data = rd.get_atom(self.data, self.atom_type)
-
+            
     def one_dimensional_density(self, Bin=None, direction=None, output=None):
         '''
         one_dimensional_density - Calculate the atomic number density within one dimensional slices of a structure.
@@ -53,7 +53,8 @@ class Density():
         c = self.data['trajectories'][:,val]
         b = (np.average(self.data['lv'][:,val]) / 2 ) 
         c = c + b
-        x = ge.get_integer((np.amax(c)), Bin)
+        print(b, np.amax(c))
+        x = ge.get_integer((np.amax(self.data['lv'][:,val])), Bin)
         bin_array = np.zeros((x))
         c.tolist()
     
@@ -67,6 +68,7 @@ class Density():
         x = (x * Bin)  - b
         y = ( bin_array / self.data['timesteps'])
         wr.line_plot(x, y, "XCoordinate (" r'$\AA$' ")", "Number Density", output)
+        
         return x, y
     
     def two_dimensional_density(self, box=None, direction=None, output=None):
