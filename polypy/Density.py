@@ -4,39 +4,50 @@ from polypy import Generic as ge
 from polypy import Read as rd
 
 class Density():
-    '''
-    The Density class will calculate the atomic density in one, two and both dimensions as well as within a specified plane. This
-    class is ideal for observing how atomic density changes within a structure. 
+    """Density system.
+    This class is designed to take atomic trajectories and calculate the
+    average number density of that species within bins in a given
+    direction (One dimension) or within boxes in two given directions
+    (Two dimensions). Both the one dimensional and two dimensional
+    can be calculated and displayed as one.
     
     Parameters
     ----------
-    data : dictionary containing the atomic trajectories, lattice vectors, timesteps and number of atoms. 
-    '''
+    data : dictionary 
+        Dictionary containing the atomic trajectories, lattice vectors,
+        timesteps and number of atoms. 
+    atom_type : optional
+        Specify the atom to retrieve the density for.
+    """
 
     def __init__(self, data, atom_type=None):
         self.data = data
         self.atom_type = atom_type
         if len(np.unique(self.data['label'])) > 1 and self.atom_type is None:
-            print("WARNING: Multiple atom types detected - Splitting Coordinates")
-
+            print("Multiple atom types detected - Splitting Coordinates")
         elif len(np.unique(self.data['label'])) > 1:
             self.data = rd.get_atom(self.data, self.atom_type)
-            
-    def one_dimensional_density(self, Bin=None, direction=None, output=None):
-        '''
-        one_dimensional_density - Calculate the atomic number density within one dimensional slices of a structure.
+
+    def one_dimensional_density(self, bin=None, direction=None, output=None):
+        """Calculate the number density within bins perpendicular 
+        to a given direction within a structure.
+
         Parameters
         ----------
-        Bin             : Bin Value                       : Float                : Default - 0.1
-        direction       : Direction normal to the bin     : String               : Default - x
-        output          : Output file name                : String               : Default - 1D-Density.png
+        bin : float (optional)
+            bin size in a given direction.
+        direction : string (optional)
+            direction perpendicular to the bins.
+        output : string (optional)
+            name of output plot.
         
         Returns
         -------
-        text file
-        matplolib plot
-        "Heatmap.png" - Contour plot - xy grid of total of atoms within each box
-        '''
+        x : float
+            bin coordinates
+        y : float
+            number denisty in each bin
+        """
         if Bin is None:
             Bin = 0.1    
         if direction is None:
@@ -49,43 +60,44 @@ class Density():
             val = 1
         elif direction == "z":
             val = 2
-       
         c = self.data['trajectories'][:,val]
         b = (np.average(self.data['lv'][:,val]) / 2 ) 
         c = c + b
-        print(b, np.amax(c))
         x = ge.get_integer((np.amax(self.data['lv'][:,val])), Bin)
         bin_array = np.zeros((x))
         c.tolist()
-    
-        for j in range(0, self.data['trajectories'][:,val].size):
-            
+        for j in range(0, self.data['trajectories'][:,val].size):  
             plane = 0
             plane = ge.bin_choose(c[j], Bin)
             bin_array[plane] = bin_array[plane] + 1       
-    
         x = np.arange( 0, ( bin_array.size ) )
         x = (x * Bin)  - b
         y = ( bin_array / self.data['timesteps'])
-        wr.line_plot(x, y, "XCoordinate (" r'$\AA$' ")", "Number Density", output)
-        
+        wr.line_plot(x, y, "XCoordinate (" r'$\AA$' ")", "Number Density", 
+                     output)
         return x, y
     
     def two_dimensional_density(self, box=None, direction=None, output=None):
-        '''
-        two_dimensional_density - 2D Atomic Density Analysis
+        """Calculate the number density within boxes.
+
         Parameters
         ----------
-        box              : Box Value                             : Float                : Default : 0.1    
-        direction        : Direction normal to the box           : String               : Default : x
-        output           : output file name                      : String               : Default : 2D-Density.png
-        log              : True for log plot, False for no log   : Boolean              : False
-                    
+        box : float (optional)
+            box size.
+        direction : string (optional)
+            direction perpendcular to boxes.
+        output : string (optional)
+            name of output plot.
+        
         Returns
         -------
-        matplolib plot
-        "Heatmap.png" - Contour plot - xy grid of total of atoms within each box
-        '''
+        x : float
+            box coordinates in x
+        y : float
+            box coordinates in y
+        z : float
+            number denisty in box
+        """
         if box is None:
             box = 0.1
         if direction is None:
@@ -98,7 +110,6 @@ class Density():
             val = [0, 2]
         elif direction == "z":
             val = [0, 1]
-    
         xc = self.data['trajectories'][:,val[0]]
         xc = xc + ( np.average(self.data['lv'][:,[val[0]]]) / 2 )             
         yc = self.data['trajectories'][:,val[1]]
@@ -108,15 +119,12 @@ class Density():
         bin_array = np.zeros(((y), (x)))
         xc = xc.tolist()
         yc = yc.tolist()
-
         for j in range(0, self.data['trajectories'][:,val[0]].size):        
-    
             xbox = 0
             ybox = 0
             xbox = ge.bin_choose(xc[j], box)
             ybox = ge.bin_choose(yc[j], box)
             bin_array[ybox, xbox] = bin_array[ybox, xbox] + 1       
-
         bin_array = bin_array / self.data['timesteps']
         x = np.arange((x))
         y = np.arange((y))
@@ -124,22 +132,26 @@ class Density():
         y = ((y * box))
         z = bin_array + 0.001
         wr.contour_plot(x, y, z, output)
-
         return x, y, z
 
     def one_dimensional_density_sb(self, ul=None, ll=None, direction=None):
-        '''
-        one_dimensional_density_sb - Calculate the total number of a given species within a 1D slice of a structure
+        """Calculate the number density within a single bin perpendicular
+        to a given direction within a structure.
+
         Parameters
         ----------
-        ul           : Upper bin limit                         :    Float
-        ll           : Lower bin limit                         :    Float
-        direction    : Direction normal to slice               :    String          : Default - x
+        ul : float (optional)
+            upper edge of bin.
+        ll : float (optional)
+            lower edge of bin.
+        direction : string (optional)
+            direction perpendicular to the bin.            
         
         Returns
         -------
-        plane        :   Number of atomic species within bin   :    Integer
-        '''
+        plane : float
+            Total number of species in bin
+        """
         if direction is None:
             direction = "x" 
         if direction == "x":
@@ -147,43 +159,42 @@ class Density():
         elif direction == "y":
             val = 1
         elif direction == "z":
-            val = 2
-        
-            
+            val = 2 
         c = self.data['trajectories'][:,val]
         c.tolist()
         plane = 0
-        
         if ul is None:
             ul = np.amax(c)
         if ll is None:
             ll = np.amin(c)
-
-        for j in range(0, self.data['trajectories'][:,val].size):
-                  
+        for j in range(0, self.data['trajectories'][:,val].size):      
             if c[j] > ll and c[j] < ul:
                 plane = plane + 1       
-    
         filename = "1D-Density-" + (str(ul)) + " - " + (str(ll))                
         wr.one_dimensional_density_sb_output(plane, ul, ll, filename)   
-        
         return plane 
     
-    def one_and_two_dimension_overlay(self, box=None, direction=None, output=None):
-        '''
-        one_and_two_dimension_overlay - Returns a plot of 1 dimensional density overlayed on two dimensional density
+    def one_and_two_dimension_overlay(self, box=None, direction=None,
+                                      output=None):
+        """Calculate the number density within boxes within a structure. A
+        one dimensional version is displayed over the 2D plot
+
         Parameters
         ----------
-        box        : Box Value                             : Float        : Default : 0.1    
-        direction  : Direction normal to the box           : String       : Default : x
-        output     : output file name                      : String       : Default : 2D-Density.png
-        log        : True for log plot, False for no log   : Boolean      : False
-                    
+        bin : float (optional)
+            bin size in a given direction.
+        direction : string (optional)
+            direction perpendicular to the bins.
+        output : string (optional)
+            name of output plot.
+        
         Returns
         -------
-        matplolib plot
-        "Heatmap.png" - Contour plot - xy grid of total of atoms within each box
-        '''
+        x : float
+            bin coordinates
+        y : float
+            number denisty in each bin
+        """
         if box is None:
             box = 0.1
         if direction is None:
@@ -207,16 +218,13 @@ class Density():
         td_array = np.zeros(((y), (x)))
         xc = xc.tolist()
         yc = yc.tolist()
-
         for j in range(0, self.data['trajectories'][:,val[0]].size):        
-        
             xbox = 0
             ybox = 0
             xbox = ge.bin_choose(xc[j], box)
             ybox = ge.bin_choose(yc[j], box)
             od_array[xbox] = od_array[xbox] + 1
             td_array[ybox, xbox] = td_array[ybox, xbox] + 1       
-
         td_array = td_array / self.data['timesteps']
         od_array = od_array / self.data['timesteps']
         x = np.arange((x))
@@ -226,3 +234,60 @@ class Density():
         td_array = td_array + 0.001
         od_array = od_array + 0.001
         wr.combined_density_plot(x, y, od_array, td_array, output)
+
+def charge_density(densities, charges, bin_volume):
+    """Calculates the charge density from given number densities
+    and atomic charges.
+
+    Parameters
+    ----------
+    densities : list
+        list of numpy arrays containing atomic densities.
+    charges : list
+        list of charges corresponding to species in densities.
+    bin_volume : float
+        Volume of bins
+
+    Returns
+    -------
+    charge_density : array like
+        charge density
+    """
+    pass
+#    charge_density = densities * charges
+    
+
+def electric_field(charge_density, bin_positions):
+    """Calculates the electric field from the charge density.
+
+    Parameters
+    ----------
+    charge_density : array like
+        array of charge densities
+    bin_positions : array like
+        array of bins
+
+    Returns
+    -------
+    electric_field : array like
+        array of electric field
+    """
+    pass
+
+def electrostatic_potential(electric_field, bin_positions):
+    """Calculates the electrostatic potential from the charge density.
+
+    Parameters
+    ----------
+    electric_field: array like
+        array of electric field
+    bin_positions : array like
+        array of bins
+
+    Returns
+    -------
+    electrostatic_potential : array like
+        array of electrostatic potentials
+    """
+    pass
+
