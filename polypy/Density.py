@@ -4,38 +4,46 @@ from polypy import Generic as ge
 from polypy import Read as rd
 
 class Density():
-    '''
-    The Density class will calculate the atomic density in one, two and both dimensions as well as within a specified plane. This
-    class is ideal for observing how atomic density changes within a structure. 
+    '''The Density class calculates the total number of atoms in one
+    dimensional planes, two dimensional boxes and a combination of
+    both. This class is ideal for observing how atomic density
+    changes within a structure.
     
     Parameters
     ----------
-    data : dictionary containing the atomic trajectories, lattice vectors, timesteps and number of atoms. 
+    data : dict
+        dictionary containing the atomic atom labels, trajectories,
+        lattice vectors, number of timesteps and atoms.
+    atom_type : list (optional)
+        atoms to be analysed 
     '''
-
     def __init__(self, data, atom_type=None):
         self.data = data
         self.atom_type = atom_type
         if len(np.unique(self.data['label'])) > 1 and self.atom_type is None:
             print("WARNING: Multiple atom types detected - Splitting Coordinates")
-
         elif len(np.unique(self.data['label'])) > 1:
             self.data = rd.get_atom(self.data, self.atom_type)
 
     def one_dimensional_density(self, Bin=None, direction=None, output=None):
-        '''
-        one_dimensional_density - Calculate the atomic number density within one dimensional slices of a structure.
+        '''Calculate the atomic number density within one dimensional
+        slices of a structure.
+
         Parameters
         ----------
-        Bin             : Bin Value                       : Float                : Default - 0.1
-        direction       : Direction normal to the bin     : String               : Default - x
-        output          : Output file name                : String               : Default - 1D-Density.png
+        Bin : float (optional)
+            Size of one dimensional planes, perpendicular to a given direction.
+        direction : string (optional)
+            Direction perpendicular to the planes
+        output : string  (optional)
+            Name of the output graph
         
         Returns
         -------
-        text file
-        matplolib plot
-        "Heatmap.png" - Contour plot - xy grid of total of atoms within each box
+        x : array like
+            values corresponding to the bin coordinates.
+        y : array like
+            total number of species in each bin.
         '''
         if Bin is None:
             Bin = 0.1    
@@ -49,7 +57,6 @@ class Density():
             val = 1
         elif direction == "z":
             val = 2
-       
         c = self.data['trajectories'][:,val]
         b = (np.average(self.data['lv'][:,val]) / 2 ) 
         c = c + b
@@ -70,19 +77,26 @@ class Density():
         return x, y
     
     def two_dimensional_density(self, box=None, direction=None, output=None):
-        '''
-        two_dimensional_density - 2D Atomic Density Analysis
+        '''Calculate the atomic number density within two dimensional
+        boxes in a structure.
+
         Parameters
         ----------
-        box              : Box Value                             : Float                : Default : 0.1    
-        direction        : Direction normal to the box           : String               : Default : x
-        output           : output file name                      : String               : Default : 2D-Density.png
-        log              : True for log plot, False for no log   : Boolean              : False
+        box : float (optional)
+            Edge length of the boxes        
+        direction : string (optional)
+            Direction pointing into the boxes        
+        output : string (optional)
+            Name of the output plot
                     
         Returns
         -------
-        matplolib plot
-        "Heatmap.png" - Contour plot - xy grid of total of atoms within each box
+        x : array like
+            x axis coordinates
+        y : array like
+            y axis coordinates
+        z : array like
+            Total number of species in each box as a function of x and y.
         '''
         if box is None:
             box = 0.1
@@ -126,17 +140,22 @@ class Density():
         return x, y, z
 
     def one_dimensional_density_sb(self, ul=None, ll=None, direction=None):
-        '''
-        one_dimensional_density_sb - Calculate the total number of a given species within a 1D slice of a structure
+        '''Calculate the total number of a given species within a
+        1D slice of a structure. 
+
         Parameters
         ----------
-        ul           : Upper bin limit                         :    Float
-        ll           : Lower bin limit                         :    Float
-        direction    : Direction normal to slice               :    String          : Default - x
-        
+        ul : float
+            Upper bin limit
+        ll : float
+            Lower bin limit
+        direction : string 
+            direction perpendicular to the slice
+
         Returns
         -------
-        plane        :   Number of atomic species within bin   :    Integer
+        plane : int
+            Total number of species within specified bin.
         '''
         if direction is None:
             direction = "x" 
@@ -168,19 +187,29 @@ class Density():
         return plane 
     
     def one_and_two_dimension_overlay(self, box=None, direction=None, output=None):
-        '''
-        one_and_two_dimension_overlay - Returns a plot of 1 dimensional density overlayed on two dimensional density
+        '''Combination of the one and two dimensional density functions.
+        Calculates both total number of atoms in one and two dimensions
+        and overlays them in one plot.
+
         Parameters
         ----------
-        box        : Box Value                             : Float        : Default : 0.1    
-        direction  : Direction normal to the box           : String       : Default : x
-        output     : output file name                      : String       : Default : 2D-Density.png
-        log        : True for log plot, False for no log   : Boolean      : False
+        box : float (optional)
+            size of the boxes and bins   
+        direction : string (optional)
+            direction perpendicular to the planes
+        output : string (optional)
+            Output file name.
                     
         Returns
         -------
-        matplolib plot
-        "Heatmap.png" - Contour plot - xy grid of total of atoms within each box
+        x : array like
+            X axis coordinates.
+        y : array like
+            Y axis coordinates.
+        od_array : array like
+            Total number of species within each plane.
+        td_array : array like
+            Total number of species within each box.
         '''
         if box is None:
             box = 0.1
@@ -224,3 +253,5 @@ class Density():
         td_array = td_array + 0.001
         od_array = od_array + 0.001
         wr.combined_density_plot(x, y, od_array, td_array, output)
+
+        return x, y, td_array, od_array

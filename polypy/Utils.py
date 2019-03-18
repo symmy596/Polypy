@@ -1,12 +1,9 @@
 import sys as sys
 import numpy as np
-
 from polypy import Read as rd
 from polypy import Density as Dens
 from polypy import Write as wr
-from polypy import Generic as ge
-
-
+from polypy import Generic as g
 from scipy import stats
 from scipy.constants import codata
 
@@ -15,18 +12,25 @@ ev = codata.value('electron volt')
 ev = -ev
 
 def system_volume(data, timestep, output=None):  
-    '''
-    system volume - Calculate the volume at each timestep and return a volume as a function of time plot
+    '''Calculate the volume at each timestep and return a volume as a
+    function of time plot.
+    
     Parameters
     ----------
-    data      : dictionary containing the atomic trajectories, lattice vectors, timesteps and number of atoms. 
-    timestep  : Timestep of MD simulation  :    Float 
-    output    : Output file name           :    String         :   Default: Volume.png
+    data : dictionary
+        Dictionary containing atom labels, trajectories,
+        lattice vectors, total number of timesteps and atoms.    
+    timestep : float
+        Timestep of MD simulation
+    output : str
+        Output file name
             
     Returns
     -------
-    volume    : Volume at each timestep   :    1D numpy array
-    time      : Time                      :    1D numpy array
+    volume : array like
+        Volume at each timestep
+    time : array like
+        Time
     '''
     if output is None:
         filename = "Volume.png"
@@ -43,18 +47,23 @@ def system_volume(data, timestep, output=None):
     return volume, time
 
 def conductivity(plane, volume, diff, temperature):
-    '''
-    conductivity - Calculate the ionic conductivity 
+    '''Calculate the ionic conductivity
+
     Parameters
     ----------
-    plane          : Total number of charge carriers       : Integer
-    volume         : lattice vectors                       : Float
-    diff           : diffusion coefficient                 : Float
-    temperature    : Temperature                           : Integer
+    plane : int
+        Total number of charge carriers
+    volume : float
+        lattice vectors
+    diff : float
+        diffusion coefficient
+    temperature : int
+        Temperature
               
     Returns
     -------
-    conductivity   : Conductivity                          : Float     
+    conductivity : float
+        Conductivity    
     '''
     volume = volume * (10 ** -30)
     diff = diff * (10 ** -9)
@@ -66,43 +75,58 @@ def conductivity(plane, volume, diff, temperature):
     return conductivity
 
 def three_d_diffusion_coefficient(x):
-    '''
-    Calculate the diffusion coefficient from the slope of MSD vs Time
+    '''Calculate the diffusion coefficient from the slope of MSD vs Time
+    
     Parameters
     ----------
-    x  : Gradient of 1D diffusion   : Float
-    Return
+    x : float
+        Gradient of 1D diffusion
+
+    Returns
     ------
-    Overal Diffusion coefficient
+    float
+        Overal Diffusion coefficient
     '''
 
     return ((np.average(x)) / 6) * 10
 
 def one_d_diffusion_coefficient(x):
-    '''
-    Calculate the diffusion coefficient from the slope of MSD vs Time
+    '''Calculate the diffusion coefficient from the slope of MSD vs Time
+
     Parameters
     ----------
-    x  : Gradient of 1D diffusion   : Float
-    Return
-    ------
-    Overal Diffusion coefficient
-    '''
+    x : float
+        Gradient of 1D diffusion
 
+    Returns
+    -------
+    float
+        Overal Diffusion coefficient
+    '''
     return ((np.average(x)) / 2) * 10
     
 def linear_regression(x, y):
-    '''
-    msd_stats - Linear Regression 
+    '''Linear Regression 
+    
     Parameters
     ----------
-    x : X coordinates
-    y : Y coordinates
+    x : array like
+        X coordinates
+    y : array like
+        Y coordinates
     Return
     ------
-    slope  : Overal gradient   : Float
+    slope : float
+        Overal gradient
     '''
-    
     slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
     
     return slope 
+
+def charge_density(atoms_coords, atom_charges):
+  #  return 
+    pass
+
+def poisson_solver():
+ #   return dx, e_field, potential
+    pass

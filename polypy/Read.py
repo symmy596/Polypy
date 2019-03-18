@@ -2,37 +2,34 @@ import os as os
 import sys as sys
 import numpy as np
 import polypy as pp
-
 from scipy import stats
 from scipy.constants import codata
 
 def read_history(file, atom_list):
-    '''
-    ReadHistory - Read a DL_POLY HISTORY file
+    '''Read a DL_POLY HISTORY file.
+
     Parameters
     ----------
-    file   : HISTORY filename                         : String
-    atom   : Atom to be read                          : String
-             
-    Return
-    ------
-    data   : trajectories - Atomic trajectories       : Numpy array
-           : lv           - Lattice Vectors           : Numpy array
-           : timesteps    - Total number of timesteps : Integer
-           : natoms       - Tital number of atoms     : Integer
+    file : string
+        Filename to be read
+    atom_list : list
+        List of atoms to be read
+
+    Returns
+    -------
+    data : dictionary
+        Dictionary containing atom labels, trajectories,
+        lattice vectors, total number of timesteps and atoms.
     '''
     if os.path.isfile(file):
         trajectories = []
         atname = []
         lv = []
-
         timesteps = 0
         count = 0
         c = 0
-
         name = False
         tstep = False
-
         history = open(file, 'r')
 
         for line in history:
@@ -57,10 +54,8 @@ def read_history(file, atom_list):
         trajectories = np.asarray(trajectories, dtype=float)
         atname = np.asarray(atname, dtype=str)
         lv = np.asarray(lv, dtype=float)
-
         natoms = count / timesteps
         natoms = int(natoms)
-        
         vec = np.array([])
         lv = np.split(lv, timesteps)
 
@@ -91,10 +86,11 @@ def read_archive(file, atom_list):
     atom_list : list
         list of atoms types to be read
              
-    Return
-    ------
+    Returns
+    -------
     data : dict
-        Dictionary containing the atom labels, trajectories, lattice vectors, timesteps and number of atoms
+        Dictionary containing the atom labels, trajectories,
+        lattice vectors, timesteps and number of atoms
     '''
     if os.path.isfile(file):
         trajectories = []
@@ -137,15 +133,11 @@ def read_archive(file, atom_list):
             elif tstep == True:
                 skipline = 2
             
-                
-
         trajectories = np.asarray(trajectories, dtype=float)
         atname = np.asarray(atname, dtype=str)
         lv = np.asarray(lv, dtype=float)
-
         natoms = count / timesteps
         natoms = int(natoms)
-        
         vec = np.array([])
         lv = np.split(lv, timesteps)
 
@@ -168,16 +160,20 @@ def read_archive(file, atom_list):
     return data
 
 def read_config(file, atom_list):
-    '''
-    read_config - Read a DL_POLY CONFIG file
+    '''Read a DL_POLY CONFIG file
+
     Parameters
     ----------
-    file   : CONFIG  filename                         : String
-    atom   : Atom to be read                          : String
+    file : string
+        Filename to be read
+    atom : list
+        List of atoms to be read
              
-    Return
-    ------
-    data   : data = {'trajectories':coords, 'lv':vec, 'timesteps':1, 'natoms':natoms}
+    Returns
+    -------
+    data : dictionary
+        Dictionary containing atom labels, trajectories,
+        lattice vectors, total number of timesteps and atoms. 
     '''
     if os.path.isfile(file):
         coords = []
@@ -209,13 +205,11 @@ def read_config(file, atom_list):
         natoms = int(count)
         vec = lv.sum(axis=0)
 
-        data = {'label': atname, 'trajectories':coords, 'lv':vec, 'timesteps':1, 'natoms':natoms}
-
-
+        data = {'label': atname, 'trajectories':coords,
+                'lv':vec, 'timesteps':1, 'natoms':natoms}
     else:
         print("File cannot be found")
         sys.exit(0)
-    
     if natoms == 0:
         print("No Atoms of specified type exist within the selected CONFIG file")
         sys.exit(0)
@@ -224,7 +218,23 @@ def read_config(file, atom_list):
     return data
 
 def get_atom(data, atom):
+    """Reads through the dictionary returned from the reading functions
+    and returns a given atom.
 
+    Parameters
+    ----------
+    data : dictionary
+        Dictionary containing atom labels, trajectories,
+        lattice vectors, total number of timesteps and atoms.
+    atom : str
+        atom type to be found
+ 
+    Returns
+    -------
+    atom_data : dictionary
+        Dictionary containing atom labels, trajectories,
+        lattice vectors, total number of timesteps and atoms.
+    """
     if len(np.unique(data['label'])) == 1:
         return data
 

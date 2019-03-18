@@ -31,7 +31,6 @@ def msd_plot(msd_data):
     plt.scatter(msd_data['time'], msd_data['ymsd'], color="black", label="YMSD",  s=5)
     plt.scatter(msd_data['time'], msd_data['zmsd'], color="darkgreen", label="ZMSD",s=5)
     plt.tick_params(labelsize=12)
-    
     plt.xlabel("Timestep (ps)", fontsize=15)
     plt.ylabel("MSD", fontsize=15)
     plt.savefig("MSD.png", dpi=600)

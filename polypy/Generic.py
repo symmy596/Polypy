@@ -12,40 +12,40 @@ from scipy import stats
 from scipy.constants import codata
 
 def pbc(rnew, rold, vec):
-    '''
-    pbc - Periodic boundary conditions for an msd calculation
+    '''Periodic boundary conditions for an msd calculation
+
     Parameters
     ----------
-    rnew  : Value of current atomic position   : Float
-    rold  : Value of previous atomic position  : Float
-    vec   : Lattice vector at that timestep    : Float
+    rnew : float
+        Value of current atomic position
+    rold : float
+        Value of previous atomic position
+    vec  : float
+        Lattice vector at that timestep
     
     Return
     ------
-    cross  : Result of PBC check - True if atom crosses the boundary   : Bool
-    new    : New position                                              : Float
+    cross : bool
+        Result of PBC check - True if atom crosses the boundary
+    new : float
+        New position
     '''
     shift = abs((rold - rnew) / vec)
     shift = round(shift, 0)
     shift = int(shift)
-
     cross = False
-    if shift < 2:
 
+    if shift < 2:
         if (rnew - rold) > vec * 0.5:
             rnew = rnew - vec                    
             cross = True
-        
         elif -(rnew - rold) > vec * 0.5:
             rnew = rnew + vec  
-            cross = True
-         
+            cross = True 
     else:
-        
         if (rnew - rold) > vec * 0.5:
             rnew = rnew - (vec * shift)                    
             cross = True
-        
         elif -(rnew - rold) > vec * 0.5:
             rnew = rnew + (vec * shift)  
             cross = True
@@ -53,16 +53,20 @@ def pbc(rnew, rold, vec):
     return cross, rnew
 
 def bin_choose(X, Y):
-    '''
-    BinChoose - Calculate the number of bins depending on a box size and a bin thickness
+    '''Calculate the number of bins depending on a box size and a bin
+    thickness
+
     Parameters
     ----------
-    X  : box length    : Float
-    Y  : bin thickness : Float
+    X : float
+        box length
+    Y : float
+        bin thickness
              
-    Return
-    ------
-    Z  : Number of bins : Float
+    Returns
+    -------
+    Z  : float
+        Number of bins
     '''
     Z = X / Y
     Z = round(Z, 0)

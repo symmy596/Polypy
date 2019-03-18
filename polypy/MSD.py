@@ -1,47 +1,32 @@
 import os as os
 import sys as sys
 import numpy as np
-
 from polypy import Read as rd
 from polypy import Density as Dens
 from polypy import Utils as Ut
 from polypy import Write as wr
 from polypy import Generic as ge
-
 from scipy import stats
 from scipy.constants import codata
 
 kb = codata.value('Boltzmann constant')
 ev = codata.value('electron volt')
 ev = -ev
-                                              
-
-def distances(r1, r0):
-    ''' 
-    Simple subtraction 
-    Parameters
-    ----------
-    r1       : numpy object
-    r0       : numpy object
-    
-    Returns
-    -------
-    distance : Float
-    '''
-    distance = ( r1 - r0 )
-    return distance
 
 def square_distance(distance, n):
-    '''
-    Calculate the MSD for a series of distances 
-    Parameters 
-    ----------
-    distance : Distance between atomic coordinates     : 2D Numpy object
-    n        : 1 = 2D array, 0 = 1D array              : Integer
+    '''Calculate the MSD for a series of distances
 
-    Return
-    ------
-    msd      : squared displacement                    : Numpy object 
+    Parameters
+    ----------
+    distance : array like
+        Distance between atomic coordinates
+    n : integer
+        1 = 2D array, 0 = 1D array
+
+    Returns
+    -------
+    msd : array like
+        squared displacement 
     '''
     if n == 1:
         msd = (distance[:,0] ** 2) + (distance[:,1] ** 2) + (distance[:,2] ** 2)
@@ -51,21 +36,28 @@ def square_distance(distance, n):
     return msd
 
 def run_msd(trajectories, lv, timesteps, natoms, start, timestep):
-    '''
-    MSD calculator - Common to all the various funcitons that do some sort of MSD
+    '''MSD calculator
+
     Parameters
     ----------
-    trajectories  : atomic coordinates                  : 3D numpy array
-    lv            : Lattive Vectors                     : 1D numpy array
-    timesteps     : Total Number of Timesteps           : Integer
-    natoms        : Total Number of Atoms               : Integer
-    start         : Total number of trajectory loops    : Integer
-    timestep      : Timestep of the simulation          : Integer
+    trajectories : array like
+        atomic coordinates
+    lv : array like
+        Lattive Vectors
+    timesteps : int
+        Total Number of Timesteps
+    natoms : int
+        Total Number of Atoms
+    start : int
+        Total number of trajectory loops
+    timestep : int
+        Timestep of the simulation
             
     Return
     ------
-    msd_data : Dictionary {'msd': msd, 'xmsd': xmsd, 'ymsd': ymsd, 'zmsd': zmsd, 'time': time}    
-    pmsd     : MSD arrays for every atom          :  1D numpy array
+    msd_data : dictionary
+        Dictionary containing 3D msd, 1D msd in the x, y, z directions
+        and the time.
     '''
     trajectories = np.asarray(trajectories)
     msd = np.array([])
@@ -80,20 +72,18 @@ def run_msd(trajectories, lv, timesteps, natoms, start, timestep):
         
         vec = lv[j]
         r1 = trajectories[j]
-        distance_new = distances(r1, r0)
+        distance_new = r1 - r0
         r1.tolist()
         rOd.tolist()    
         
         if distance_new.size > 3:
             n = 1
-
             for k in range(0, distance_new[:,0].size):
                 for i in range(0, 3):
                     cross, r_new = ge.pbc(r1[k,i], rOd[k,i], vec[i])
                     if cross == True:
                         r1[k,i] = r_new
                         distance_new[k,i] = r_new - r0[k,i]
-
         else:
             n = 0
             r1 = r1.flatten()
@@ -134,22 +124,32 @@ def run_msd(trajectories, lv, timesteps, natoms, start, timestep):
     return msd_data
 
 def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
-    '''
-    Check Trajectory - From an assigned bin determine if any part of a trajectory crosses the bin
+    '''From an assigned bin determine if any part of a trajectory crosses
+    a given 1D bin.
+
     Parameters
     ----------
-    trajectory   : Trajectories                    : Numpy array
-    xc           : Coordinates for one dimension   : Numpy array
-    lv           : Lattice vectors                 : Numpy array
-    timesteps    : Total Number of Timesteps       : Integer
-    timestep     : Timestep of simulation          : Float
-    ul           : Upper Bin limit                 : Float
-    ll           : Lower Bin Limit                 : Float
-    runs         : Number of trajectory sweeps     : Intger
+    trajectory : array like
+        Trajectories
+    xc : array like
+        Coordinates for one dimension
+    lv : array like
+        Lattice vectors
+    timesteps : int
+        Total Number of Timesteps
+    timestep : float
+        Timestep of simulation
+    ul : float
+        Upper Bin limit
+    ll : float
+        Lower Bin Limit
+    runs : float
+        Number of trajectory sweeps
              
     Return
     ------
-    Diffusion Coefficient for a given atom within a given bin
+    dco : float
+        Diffusion Coefficient for a given atom within a given bin
     '''
     ib = False
     count = 0
@@ -206,18 +206,25 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
     return dco
 
 def msd(data, timestep):
-    '''
-    msd - Function that runs all of the parts of the MSD calcualtion
+    '''Function that runs all of the parts of the MSD calcualtion.
+
     Parameters
     ----------
-    data          : Dictionary containing atomic trajectories ['trajectories'], lattice vectors ['lv'], timesteps ['timesteps'] and number                     of atoms['natoms']
-    timestep      : simulation timestep - float                                 : Float
-    conductivity  : True/False True - calculate conductivity                    : Bool
-    temperature   : Temperature of the simulation - needed for conductivity     : Integer
+    data : dictionary
+        Dictionary containing atom labels, trajectories,
+        lattice vectors, total number of timesteps and atoms.
+    timestep : float
+        Simulation timestep.
+    conductivity : bool
+        True/False True - calculate conductivity.
+    temperature : int
+        Temperature of the simulation - needed for conductivity.
     
     Returns
     -------
-    Outputs diffusion info
+    msd_data : dictionary
+        Dictionary containing 3D msd, 1D msd in the x, y, z directions
+        and the time.
     '''
      
     if data['timesteps'] == 1:
@@ -228,22 +235,27 @@ def msd(data, timestep):
         print("ERROR: MSD can only handle one atom type. Exiting...")
         sys.exit(0)
     
-
     trajectories = np.split(data['trajectories'], data['timesteps'])
     msd_data = run_msd(trajectories, data['lv'], data['timesteps'], data['natoms'], 1, timestep)
 
     return msd_data
 
 def smooth_msd(data, timestep, runs=None, conductivity=None, temperature=None):
-    '''
-    smooth_msd - MSD Launcher for a Smoothed MSD calc
+    '''MSD Launcher for a Smoothed MSD calc.
+
     Parameters
     ----------
-    data          : Dictionary containing atomic trajectories ['trajectories'], lattice vectors ['lv'], timesteps ['timesteps'] and number                     of atoms['natoms']
-    timestep      : simulation timestep - float                                 : Float
-    runs          : How many sweeps across the trajectory                       : Integer
-    conductivity  : True/False True - calculate conductivity                    : Bool
-    temperature   : Temperature of the simulation - needed for conductivity     : Integer
+    data : dictionary
+        Dictionary containing atom labels, trajectories,
+        lattice vectors, total number of timesteps and atoms.
+    timestep : float
+        simulation timestep
+    runs : int
+        How many sweeps across the trajectory
+    conductivity : bool
+        True/False True - calculate conductivity
+    temperature : int
+        Temperature of the simulation - needed for conductivity
     
     Returns
     -------
@@ -275,8 +287,7 @@ def smooth_msd(data, timestep, runs=None, conductivity=None, temperature=None):
         start = i * 10
         print("Starting Run", i, "of", runs)
         msd_data, pmsd = run_msd(trajectories, data['lv'], data['timesteps'], data['natoms'], start, timestep)
-        d, xd, yd, zd = msd_stats(msd_data)    
-        
+        d, xd, yd, zd = msd_stats(msd_data)
         dc = np.append(dc, d)
         xdc = np.append(xdc, xd)
         ydc = np.append(ydc, yd)
@@ -299,18 +310,27 @@ def smooth_msd(data, timestep, runs=None, conductivity=None, temperature=None):
     wr.msd_plot(smsd_data)
        
 def plane_msd(data, timestep, runs=None, ul=None, ll=None, direction=None, conductivity=None, temperature=None):
-    '''
-    PlaneMSD - Calculate an MSD value within a area of a structure 
+    '''Calculate an MSD value within a area of a structure.
+    
     Parameters
     ----------
-    data          : Dictionary containing atomic trajectories ['trajectories'], lattice vectors ['lv'], timesteps ['timesteps'] and number of atoms['natoms']    
-    timestep      : Simulation timestep                        : Float
-    runs          : Number of trajectory sweeps                : Integer
-    ul            : Upper bin limit                            : Float
-    ll            : Lower bin limit                            : Float
-    direction     : Direction normal to slices                 : str
-    conductivity  : True/False - True for conductivity calc    : Bool
-    temperature   : Temperature of simulation                  : Integer
+    data : dictionary
+        Dictionary containing atom labels, trajectories,
+        lattice vectors, total number of timesteps and atoms.
+    timestep : float
+        Simulation timestep.
+    runs : int
+        Number of trajectory sweeps.
+    ul : float
+        Upper bin limit.
+    ll : float
+        Lower bin limit.
+    direction : str 
+        Direction normal to slices.
+    conductivity : bool
+        True/False - True for conductivity calc.
+    temperature : int
+        Temperature of simulation.
     
     Returns
     -------
@@ -330,8 +350,7 @@ def plane_msd(data, timestep, runs=None, ul=None, ll=None, direction=None, condu
     else:
         con = False
     if temperature is None and conductivity == True: 
-        sys.exit(0)
-            
+        sys.exit(0) 
     if direction == "x":
         val = 0
         area = [1, 2]
