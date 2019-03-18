@@ -82,6 +82,91 @@ def read_history(file, atom_list):
     history.close() 
     return data
 
+def read_archive(file, atom_list):
+    '''Read a DL_MONTE ARCHIVE file
+    Parameters
+    ----------
+    file : str
+        Name of the dlmonte ARCHIVE file
+    atom_list : list
+        list of atoms types to be read
+             
+    Return
+    ------
+    data : dict
+        Dictionary containing the atom labels, trajectories, lattice vectors, timesteps and number of atoms
+    '''
+    if os.path.isfile(file):
+        trajectories = []
+        atname = []
+        lv = []
+        natoms_at_timestep = []
+        count = 0
+        c = 0
+        atom_count = 0
+        timesteps = 1
+        skipline = 1
+        name = False
+        tstep = True
+        archive = open(file, 'r')
+        config_label = archive.readline()
+        config_label = config_label.split()
+        for line in archive:
+            x = line.split()
+            if c == 3:
+                c = 0
+                skipline = 0
+                tstep = False
+            if c < 3 and tstep == True and skipline == 2:
+                lv.append(line.split())
+                c = c + 1
+            if name:
+                name = False
+                trajectories.append(line.split())
+                atom_count = atom_count + 1 
+            if x[0] in atom_list:
+                atname.append(x[0])
+                name = True
+                count = count + 1
+            if x[0] == config_label[0]:
+                timesteps = timesteps + 1
+                tstep = True
+                skipline = 1
+                natoms_at_timestep.append(atom_count)
+                atom_count = 0
+            elif tstep == True:
+                skipline = 2
+            
+                
+
+        trajectories = np.asarray(trajectories, dtype=float)
+        atname = np.asarray(atname, dtype=str)
+        lv = np.asarray(lv, dtype=float)
+
+        natoms = count / timesteps
+        natoms = int(natoms)
+        
+        vec = np.array([])
+        lv = np.split(lv, timesteps)
+
+        for i in range(0, timesteps):
+
+            vec = np.append(vec, (lv[i].sum(axis=0)))
+
+        lv = np.reshape(vec, (timesteps, 3))
+        data = {'label': atname, 'trajectories': trajectories, 'lv':lv, 'timesteps':timesteps, 'natoms':natoms, "atoms_per_timestep": natoms_at_timestep}
+
+    else:
+        print("File cannot be found")
+        sys.exit(0)
+    
+    if natoms == 0:
+        print("No Atoms of specified type exist within the selected HISTORY file")
+        sys.exit(0)
+        
+    archive.close() 
+    return data
+
 def read_config(file, atom_list):
     '''
     read_config - Read a DL_POLY CONFIG file
