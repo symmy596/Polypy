@@ -1,5 +1,5 @@
-surfinpy
-========
+polypy
+======
 
 .. include:: README.rst
 

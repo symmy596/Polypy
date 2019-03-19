@@ -3,9 +3,13 @@ import sys as sys
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
-import math as mt 
+import math as mt
+import seaborn as sns
+sns.set(style="white")
+sns.set_style("ticks")
 
-def msd_plot(msd_data):
+
+def msd_plot(msd_data, set_style="default", palette="tab10", figsize=None, output=None):
     '''
     MSDPlot - Plot MSD 
     Parameters 
@@ -16,115 +20,70 @@ def msd_plot(msd_data):
     ------
     matplotlib plot - png
     '''
-    YMax = np.amax(msd_data['msd'])
-    XMax = np.amax(msd_data['time'])
-    plt.ylim(ymin=0, ymax=YMax)
-    plt.xlim(xmin=0, xmax=XMax)
-    plt.scatter(msd_data['time'], msd_data['msd'], color="crimson", label="MSD", s=5)
-    plt.scatter(msd_data['time'], msd_data['xmsd'], color="blue", label="XMSD",  s=5)
-    plt.scatter(msd_data['time'], msd_data['ymsd'], color="black", label="YMSD",  s=5)
-    plt.scatter(msd_data['time'], msd_data['zmsd'], color="darkgreen", label="ZMSD",s=5)
-    plt.tick_params(labelsize=12)
-    plt.xlabel("Timestep (ps)", fontsize=15)
-    plt.ylabel("MSD", fontsize=15)
-    plt.savefig("MSD.png", dpi=600)
+    sns.palette=palette
+    plt.style.use(set_style)
+
+    fig = plt.figure(figsize=figsize)
+    ax = fig.add_subplot(111)
+
+    ax.set_ylim(ymin=0, ymax=np.amax(msd_data['msd']))
+    ax.set_xlim(xmin=0, xmax=np.amax(msd_data['time']))
+    ax.plot(msd_data['time'], msd_data['msd'], label="MSD")
+    ax.plot(msd_data['time'], msd_data['xmsd'], label="XMSD")
+    ax.plot(msd_data['time'], msd_data['ymsd'], label="YMSD")
+    ax.plot(msd_data['time'], msd_data['zmsd'], label="ZMSD")
+    ax.tick_params(labelsize=12)
+    ax.set_xlabel("Time (ps)", fontsize=15)
+    ax.set_ylabel("MSD ($\AA$)", fontsize=15)
+    plt.legend()
+    if output:
+        plt.savefig(output, dpi=600)
     plt.show()
     plt.close()
-       
-def diffusion_output(DiffusionCo, XDiffusionCo, YDiffusionCo, ZDiffusionCo, conductivity=None):
-    '''
-    DiffusionOutput - Write out diffusion coefficients to a file
+
+def volume_plot(x, y, xlab="Timestep (ps)", ylab="System Volume ($\AA$)",
+                output=None, set_style="default", palette="tab10",
+                figsize=None):
+    '''Plots the system volume vs timestep.
+    
     Parameters
     ----------
-    DiffuscionCo  : Diffusion coefficient        : Float
-    XDiffusionCo  : Diffusion coefficient in x   : Float
-    YDiffusionCo  : Diffusion coefficient in y   : Float
-    ZDiffusionCo  : Diffusion coefficient in z   : Float
-    
+    x : array like
+        Timesteps
+    y : array like
+        Volume
+    xlab : str
+        X label
+    ylab : str
+        Y label
+    output : str
+        Output filename
+    set_style : str
+        Plot style
+    palette : str
+        Color palette
+    figsize : tuple (optional)
+        Size of plot
+
     Return
     ------
-    Text file
+    matplotlib plot
+    
     '''
-    DiffusionCo = str(DiffusionCo)
-    XDiffusionCo = str(XDiffusionCo)
-    YDiffusionCo = str(YDiffusionCo)
-    ZDiffusionCo = str(ZDiffusionCo)
-    Output = open("Diffusion.txt", "w")
-    Output.write("3D Diffusion Coefficient: " + DiffusionCo + " m^2/s (10^-9)\n")
-    Output.write("2D X Diffusion Coefficient: " + XDiffusionCo + " m^2/s (10^-9)\n")
-    Output.write("2D Y Diffusion Coefficient: " + YDiffusionCo + " m^2/s (10^-9)\n")
-    Output.write("2D Z Diffusion Coefficient: " + ZDiffusionCo + " m^2/s (10^-9)\n")
-    if conductivity:
-        con = str(conductivity)
-        Output.write("Conductivity: " + con + "(S/cm)\n")
-        c = np.log(conductivity)
-        c = str(c)
-        Output.write("Log of Conductivity: " + c + "log (S/cm)")
-    else:       
-        Output.close()    
+    sns.palette=palette
+    plt.style.use(set_style)
+    fig = plt.figure(figsize=figsize)
+    ax = fig.add_subplot(111)
 
-def plane_msd_output(Diffusion, xd, yd, zd, UL, LL, nt, conductivity=None):
-    '''
-    plane_msd_output - Write out the diffusion coefficient for a region of a configuration to a file
-    Parameters
-    ----------
-    Diffusion  : Diffusion coefficient 
-    xd         : DIffusion coefficient in x
-    yd         : DIffusion coefficient in y
-    zd         : DIffusion coefficient in z
-    UL         : upper limit of bin
-    LL         : lower limit of bin
-    nt         : Number of trajectories used
-    
-    Return 
-    ------
-    text file
-    '''
-    if conductivity:
-        conductivity = conductivity 
-        l = np.log(conductivity)
-        l = str(l)
-        C = str(conductivity)
-
-        con = True
-    else:
-        con = False
-    
-    UL = str(UL)
-    LL = str(LL)
-    M = str("-")
-    X = str(xd)
-    Y = str(yd)
-    Z = str(zd)
-
-
-    D = str(Diffusion)
-    nt = str(nt)
-    Name = LL + M + UL
-    
-    Output = open(Name, "w")
-    
-    Output.write("Diffusion Coefficient within region spanning : " + LL + " - " + UL + " : " + D +  " m^2/s (10^-9)\n")
-    Output.write("Diffusion in the X Direction                 : " + X +  " m^2/s (10^-9)\n")
-    Output.write("Diffusion in the Y Direction                 : " + Y +  " m^2/s (10^-9)\n")
-    Output.write("Diffusion in the Z Direction                 : " + Z +  " m^2/s (10^-9)\n")
-   
-    if con == True:
-        
-        Output.write("Conductivity within region spanning          : " + LL + " - " + UL + " : " + C +  " (S cm^-1) \n")
-        Output.write("Log of Conductivity within region spanning   : " + LL + " - " + UL + " : " + l +  " (log S cm^-1) \n")
-
-    Output.write("Number of Trajectories used                 : " + nt) 
-    Output.close()
- 
-def one_dimensional_density_sb_output(plane, UL, LL, output):
-    
-    UL = str(UL)
-    LL = str(LL)
-    plane = str(plane)
-    Output = open(output, "w")
-    Output.write("Total Number of species within region spanning - " + LL + " - " + UL + " : " + plane)
-    Output.close()
+    ax.plot(x, y)
+    ax.set_xlabel(xlab, fontsize=13)
+    ax.set_ylabel(ylab, fontsize=13)
+    ax.tick_params(labelsize=12)
+    if output:
+        plt.savefig(output, dpi=600)
+    plt.tight_layout()
+    plt.show()
+    plt.close()
 
 def line_plot(X, Y, XLab, YLab, output):
     '''

@@ -1,14 +1,12 @@
-import os as os
 import sys as sys
 import numpy as np
 from polypy import utils as ut
-from polypy import write as wr
-from scipy import stats
 from scipy.constants import codata
 
 kb = codata.value('Boltzmann constant')
 ev = codata.value('electron volt')
 ev = -ev
+
 
 def square_distance(distance, n):
     '''Calculate the MSD for a series of distances
@@ -23,14 +21,18 @@ def square_distance(distance, n):
     Returns
     -------
     msd : array like
-        squared displacement 
+        squared displacement
     '''
     if n == 1:
-        msd = (distance[:,0] ** 2) + (distance[:,1] ** 2) + (distance[:,2] ** 2)
+        msd = (distance[:, 0] ** 2) + (
+               distance[:, 1] ** 2) + (
+               distance[:, 2] ** 2)
     elif n == 0:
-        msd = (distance[0] ** 2) + (distance[1] ** 2) + (distance[2] ** 2)
-
+        msd = (distance[0] ** 2) + (
+               distance[1] ** 2) + (
+               distance[2] ** 2)
     return msd
+
 
 def run_msd(trajectories, lv, timesteps, natoms, start, timestep):
     '''MSD calculator
@@ -49,9 +51,9 @@ def run_msd(trajectories, lv, timesteps, natoms, start, timestep):
         Total number of trajectory loops
     timestep : int
         Timestep of the simulation
-            
-    Return
-    ------
+
+    Returns
+    -------
     msd_data : dictionary
         Dictionary containing 3D msd, 1D msd in the x, y, z directions
         and the time.
@@ -63,24 +65,24 @@ def run_msd(trajectories, lv, timesteps, natoms, start, timestep):
     time = np.array([])
     zmsd = np.array([])
     r0 = trajectories[start-1]
-    rOd = trajectories[start-1] 
+    rOd = trajectories[start-1]
 
     for j in range((start), timesteps):
-        
+
         vec = lv[j]
         r1 = trajectories[j]
         distance_new = r1 - r0
         r1.tolist()
-        rOd.tolist()    
-        
+        rOd.tolist()
+
         if distance_new.size > 3:
             n = 1
-            for k in range(0, distance_new[:,0].size):
+            for k in range(0, distance_new[:, 0].size):
                 for i in range(0, 3):
-                    cross, r_new = ut.pbc(r1[k,i], rOd[k,i], vec[i])
-                    if cross == True:
-                        r1[k,i] = r_new
-                        distance_new[k,i] = r_new - r0[k,i]
+                    cross, r_new = ut.pbc(r1[k, i], rOd[k, i], vec[i])
+                    if cross is True:
+                        r1[k, i] = r_new
+                        distance_new[k, i] = r_new - r0[k, i]
         else:
             n = 0
             r1 = r1.flatten()
@@ -88,9 +90,9 @@ def run_msd(trajectories, lv, timesteps, natoms, start, timestep):
             r0 = r0.flatten()
             distance_new = distance_new.flatten()
             for i in range(0, 3):
-                
+
                 cross, r_new = ut.pbc(r1[i], rOd[i], vec[i])
-                if cross == True:
+                if cross is True:
                     r1[i] = r_new
                     distance_new[i] = r_new - r0[i]
         if n == 0:
@@ -100,7 +102,7 @@ def run_msd(trajectories, lv, timesteps, natoms, start, timestep):
 
         r1 = np.asarray(r1)
         rOd = np.asarray(rOd)
-        rOd = r1    
+        rOd = r1
 
         msd_new = square_distance(distance, n)
         msd_new = np.average(msd_new)
@@ -108,17 +110,22 @@ def run_msd(trajectories, lv, timesteps, natoms, start, timestep):
         time = np.append(time, ((j - start) * timestep))
 
         if n == 1:
-            xmsd = np.append(xmsd, (np.average((distance[:,0] ** 2))))
-            ymsd = np.append(ymsd, (np.average((distance[:,1] ** 2))))
-            zmsd = np.append(zmsd, (np.average((distance[:,2] ** 2))))
+            xmsd = np.append(xmsd, (np.average((distance[:, 0] ** 2))))
+            ymsd = np.append(ymsd, (np.average((distance[:, 1] ** 2))))
+            zmsd = np.append(zmsd, (np.average((distance[:, 2] ** 2))))
         elif n == 0:
             xmsd = np.append(xmsd, (np.average((distance[0] ** 2))))
             ymsd = np.append(ymsd, (np.average((distance[1] ** 2))))
             zmsd = np.append(zmsd, (np.average((distance[2] ** 2))))
-        
-        msd_data = {'msd': msd, 'xmsd': xmsd, 'ymsd': ymsd, 'zmsd': zmsd, 'time': time}
+
+        msd_data = {'msd': msd,
+                    'xmsd': xmsd,
+                    'ymsd': ymsd,
+                    'zmsd': zmsd,
+                    'time': time}
 
     return msd_data
+
 
 def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
     '''From an assigned bin determine if any part of a trajectory crosses
@@ -142,7 +149,7 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
         Lower Bin Limit
     runs : float
         Number of trajectory sweeps
-             
+
     Return
     ------
     dco : float
@@ -161,46 +168,58 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
             vecs = np.append(vecs, lv[i])
 
         elif xc[i] < ll or xc[i] > ul:
-            if count > 200 and ib == True:
+            if count > 200 and ib is True:
 
-                trajectory_slice = np.split(trajectory_slice, (trajectory_slice.size / 3))
+                trajectory_slice = np.split(trajectory_slice,
+                                            (trajectory_slice.size / 3))
                 vecs = np.reshape(vecs, (count, 3))
                 do = np.array([])
 
                 for i in range(0, runs):
                     start = i + 5
-                    msd_data = run_msd(trajectory_slice, vecs, count, 1, start, timestep)
+                    msd_data = run_msd(trajectory_slice,
+                                       vecs,
+                                       count,
+                                       1,
+                                       start,
+                                       timestep)
                     d = ut.linear_regression(msd_data['time'], msd_data['msd'])
                     d = ut.three_d_diffusion_coefficient(d)
                     do = np.append(do, d)
 
                 dco = np.append(dco, np.average(do))
-
                 count = 0
                 trajectory_slice = np.array([])
                 vecs = np.array([])
-            else:   
+            else:
                 ib = False
                 trajectory_slice = np.array([])
                 vecs = np.array([])
                 count = 0
-    if count > 200 and ib == True:
+    if count > 200 and ib is True:
 
         do = np.array([])
-        trajectory_slice = np.split(trajectory_slice, (trajectory_slice.size / 3))
+        trajectory_slice = np.split(trajectory_slice,
+                                    (trajectory_slice.size / 3))
         vecs = np.reshape(vecs, (count, 3))
 
         for i in range(0, runs):
             start = i + 5
-            msd_data = run_msd(trajectory_slice, vecs, count, 1, start, timestep)
+            msd_data = run_msd(trajectory_slice,
+                               vecs,
+                               count,
+                               1,
+                               start,
+                               timestep)
             d = ut.linear_regression(msd_data['time'], msd_data['msd'])
             d = ut.three_d_diffusion_coefficient(d)
             do = np.append(do, d)
-        
+
         dco = np.append(dco, np.average(do))
         count = 0
 
     return dco
+
 
 def msd(data, timestep):
     '''Function that runs all of the parts of the MSD calcualtion.
@@ -216,28 +235,31 @@ def msd(data, timestep):
         True/False True - calculate conductivity.
     temperature : int
         Temperature of the simulation - needed for conductivity.
-    
+
     Returns
     -------
     msd_data : dictionary
         Dictionary containing 3D msd, 1D msd in the x, y, z directions
         and the time.
     '''
-     
     if data['timesteps'] == 1:
         print("ERROR: - Only one timestep has been found")
     if data['timesteps'] < 100:
         print("WARNING: Small number of timesteps - Poor statistics likely")
     if len(np.unique(data['label'])) > 1:
-        print("ERROR: MSD can only handle one atom type. Exiting...")
+        print("ERROR: MSD can only handle one atom type. Exiting")
         sys.exit(0)
-    
-    trajectories = np.split(data['trajectories'], data['timesteps'])
-    msd_data = run_msd(trajectories, data['lv'], data['timesteps'], data['natoms'], 1, timestep)
 
+    trajectories = np.split(data['trajectories'], data['timesteps'])
+    msd_data = run_msd(trajectories, data['lv'],
+                       data['timesteps'],
+                       data['natoms'],
+                       1,
+                       timestep)
     return msd_data
 
-def smooth_msd(data, timestep, runs=None, conductivity=None, temperature=None):
+
+def smooth_msd(data, timestep, runs=None):
     '''MSD Launcher for a Smoothed MSD calc.
 
     Parameters
@@ -249,28 +271,14 @@ def smooth_msd(data, timestep, runs=None, conductivity=None, temperature=None):
         simulation timestep
     runs : int
         How many sweeps across the trajectory
-    conductivity : bool
-        True/False True - calculate conductivity
-    temperature : int
-        Temperature of the simulation - needed for conductivity
-    
+
     Returns
     -------
     Outputs diffusion info
     '''
-    if conductivity is None:
-        conductivity = False
-    if temperature is None and con == True:
-        print("Temperature is needed for conductivity calulcation- exiting....")
-        sys.exit(0)
-            
     if runs is None:
         runs = 5
-        
-    dc = np.array([])
-    xdc = np.array([])
-    ydc = np.array([])
-    zdc = np.array([])
+
     smsd = np.array([])
     sxmsd = np.array([])
     symsd = np.array([])
@@ -278,37 +286,29 @@ def smooth_msd(data, timestep, runs=None, conductivity=None, temperature=None):
     stime = np.array([])
 
     trajectories = np.split(data['trajectories'], data['timesteps'])
-    x = np.array([])
-    
+
     for i in range(1, runs):
         start = i * 10
-        print("Starting Run", i, "of", runs)
-        msd_data, pmsd = run_msd(trajectories, data['lv'], data['timesteps'], data['natoms'], start, timestep)
-        d, xd, yd, zd = msd_stats(msd_data)
-        dc = np.append(dc, d)
-        xdc = np.append(xdc, xd)
-        ydc = np.append(ydc, yd)
-        zdc = np.append(zdc, zd)
+        msd_data = run_msd(trajectories, data['lv'],
+                           data['timesteps'],
+                           data['natoms'],
+                           start,
+                           timestep)
         smsd = np.append(smsd, msd_data['msd'])
         sxmsd = np.append(sxmsd, msd_data['xmsd'])
         symsd = np.append(symsd, msd_data['ymsd'])
         szmsd = np.append(szmsd, msd_data['zmsd'])
         stime = np.append(stime, msd_data['time'])
 
-    d, xd, yd, zd = diffusion_coefficient(dc, xdc, ydc, zdc)
-    smsd_data = {'time': stime, 'msd': smsd, 'xmsd': sxmsd, 'ymsd': symsd, 'zmsd': szmsd}
-    if conductivity == True:
-        
-        volume = (np.average(data['lv'][:,0])) *  (np.average(data['lv'][:,1])) * (np.average(data['lv'][:,2]))
-        cond = ta.conductivity(data['natoms'], volume, d, temperature)
-        wr.diffusion_output(d, xd, yd, zd, cond)
-    else:
-        wr.diffusion_output(d, xd, yd, zd)
-    wr.msd_plot(smsd_data)
-       
-def plane_msd(data, timestep, runs=None, ul=None, ll=None, direction=None, conductivity=None, temperature=None):
+    smsd_data = {'time': stime, 'msd': smsd, 'xmsd': sxmsd,
+                 'ymsd': symsd, 'zmsd': szmsd}
+    return smsd_data
+
+
+def plane_msd(data, timestep, runs=None, ul=None, ll=None,
+              direction=None):
     '''Calculate an MSD value within a area of a structure.
-    
+
     Parameters
     ----------
     data : dictionary
@@ -322,13 +322,9 @@ def plane_msd(data, timestep, runs=None, ul=None, ll=None, direction=None, condu
         Upper bin limit.
     ll : float
         Lower bin limit.
-    direction : str 
+    direction : str
         Direction normal to slices.
-    conductivity : bool
-        True/False - True for conductivity calc.
-    temperature : int
-        Temperature of simulation.
-    
+
     Returns
     -------
     File containing the result of the calc
@@ -341,50 +337,23 @@ def plane_msd(data, timestep, runs=None, ul=None, ll=None, direction=None, condu
         sys.exit(0)
     if direction is None:
         direction = "x"
-    if conductivity:
-        conductivity = True
-        c = trajectories
-    else:
-        con = False
-    if temperature is None and conductivity == True: 
-        sys.exit(0) 
     if direction == "x":
         val = 0
-        area = [1, 2]
     elif direction == "y":
         val = 1
-        area = [0, 2]
     elif direction == "z":
         val = 2
-        area = [0, 1]
-                      
-    xc = np.reshape(data['trajectories'][:,val], ((data['timesteps']), data['natoms']))
+
+    xc = np.reshape(data['trajectories'][:, val], ((data['timesteps']),
+                    data['natoms']))
     trajectories = np.split(data['trajectories'], data['timesteps'])
     trajectories = np.asarray(trajectories)
     d = np.array([])
-    x = np.array([])
-    y = np.array([])
-    z = np.array([])
 
     for i in range(0, (data['natoms'])):
 
-        dd = check_trajectory(trajectories[:,i], xc[:,i], data['lv'], data['timesteps'], timestep, ul, ll, runs)
+        dd = check_trajectory(trajectories[:, i], xc[:, i], data['lv'],
+                              data['timesteps'], timestep, ul, ll, runs)
         d = np.append(d, dd)
-    nt = d.size
     diffusion = np.average(d)
-
-    if conductivity == True:
-
-        width = ul - ll
-        volume = width * (np.average(data['lv'][:,[area[0]]])) * (np.average(data['lv'][:,[area[1]]]))
-        plane = ta.one_dimensional_density_sb(c, ul=ul, ll=ll, direction=direction)
-        plane = plane / data['timesteps']
-        cond = ta.conductivity(plane, volume, diffusion, temperature)
-        wr.plane_msd_output(diffusion, xd, yd, zd, ul, ll, nt, cond)
-
-    else:
-         diffusion = str(diffusion)
-         output = open("Bulk_Diffusion", "w")
-         output.write(diffusion)
-         output.close()
-#        wr.plane_msd_output(diffusion, xd, yd, zd, ul, ll, nt)
+    return diffusion

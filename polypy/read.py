@@ -1,8 +1,7 @@
 import os as os
 import sys as sys
 import numpy as np
-from scipy import stats
-from scipy.constants import codata
+
 
 def read_history(file, atom_list):
     '''Read a DL_POLY HISTORY file.
@@ -36,17 +35,17 @@ def read_history(file, atom_list):
             if c == 3:
                 c = 0
                 tstep = False
-            if c < 3 and tstep == True:
+            if c < 3 and tstep is True:
                 lv.append(line.split())
                 c = c + 1
             if name:
                 name = False
-                trajectories.append(line.split()) 
+                trajectories.append(line.split())
             if x[0] in atom_list:
                 atname.append(x[0])
                 name = True
                 count = count + 1
-            if x[0] =="timestep":
+            if x[0] == "timestep":
                 timesteps = timesteps + 1
                 tstep = True
 
@@ -63,18 +62,23 @@ def read_history(file, atom_list):
             vec = np.append(vec, (lv[i].sum(axis=0)))
 
         lv = np.reshape(vec, (timesteps, 3))
-        data = {'label': atname, 'trajectories': trajectories, 'lv':lv, 'timesteps':timesteps, 'natoms':natoms}
+        data = {'label': atname,
+                'trajectories': trajectories,
+                'lv': lv,
+                'timesteps': timesteps,
+                'natoms': natoms}
 
     else:
         print("File cannot be found")
         sys.exit(0)
-    
+
     if natoms == 0:
-        print("No Atoms of specified type exist within the selected HISTORY file")
+        print("No Atoms of specified type exist within the HISTORY file")
         sys.exit(0)
-        
-    history.close() 
+
+    history.close()
     return data
+
 
 def read_archive(file, atom_list):
     '''Read a DL_MONTE ARCHIVE file
@@ -84,7 +88,7 @@ def read_archive(file, atom_list):
         Name of the dlmonte ARCHIVE file
     atom_list : list
         list of atoms types to be read
-             
+
     Returns
     -------
     data : dict
@@ -112,13 +116,13 @@ def read_archive(file, atom_list):
                 c = 0
                 skipline = 0
                 tstep = False
-            if c < 3 and tstep == True and skipline == 2:
+            if c < 3 and tstep is True and skipline == 2:
                 lv.append(line.split())
                 c = c + 1
             if name:
                 name = False
                 trajectories.append(line.split())
-                atom_count = atom_count + 1 
+                atom_count = atom_count + 1
             if x[0] in atom_list:
                 atname.append(x[0])
                 name = True
@@ -129,9 +133,9 @@ def read_archive(file, atom_list):
                 skipline = 1
                 natoms_at_timestep.append(atom_count)
                 atom_count = 0
-            elif tstep == True:
+            elif tstep is True:
                 skipline = 2
-            
+
         trajectories = np.asarray(trajectories, dtype=float)
         atname = np.asarray(atname, dtype=str)
         lv = np.asarray(lv, dtype=float)
@@ -145,18 +149,24 @@ def read_archive(file, atom_list):
             vec = np.append(vec, (lv[i].sum(axis=0)))
 
         lv = np.reshape(vec, (timesteps, 3))
-        data = {'label': atname, 'trajectories': trajectories, 'lv':lv, 'timesteps':timesteps, 'natoms':natoms, "atoms_per_timestep": natoms_at_timestep}
+        data = {'label': atname,
+                'trajectories': trajectories,
+                'lv': lv,
+                'timesteps': timesteps,
+                'natoms': natoms,
+                "atoms_per_timestep": natoms_at_timestep}
 
     else:
         print("File cannot be found")
         sys.exit(0)
-    
+
     if natoms == 0:
-        print("No Atoms of specified type exist within the selected HISTORY file")
+        print("No Atoms of specified type exist within the ARCHIVE file")
         sys.exit(0)
-        
-    archive.close() 
+
+    archive.close()
     return data
+
 
 def read_config(file, atom_list):
     '''Read a DL_POLY CONFIG file
@@ -167,12 +177,12 @@ def read_config(file, atom_list):
         Filename to be read
     atom : list
         List of atoms to be read
-             
+
     Returns
     -------
     data : dictionary
         Dictionary containing atom labels, trajectories,
-        lattice vectors, total number of timesteps and atoms. 
+        lattice vectors, total number of timesteps and atoms.
     '''
     if os.path.isfile(file):
         coords = []
@@ -181,40 +191,45 @@ def read_config(file, atom_list):
         count = 0
         lv = []
         atname = []
+
         title = config.readline()
         stuff = config.readline()
 
         for i in range(0, 3):
             l = config.readline()
             lv.append(l.split())
-            
+
         for line in config:
             x = line.split()
             if name:
                 name = False
-                coords.append(line.split()) 
+                coords.append(line.split())
             if x[0] in atom_list:
                 atname.append(x[0])
                 name = True
                 count = count + 1
-                
-        lv = np.asarray(lv, dtype=float)        
+
+        lv = np.asarray(lv, dtype=float)
         coords = np.asarray(coords, dtype=float)
         atname = np.asarray(atname, dtype=str)
         natoms = int(count)
         vec = lv.sum(axis=0)
 
-        data = {'label': atname, 'trajectories':coords,
-                'lv':vec, 'timesteps':1, 'natoms':natoms}
+        data = {'label': atname,
+                'trajectories': coords,
+                'lv': vec,
+                'timesteps': 1,
+                'natoms': natoms}
     else:
         print("File cannot be found")
         sys.exit(0)
     if natoms == 0:
-        print("No Atoms of specified type exist within the selected CONFIG file")
+        print("No Atoms of specified type exist within the CONFIG file")
         sys.exit(0)
-        
-    config.close() 
+
+    config.close()
     return data
+
 
 def get_atom(data, atom):
     """Reads through the dictionary returned from the reading functions
@@ -227,7 +242,7 @@ def get_atom(data, atom):
         lattice vectors, total number of timesteps and atoms.
     atom : str
         atom type to be found
- 
+
     Returns
     -------
     atom_data : dictionary
@@ -246,6 +261,10 @@ def get_atom(data, atom):
 
     coords = np.asarray(coords)
     natoms = int(count / data['timesteps'])
-    atom_data = {'label': atom, 'trajectories': coords, 'lv': data['lv'], 'timesteps': data['timesteps'], 'natoms': natoms}
+    atom_data = {'label': atom,
+                 'trajectories': coords,
+                 'lv': data['lv'],
+                 'timesteps': data['timesteps'],
+                 'natoms': natoms}
 
     return atom_data

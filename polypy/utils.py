@@ -1,4 +1,3 @@
-import sys as sys
 import numpy as np
 from polypy import write as wr
 from scipy import stats
@@ -9,20 +8,21 @@ kb = codata.value('Boltzmann constant')
 ev = codata.value('electron volt')
 ev = -ev
 
-def system_volume(data, timestep, output=None):  
+
+def system_volume(data, timestep, output=None):
     '''Calculate the volume at each timestep and return a volume as a
     function of time plot.
-    
+
     Parameters
     ----------
     data : dictionary
         Dictionary containing atom labels, trajectories,
-        lattice vectors, total number of timesteps and atoms.    
+        lattice vectors, total number of timesteps and atoms.
     timestep : float
         Timestep of MD simulation
     output : str
         Output file name
-            
+
     Returns
     -------
     volume : array like
@@ -32,17 +32,15 @@ def system_volume(data, timestep, output=None):
     '''
     if output is None:
         filename = "Volume.png"
-    
+
     volume = np.array([])
     time = np.array([])
 
     for i in range(0, data['timesteps']):
         volume = np.append(volume, (np.prod(data['lv'][i])))
         time = np.append(time, (i * timestep))
-        
-    wr.line_plot(time, volume, "Timestep", "System Volume (" r'$\AA$' ")", filename)
-
     return volume, time
+
 
 def conductivity(plane, volume, diff, temperature):
     '''Calculate the ionic conductivity
@@ -52,16 +50,16 @@ def conductivity(plane, volume, diff, temperature):
     plane : int
         Total number of charge carriers
     volume : float
-        lattice vectors
+        System volume
     diff : float
         diffusion coefficient
     temperature : int
         Temperature
-              
+
     Returns
     -------
     conductivity : float
-        Conductivity    
+        Conductivity
     '''
     volume = volume * (10 ** -30)
     diff = diff * (10 ** -9)
@@ -69,12 +67,13 @@ def conductivity(plane, volume, diff, temperature):
     EV = ev ** 2
     constants = kb * temperature
     conductivity = ((diff * conc) * EV) / constants
-    
+
     return conductivity
+
 
 def three_d_diffusion_coefficient(x):
     '''Calculate the diffusion coefficient from the slope of MSD vs Time
-    
+
     Parameters
     ----------
     x : float
@@ -85,8 +84,8 @@ def three_d_diffusion_coefficient(x):
     float
         Overal Diffusion coefficient
     '''
-
     return ((np.average(x)) / 6) * 10
+
 
 def one_d_diffusion_coefficient(x):
     '''Calculate the diffusion coefficient from the slope of MSD vs Time
@@ -102,10 +101,11 @@ def one_d_diffusion_coefficient(x):
         Overal Diffusion coefficient
     '''
     return ((np.average(x)) / 2) * 10
-    
+
+
 def linear_regression(x, y):
-    '''Linear Regression 
-    
+    '''Linear Regression
+
     Parameters
     ----------
     x : array like
@@ -118,8 +118,8 @@ def linear_regression(x, y):
         Overal gradient
     '''
     slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
-    
-    return slope 
+    return slope
+
 
 def pbc(rnew, rold, vec):
     '''Periodic boundary conditions for an msd calculation
@@ -132,7 +132,7 @@ def pbc(rnew, rold, vec):
         Value of previous atomic position
     vec  : float
         Lattice vector at that timestep
-    
+
     Return
     ------
     cross : bool
@@ -147,20 +147,21 @@ def pbc(rnew, rold, vec):
 
     if shift < 2:
         if (rnew - rold) > vec * 0.5:
-            rnew = rnew - vec                    
+            rnew = rnew - vec
             cross = True
         elif -(rnew - rold) > vec * 0.5:
-            rnew = rnew + vec  
-            cross = True 
+            rnew = rnew + vec
+            cross = True
     else:
         if (rnew - rold) > vec * 0.5:
-            rnew = rnew - (vec * shift)                    
+            rnew = rnew - (vec * shift)
             cross = True
         elif -(rnew - rold) > vec * 0.5:
-            rnew = rnew + (vec * shift)  
+            rnew = rnew + (vec * shift)
             cross = True
-    
+
     return cross, rnew
+
 
 def bin_choose(X, Y):
     '''Calculate the number of bins depending on a box size and a bin
@@ -172,7 +173,7 @@ def bin_choose(X, Y):
         box length
     Y : float
         bin thickness
-             
+
     Returns
     -------
     Z  : float
@@ -184,11 +185,13 @@ def bin_choose(X, Y):
     Z = Z - 1
     return Z
 
+
 def get_integer(x, y):
     z = x / y
     z = round(z, 0)
     z = int(z)
     return z
+
 
 def charge_density(atoms_coords, atom_charges, bin_volume):
     """Calculates the charge density
@@ -196,7 +199,8 @@ def charge_density(atoms_coords, atom_charges, bin_volume):
     Parameters
     ----------
     atoms_coords : list
-        List of numpy arrays containing number densities for a particlar species
+        List of numpy arrays containing number densities
+        for a particlar species
     atom_charges : list
         List of charges corresponding to the atoms in atom_coords
     bin_volume : float
@@ -209,8 +213,10 @@ def charge_density(atoms_coords, atom_charges, bin_volume):
     """
     number_density = np.column_stack((atoms_coords))
     charges = np.asarray(atom_charges)
-    charge_density = np.sum(np.multiply(number_density, charges), axis=1) / bin_volume 
+    charge_density = np.sum(np.multiply(number_density, charges),
+                            axis=1) / bin_volume
     return charge_density
+
 
 def poisson_solver(dx, rho, timesteps):
     """Calculates the electric field and electrostatic potential from the
@@ -236,8 +242,7 @@ def poisson_solver(dx, rho, timesteps):
     """
     magic_scaling = 14.3997584
     e_field = magic_scaling * integrate.cumtrapz(rho, dx, initial=0)
-    e_field = e_field - np.mean( e_field )
-    potential = -integrate.cumtrapz( e_field, dx, initial=0)
+    e_field = e_field - np.mean(e_field)
+    potential = -integrate.cumtrapz(e_field, dx, initial=0)
     potential = potential / timesteps
     return dx, e_field, potential
-    
