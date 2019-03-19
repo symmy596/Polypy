@@ -1,10 +1,7 @@
-# PolyPy
-
-[![PyPI version](https://badge.fury.io/py/polypy.svg)](https://badge.fury.io/py/polypy) [![Build Status](https://travis-ci.com/symmy596/PolyPy.svg?branch=master)](https://travis-ci.com/symmy596/PolyPy) [![Coverage Status](https://coveralls.io/repos/github/symmy596/PolyPy/badge.svg?branch=master)](https://coveralls.io/github/symmy596/PolyPy?branch=master)
 
 This is the documentation for the open-source Python project - `polypy`.
-A library designed to facilitate the analysis of [DL_POLY](https://www.scd.stfc.ac.uk/Pages/DL_POLY.aspx) and [DL_MONTE](https://www.ccp5.ac.uk/DL_MONTE) calculations.
-polypy is built on existing Python packages that those in the solid state physics/chemistry community should already be familiar with.
+A library designed to facilitate the analysis of `DL_POLY <https://www.scd.stfc.ac.uk/Pages/DL_POLY.aspx>`_ and `DL_MONTE <https://www.ccp5.ac.uk/DL_MONTE>`_ calculations.
+`polypy` is built on existing Python packages that those in the solid state physics/chemistry community should already be familiar with.
 It is hoped that this tool will bring some benfits to the solid state community and facilitate data analysis and the generation of publication ready plots (powered by Matplotlib.)
 
 The main features include:
@@ -35,15 +32,19 @@ are wide ranging. Code contributions aimed at expanding the code to new of probl
 
 `polypy` is free to use.
 
-## Usage
+Usage
+-----
 
 A full list of examples can be found in the examples folder of the git repository, these include both the Python scripts and jupyter notebook tutorials which combine the full theory with code examples. It should be noted however that DL_POLY HISTORY files and DL_MONTE ARCHIVE files are sizable (1-5GB) and as such we would discourage the use of notebooks and encourage using `polypy` on the HPC resource used to generate the data. Notebooks are provided here to illustrate the theory but are not practicle.
 
-## Installation
+Installation
+------------
 
 `polypy` is a Python 3 package and requires a typical scientific Python stack. Use of the tutorials requires Anaconda/Jupyter to be installed.
 
 To build from source:
+
+.. code-block:: bash 
 
     pip install -r requirements.txt
 
@@ -55,21 +56,29 @@ To build from source:
 
 Or alternatively install with pip
 
+.. code-block:: bash
+
     pip install polypy
 
 
-### Documentation
+Documentation
+-------------
 
 To build the documentation from scratch
   
+.. code-block:: bash
+
     cd docs
+
     make html
 
-### License
+License
+-------
 
 `polypy` is made available under the MIT License.
 
-### Detailed requirements
+Detailed requirements
+---------------------
 
 `polypy` is compatible with Python 3.5+ and relies on a number of open source Python packages, specifically:
 
@@ -77,23 +86,27 @@ To build the documentation from scratch
 - Scipy
 - Matplotlib
 
-## Contributing
+Contributing
+------------
 
-### Contact
+Contact
+~~~~~~~
 
 If you have questions regarding any aspect of the software then please get in touch with the developer Adam Symington via email - ars44@bath.ac.uk.
-Alternatively you can create an issue on the [Issue Tracker](https://github.com/symmy596/PolyPy/issues).
+Alternatively you can create an issue on the `Issue Tracker <https://github.com/symmy596/PolyPy/issues>`_.
 
-### Bugs
+Bugs
+~~~
 
-There may be bugs. If you think you've caught one, please report it on the [Issue Tracker](https://github.com/symmy596/PolyPy/issues).
+There may be bugs. If you think you've caught one, please report it on the `<Issue Tracker <https://github.com/symmy596/PolyPy/issues>`_.
 This is also the place to propose new ideas for features or ask questions about the design of `polypy`. Poor documentation is considered a bug
 so feel free to request improvements.
 
-### Code contributions
+Code contributions
+~~~~~~~~~~~~~~~~~~
 
 We welcome help in improving and extending the package. This is managed through Github pull requests; for external contributions we prefer the
-["fork and pull"](https://guides.github.com/activities/forking/)__
+`"fork and pull" <https://guides.github.com/activities/forking/>`__
 workflow while core developers use branches in the main repository:
 
    1. First open an Issue to discuss the proposed contribution. This
@@ -106,11 +119,3 @@ workflow while core developers use branches in the main repository:
       the changes are accepted.
 
 For further information please contact Adam Symington, ars44@bath.ac.uk
-
-## Author
-
-* Adam R.Symington
-  
-## Acknowledgements
-  
-* [Prof Stephen C.Parker](http://people.bath.ac.uk/chsscp/) - (Bath University)
