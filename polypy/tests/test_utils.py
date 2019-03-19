@@ -1,5 +1,5 @@
 import numpy as np
-from polypy import Utils as ut
+from polypy import utils as ut
 import unittest
 from numpy.testing import assert_almost_equal
 import os
@@ -67,3 +67,22 @@ class TestUtils(unittest.TestCase):
     
     def test_poisson_solver(self):
         pass
+
+    def test_pbc(self):
+        a, b = ut.pbc(10, 9, 20)
+        c, d = ut.pbc(1, 40, 20)
+        expected_a = False
+        expected_b = 10
+        expected_c = True
+        expected_d = 41
+        assert a == expected_a
+        assert b == expected_b
+        assert c == expected_c
+        assert d == expected_d
+
+    def test_bin_choose(self):
+        a = ut.bin_choose(4, 2)
+        expected = 1
+        assert a == expected
+    
+
