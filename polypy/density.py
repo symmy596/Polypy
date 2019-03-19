@@ -73,10 +73,8 @@ class Density():
 
         x = np.arange(0, (bin_array.size))
         x = (x * Bin) - b
-        y = (bin_array / self.data['timesteps'])
-        wr.line_plot(x, y, "XCoordinate (" r'$\AA$' ")", "Number Density",
-                     output)
-        return x, y
+
+        return x, bin_array
 
     def two_dimensional_density(self, box=None, direction=None, output=None):
         '''Calculate the atomic number density within two dimensional
@@ -140,7 +138,6 @@ class Density():
         x = ((x * box)) - (np.average(self.data['lv'][:, [val[0]]]) / 2)
         y = ((y * box))
         z = bin_array + 0.001
-        wr.contour_plot(x, y, z, output)
 
         return x, y, z
 
@@ -184,9 +181,6 @@ class Density():
 
             if c[j] > ll and c[j] < ul:
                 plane = plane + 1
-
-        filename = "1D-Density-" + (str(ul)) + " - " + (str(ll))
-        wr.one_dimensional_density_sb_output(plane, ul, ll, filename)
 
         return plane
 
@@ -257,6 +251,5 @@ class Density():
         y = ((y * box))
         td_array = td_array + 0.001
         od_array = od_array + 0.001
-        wr.combined_density_plot(x, y, od_array, td_array, output)
 
         return x, y, td_array, od_array

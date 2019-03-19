@@ -3,7 +3,8 @@
 build/
 dist/
 examples/.ipynb_checkpoints
-examples/Untitled.ipynb
+examples/*.txt
+examples/*.png
 examples/example_data/*
 polypy.egg-info/
 polypy/tests/__pycache__

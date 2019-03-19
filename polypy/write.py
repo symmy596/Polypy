@@ -52,23 +52,18 @@ def volume_plot(x, y, xlab="Timestep (ps)", ylab="System Volume ($\AA$)",
         Timesteps
     y : array like
         Volume
-    xlab : str
+    xlab : str (optional)
         X label
-    ylab : str
+    ylab : str (optional)
         Y label
-    output : str
+    output : str (optional)
         Output filename
-    set_style : str
+    set_style : str (optional)
         Plot style
-    palette : str
+    palette : str (optional)
         Color palette
-    figsize : tuple (optional)
-        Size of plot
-
-    Return
-    ------
-    matplotlib plot
-    
+    figsize : bool (optional)
+        Size of plot 
     '''
     sns.palette=palette
     plt.style.use(set_style)
@@ -85,73 +80,105 @@ def volume_plot(x, y, xlab="Timestep (ps)", ylab="System Volume ($\AA$)",
     plt.show()
     plt.close()
 
-def line_plot(X, Y, XLab, YLab, output):
-    '''
-    LinePlot - Simple line plot
-    
+def one_dimensional_density_plot(x, y, data_labels, xlab="Coordinate ($\AA$)",
+                                 ylab="Number Density", output=None, 
+                                 set_style="default", palette="tab10",
+                                 figsize=None):
+    '''Plots the 
+        
     Parameters
     ----------
-    first  : numpy object
-             X axis values
-    second : numpy object
-             Y axis values
-    third  : str
-             X label
-    fourth : str
-             Y label
-             
-    Return
-    ------
-    matplotlib plot
-    
+    x : list
+        X axis values
+    y : list
+        Y axis values
+    xlab : str (optional)
+        X label
+    ylab : str (optional)
+        Y label
+    output : str (optional)
+        Output filename
+    set_style : str (optional)
+        Plot style
+    palette : str (optional)
+        Color palette
+    figsize : bool (optional)
+        Size of plot
     '''
-        
-    plt.plot(X, Y, color="crimson")
-    plt.xlabel(XLab, fontsize=13)
-    plt.ylabel(YLab, fontsize=13)
+    sns.palette=palette
+    plt.style.use(set_style)
+    fig = plt.figure(figsize=figsize)
+    ax = fig.add_subplot(111)
+    for i in range(len(x)):
+        ax.plot(x[i], y[i], label=data_labels[i])
+    ax.set_xlabel(xlab, fontsize=13)
+    ax.set_ylabel(ylab, fontsize=13)
+    ax.tick_params(labelsize=12)
+    plt.legend()
     plt.tight_layout()
-    plt.tick_params(labelsize=12)
-    plt.savefig(output, dpi=600)
+    if output:
+        plt.savefig(output, dpi=600)
     plt.show()
     plt.close()
 
-def contour_plot(X, Y, Z, output):
-    '''
-    CountourPlot - Contour plotting tool
+def two_dimensional_density_plot(x, y, z, xlab="Coordinate ($\AA$)",
+                 ylab="Coordinate ($\AA$)", output=None,
+                 set_style="default", palette="gray",
+                 figsize=None):
+    '''Contour plotting tool
     
     Parameters 
     ----------
-    first  : numpy 
-             X axis
-    second : numpy 
-             Y axis
-    third  : 2D numpy array
-             grid
-             
-    Return
-    ------
-    matplotlib plot
-    
+    x : array like
+        X axis
+    y : array like
+        Y axis
+    z : array like
+        Grid of number densities
+    xlab : str (optional)
+        X label
+    ylab : str (optional)
+        Y label
+    output : str (optional)
+        Output filename
+    set_style : str (optional)
+        Plot style
+    palette : str (optional)
+        Color palette
+    figsize : bool (optional)
+        Size of plot
     '''
-    plt.contourf(X, Y, Z, cmap="gray")
-    plt.xlabel("X Coordinate (" r'$\AA$' ")", fontsize=15)
-    plt.ylabel("Y Coordinate (" r'$\AA$' ")", fontsize=15)
-    plt.tick_params(labelsize=12)
-    plt.savefig(output, dpi=600)
+    sns.palette=palette
+    plt.style.use(set_style)
+    fig = plt.figure(figsize=figsize)
+    
+    ax = fig.add_subplot(111)
+    ax.contourf(x, y, z, cmap=palette)
+    ax.set_xlabel(xlab, fontsize=15)
+    ax.set_ylabel(ylab, fontsize=15)
+    ax.tick_params(labelsize=12)
+    if output:
+        plt.savefig(output, dpi=600)
     plt.show()
     plt.close()
     
-def combined_density_plot(X, Y, Y2, Z, output):
-    
-    fig, ax1 = plt.subplots()
+def combined_density_plot(x, y, z, y2, xlab="Coordinate ($\AA$)",
+                 ylab="Coordinate ($\AA$)", y2_lab="Number Density",
+                 output=None, set_style="default", palette="gray",
+                 figsize=None):
+    sns.palette=palette
+    plt.style.use(set_style)
+
+    fig, ax1 = plt.subplots(figsize=figsize)
     ax2 = ax1.twinx()
-    ax1.contourf(X, Y, Z, cmap="gray")
-    ax1.set_xlabel("X Coordinate (" r'$\AA$' ")", fontsize=15)
-    ax1.set_ylabel("Y Coordinate (" r'$\AA$' ")", fontsize=15)
-    ax1.set_xlim([np.amin(X), np.amax(X)]) 
+    ax1.contourf(x, y, z, cmap=palette)
+    ax1.set_xlabel(xlab, fontsize=15)
+    ax1.set_ylabel(ylab, fontsize=15)
+    ax1.set_xlim([np.amin(x), np.amax(x)]) 
     ax1.tick_params(labelsize=12)
-    ax2.plot(X, Y2, color="white")
-    ax2.set_ylabel("Number Density", fontsize=15)
+    ax2.plot(x, y2)
+    ax2.set_ylabel(y2_lab, fontsize=15)
     ax2.tick_params(labelsize=12)
-    plt.savefig("Combined_Density.png", dpi=600)
+    if output:
+        plt.savefig(output, dpi=600)
     plt.show()
