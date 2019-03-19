@@ -56,8 +56,14 @@ class TestUtils(unittest.TestCase):
         expected = 50.0
         assert a == expected
 
-    def test_linera_regression(self):
+    def test_linear_regression(self):
         a = ut.linear_regression(np.array([1, 2, 3, 4, 5, 6, 7, 8, 9]),
                                  np.array([5, 10, 15, 20, 25, 30, 35, 40, 45]))
         expected = 5.0
         assert a == expected
+
+    def test_charge_density(self):
+        pass
+    
+    def test_poisson_solver(self):
+        pass

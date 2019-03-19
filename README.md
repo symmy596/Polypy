@@ -2,6 +2,10 @@
 
 [![PyPI version](https://badge.fury.io/py/polypy.svg)](https://badge.fury.io/py/polypy)
 
+[![Build Status](https://travis-ci.com/symmy596/PolyPy.svg?branch=master)](https://travis-ci.com/symmy596/PolyPy)
+
+[![Coverage Status](https://coveralls.io/repos/github/symmy596/PolyPy/badge.svg?branch=master)](https://coveralls.io/github/symmy596/PolyPy?branch=master)
+
 This is the documentation for the open-source Python project - `polypy`.
 A library designed to facilitate the analysis of [DL_POLY](https://www.scd.stfc.ac.uk/Pages/DL_POLY.aspx) and [DL_MONTE](https://www.ccp5.ac.uk/DL_MONTE) calculations.
 polypy is built on existing Python packages that those in the solid state physics/chemistry community should already be familiar with.
