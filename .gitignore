@@ -1,10 +1,11 @@
 .cache
 .vscode
-build
-dist
+build/
+dist/
 examples/.ipynb_checkpoints
 examples/Untitled.ipynb
-polypy.egg-info/*
+examples/example_data/*
+polypy.egg-info/
 polypy/__pycache__
 polypy/tests/__pycache__
 docs/build
