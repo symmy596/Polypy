@@ -4,7 +4,7 @@ build
 dist
 examples/.ipynb_checkpoints
 examples/Untitled.ipynb
-polypy.egg-info
+polypy.egg-info/*
 polypy/__pycache__
 polypy/tests/__pycache__
 docs/build
