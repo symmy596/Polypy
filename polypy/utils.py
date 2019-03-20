@@ -193,7 +193,7 @@ def get_integer(x, y):
     return z
 
 
-def charge_density(atoms_coords, atom_charges, bin_volume):
+def one_dimensional_charge_density(atoms_coords, atom_charges, bin_volume):
     """Calculates the charge density
 
     Parameters
@@ -215,6 +215,29 @@ def charge_density(atoms_coords, atom_charges, bin_volume):
     charges = np.asarray(atom_charges)
     charge_density = np.sum(np.multiply(number_density, charges),
                             axis=1) / bin_volume
+    return charge_density
+
+def two_dimensional_charge_density(atoms_coords, atom_charges, bin_volume):
+    """Calculates the charge density
+
+    Parameters
+    ----------
+    atoms_coords : list
+        List of numpy arrays containing number densities
+        for a particlar species
+    atom_charges : list
+        List of charges corresponding to the atoms in atom_coords
+    bin_volume : float
+        Volume of the bins
+
+    Returns
+    -------
+    charge_density : array like
+        Charge density
+    """
+    number_density = np.dstack((atoms_coords))
+    charges = np.asarray(atom_charges)
+    charge_density = np.sum(np.multiply(number_density, charges), axis=2) / bin_volume
     return charge_density
 
 
