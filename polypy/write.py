@@ -9,12 +9,22 @@ sns.set(style="white")
 sns.set_style("ticks")
 
 
-def msd_plot(msd_data, set_style="default", palette="tab10", figsize=None, output=None):
+def msd_plot(msd_data, set_style="default", palette="tab10",
+             figsize=None, output=None):
     '''
     MSDPlot - Plot MSD 
     Parameters 
     ----------
-    msd_data  : Dictionary {'msd': msd, 'xmsd': xmsd, 'ymsd': ymsd, 'zmsd': zmsd, 'time': time}
+    msd_data  : Dictionary {'msd': msd, 'xmsd': xmsd, 
+                'ymsd': ymsd, 'zmsd': zmsd, 'time': time}
+    set_style : str (optional)
+        Plot style
+    palette : str (optional)
+        Color palette
+    figsize : bool (optional)
+        Size of plot 
+    output : str (optional)
+        Output filename
 
     Return
     ------
@@ -25,7 +35,6 @@ def msd_plot(msd_data, set_style="default", palette="tab10", figsize=None, outpu
 
     fig = plt.figure(figsize=figsize)
     ax = fig.add_subplot(111)
-
     ax.set_ylim(ymin=0, ymax=np.amax(msd_data['msd']))
     ax.set_xlim(xmin=0, xmax=np.amax(msd_data['time']))
     ax.plot(msd_data['time'], msd_data['msd'], label="MSD")

@@ -6,6 +6,7 @@ polypy
 .. toctree::
    :maxdepth: 1
 
+   theory.rst
    using_polypy.rst
 
 .. toctree::
