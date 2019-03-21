@@ -118,7 +118,7 @@ def linear_regression(x, y):
         Overal gradient
     '''
     slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
-    return slope
+    return slope, intercept, r_value, p_value, std_err
 
 
 def pbc(rnew, rold, vec):

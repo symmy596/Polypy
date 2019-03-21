@@ -1,6 +1,7 @@
 import sys as sys
 import numpy as np
 from polypy import utils as ut
+from polypy import write as wr
 from scipy.constants import codata
 
 kb = codata.value('Boltzmann constant')
@@ -183,7 +184,7 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
                                        1,
                                        start,
                                        timestep)
-                    d = ut.linear_regression(msd_data['time'], msd_data['msd'])
+                    d, intercept, r_value, p_value, std_err = ut.linear_regression(msd_data['time'], msd_data['msd'])
                     d = ut.three_d_diffusion_coefficient(d)
                     do = np.append(do, d)
 
@@ -211,7 +212,7 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
                                1,
                                start,
                                timestep)
-            d = ut.linear_regression(msd_data['time'], msd_data['msd'])
+            d, intercept, r_value, p_value, std_err = ut.linear_regression(msd_data['time'], msd_data['msd'])
             d = ut.three_d_diffusion_coefficient(d)
             do = np.append(do, d)
 
@@ -256,6 +257,7 @@ def msd(data, timestep):
                        data['natoms'],
                        1,
                        timestep)
+    wr.save_msd(msd_data)
     return msd_data
 
 
@@ -300,8 +302,11 @@ def smooth_msd(data, timestep, runs=None):
         szmsd = np.append(szmsd, msd_data['zmsd'])
         stime = np.append(stime, msd_data['time'])
 
-    smsd_data = {'time': stime, 'msd': smsd, 'xmsd': sxmsd,
-                 'ymsd': symsd, 'zmsd': szmsd}
+
+    args = np.argsort(stime)
+
+    smsd_data = {'time': stime[args], 'msd': smsd[args], 'xmsd': sxmsd[args],
+                 'ymsd': symsd[args], 'zmsd': szmsd[args]}
     return smsd_data
 
 
@@ -357,3 +362,5 @@ def plane_msd(data, timestep, runs=None, ul=None, ll=None,
         d = np.append(d, dd)
     diffusion = np.average(d)
     return diffusion
+
+

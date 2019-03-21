@@ -5,12 +5,13 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import math as mt
 import seaborn as sns
+from polypy import utils as ut
 sns.set(style="white")
 sns.set_style("ticks")
 
 
 def msd_plot(msd_data, set_style="default", palette="tab10",
-             figsize=None, output=None):
+             figsize=None, output=None, fit=False):
     '''
     MSDPlot - Plot MSD 
     Parameters 
@@ -25,11 +26,20 @@ def msd_plot(msd_data, set_style="default", palette="tab10",
         Size of plot 
     output : str (optional)
         Output filename
-
-    Return
-    ------
-    matplotlib plot - png
+    fit : bool (optional)
+        If true it will plot the fitted msd
     '''
+
+    if fit:
+        slope, intercept, r_value, p_value, std_err = ut.linear_regression(msd_data['time'], msd_data['msd'])
+        msd_data['msd'] = msd_data['time'] * slope + intercept 
+        slope, intercept, r_value, p_value, std_err = ut.linear_regression(msd_data['time'], msd_data['xmsd'])
+        msd_data['xmsd'] = msd_data['time'] * slope + intercept 
+        slope, intercept, r_value, p_value, std_err = ut.linear_regression(msd_data['time'], msd_data['ymsd'])
+        msd_data['ymsd'] = msd_data['time'] * slope + intercept 
+        slope, intercept, r_value, p_value, std_err = ut.linear_regression(msd_data['time'], msd_data['zmsd'])
+        msd_data['zmsd'] = msd_data['time'] * slope + intercept 
+
     sns.palette=palette
     plt.style.use(set_style)
 
@@ -93,14 +103,14 @@ def one_dimensional_density_plot(x, y, data_labels, xlab="Coordinate ($\AA$)",
                                  ylab="Number Density", output=None, 
                                  set_style="default", palette="tab10",
                                  figsize=None):
-    '''Plots the 
+    '''Plots the number density for a list of species.
         
     Parameters
     ----------
     x : list
-        X axis values
+        X axis values - Coordinates of bins
     y : list
-        Y axis values
+        Y axis values - Number dnesity
     xlab : str (optional)
         X label
     ylab : str (optional)
@@ -133,8 +143,29 @@ def one_dimensional_density_plot(x, y, data_labels, xlab="Coordinate ($\AA$)",
 
 def electric_field_plot(x, y, xlab="Coordinate ($\AA$)",
                         ylab="Electric Field", output=None,
-                        set_style="default", palette="gray",
+                        set_style="default", palette="tab10",
                         figsize=None):
+    '''Plots the electric field of a system.
+        
+    Parameters
+    ----------
+    x : array like
+         X axis values - Coordinates of bins
+    y : array like
+        Y axis values - Electric field
+    xlab : str (optional)
+        X label
+    ylab : str (optional)
+        Y label
+    output : str (optional)
+        Output filename
+    set_style : str (optional)
+        Plot style
+    palette : str (optional)
+        Color palette
+    figsize : bool (optional)
+        Size of plot
+    '''
     sns.palette=palette
     plt.style.use(set_style)
     fig = plt.figure(figsize=figsize)
@@ -152,8 +183,29 @@ def electric_field_plot(x, y, xlab="Coordinate ($\AA$)",
 
 def electrostatic_potential_plot(x, y, xlab="Coordinate ($\AA$)",
                  ylab="Electrostatic Potential", output=None,
-                 set_style="default", palette="gray",
+                 set_style="default", palette="tab10",
                  figsize=None):
+    '''Plots the electrostatic potential of a system.
+        
+    Parameters
+    ----------
+    x : array like
+         X axis values - Coordinates of bins
+    y : array like
+        Y axis values - Electrostatic potential
+    xlab : str (optional)
+        X label
+    ylab : str (optional)
+        Y label
+    output : str (optional)
+        Output filename
+    set_style : str (optional)
+        Plot style
+    palette : str (optional)
+        Color palette
+    figsize : bool (optional)
+        Size of plot
+    '''
     sns.palette=palette
     plt.style.use(set_style)
     fig = plt.figure(figsize=figsize)
@@ -170,9 +222,29 @@ def electrostatic_potential_plot(x, y, xlab="Coordinate ($\AA$)",
 
 def one_dimensional_charge_density_plot(x, y, xlab="Coordinate ($\AA$)",
                                         ylab="Charge Density", output=None,
-                                        set_style="default", palette="gray",
+                                        set_style="default", palette="tab10",
                                         figsize=None):
-
+    '''Plots the charge density of a system in one dimension.
+        
+    Parameters
+    ----------
+    x : array like
+         X axis values - Coordinates of bins
+    y : array like
+        Y axis values - Charge density
+    xlab : str (optional)
+        X label
+    ylab : str (optional)
+        Y label
+    output : str (optional)
+        Output filename
+    set_style : str (optional)
+        Plot style
+    palette : str (optional)
+        Color palette
+    figsize : bool (optional)
+        Size of plot
+    '''
     sns.palette=palette
     plt.style.use(set_style)
     fig = plt.figure(figsize=figsize)
@@ -192,16 +264,16 @@ def two_dimensional_charge_density_plot(x, y, z, xlab="Coordinate ($\AA$)",
                  ylab="Coordinate ($\AA$)", output=None,
                  set_style="default", palette="seismic",
                  figsize=None):
-    '''Contour plotting tool
+    '''Plots the charge density of a system in two dimensions.
     
     Parameters 
     ----------
     x : array like
-        X axis
+        X axis - Coordinates
     y : array like
-        Y axis
+        Y axis - Coordinates
     z : array like
-        Grid of number densities
+        Grid of charge densities
     xlab : str (optional)
         X label
     ylab : str (optional)
@@ -236,14 +308,14 @@ def two_dimensional_density_plot(x, y, z, xlab="Coordinate ($\AA$)",
                  ylab="Coordinate ($\AA$)", output=None,
                  set_style="default", palette="gray",
                  figsize=None):
-    '''Contour plotting tool
+    '''Plots the number density of atoms in a system in two dimensions.
     
     Parameters 
     ----------
     x : array like
-        X axis
+        X axis - Coordinates
     y : array like
-        Y axis
+        Y axis - Coordinates
     z : array like
         Grid of number densities
     xlab : str (optional)
@@ -277,6 +349,33 @@ def combined_density_plot(x, y, z, y2, xlab="Coordinate ($\AA$)",
                  ylab="Coordinate ($\AA$)", y2_lab="Number Density",
                  output=None, set_style="default", palette="gray",
                  figsize=None):
+    '''Plots the number density of atoms in a system in two dimensions
+    and overlays the one dimensional plot.
+    
+    Parameters 
+    ----------
+    x : array like
+        X axis - Coordinates
+    y : array like
+        Y axis - Coordinates
+    z : array like
+        Grid of number densities
+    y2 : array like
+        Number density in one dimension
+    xlab : str (optional)
+        X label
+    ylab : str (optional)
+        Y label
+    output : str (optional)
+        Output filename
+    set_style : str (optional)
+        Plot style
+    palette : str (optional)
+        Color palette
+    figsize : bool (optional)
+        Size of plot
+    '''
+    
     sns.palette=palette
     plt.style.use(set_style)
 
@@ -293,3 +392,7 @@ def combined_density_plot(x, y, z, y2, xlab="Coordinate ($\AA$)",
     if output:
         plt.savefig(output, dpi=600)
     plt.show()
+
+
+def save_msd(msd_data, output="MSD"):
+    np.save(output, msd_data)
