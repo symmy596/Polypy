@@ -232,10 +232,6 @@ def msd(data, timestep):
         lattice vectors, total number of timesteps and atoms.
     timestep : float
         Simulation timestep.
-    conductivity : bool
-        True/False True - calculate conductivity.
-    temperature : int
-        Temperature of the simulation - needed for conductivity.
 
     Returns
     -------
