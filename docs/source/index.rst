@@ -8,6 +8,7 @@ polypy
 
    theory.rst
    using_polypy.rst
+   tutorials.rst
 
 .. toctree::
    :maxdepth: 2

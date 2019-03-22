@@ -268,3 +268,22 @@ def get_atom(data, atom):
                  'natoms': natoms}
 
     return atom_data
+
+def get_config(data, timestep):
+    """Returns single config from entire trajectory
+
+    Parameters
+    ----------
+    data : dictionary
+        Dictionary containing atom labels, trajectories,
+        lattice vectors, total number of timesteps and atoms.
+    timestep : int
+        Timestep of desired config
+
+    Returns
+    -------
+    array like
+        Coordinates of desired config
+    """
+    configs = np.split(data['trajectories'], data['timesteps'])
+    return configs[timestep]

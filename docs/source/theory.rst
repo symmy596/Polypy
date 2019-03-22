@@ -52,7 +52,7 @@ Going back to the example of the dye in water, lets assume for the sake of simpl
 
 By adding the square of the distance we will always be adding positive numbers to our total which now increases linearly with time. Based upon equation 1 it should now be clear that a plot of :math:`\Big \langle r_{i}^{2} \big \rangle` vs time with produce a line, the gradient of which is equal to 6D. Giving us direct access to the diffusion coefficient of the system. The state of the matter effects the shape of the MSD plot, solids, where little to no diffusion is occuring, has a flat MSD profile. In a liquid however, the particles diffusion randomly and the gradient of the curve is proportional to the diffusion coefficient. 
 
-.. image:: Figures/fig001.png
+.. image:: Figures/States_of_Matter.png
     :height: 300px
     :align: center
 
