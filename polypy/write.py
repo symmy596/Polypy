@@ -11,7 +11,7 @@ sns.set_style("ticks")
 
 
 def msd_plot(msd_data, set_style="default", palette="tab10",
-             figsize=None, output=None, fit=False):
+             figsize=None, output=None):
     '''
     MSDPlot - Plot MSD 
     Parameters 
@@ -26,20 +26,7 @@ def msd_plot(msd_data, set_style="default", palette="tab10",
         Size of plot 
     output : str (optional)
         Output filename
-    fit : bool (optional)
-        If true it will plot the fitted msd
     '''
-
-    if fit:
-        slope, intercept, r_value, p_value, std_err = ut.linear_regression(msd_data['time'], msd_data['msd'])
-        msd_data['msd'] = msd_data['time'] * slope + intercept 
-        slope, intercept, r_value, p_value, std_err = ut.linear_regression(msd_data['time'], msd_data['xmsd'])
-        msd_data['xmsd'] = msd_data['time'] * slope + intercept 
-        slope, intercept, r_value, p_value, std_err = ut.linear_regression(msd_data['time'], msd_data['ymsd'])
-        msd_data['ymsd'] = msd_data['time'] * slope + intercept 
-        slope, intercept, r_value, p_value, std_err = ut.linear_regression(msd_data['time'], msd_data['zmsd'])
-        msd_data['zmsd'] = msd_data['time'] * slope + intercept 
-
     sns.palette=palette
     plt.style.use(set_style)
 

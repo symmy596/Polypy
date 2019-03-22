@@ -3,6 +3,7 @@ from polypy import write as wr
 from scipy import stats
 from scipy.constants import codata
 from scipy import integrate
+import pandas as pd
 
 kb = codata.value('Boltzmann constant')
 ev = codata.value('electron volt')
@@ -269,3 +270,26 @@ def poisson_solver(dx, rho, timesteps):
     potential = -integrate.cumtrapz(e_field, dx, initial=0)
     potential = potential / timesteps
     return dx, e_field, potential
+
+
+def smooth_msd_data(x, y):
+    '''Smooths the data from the smoothed msd function. The data consists
+    of multiple msd runs but the data is unordered. This function will
+    order the data and average all y values with equivalent x values.
+
+    Parameters
+    ----------
+    x : array like
+        Time
+    y : array like
+        MSD
+    
+    Returns
+    -------
+    z : array like
+        Smoothed Time and MSD values.
+    '''
+    xy = np.column_stack((x, y))
+    z = pd.DataFrame(xy).groupby(0, as_index=False)[1].mean().values
+    return z[:,0], z[:,1]
+

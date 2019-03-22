@@ -298,11 +298,11 @@ def smooth_msd(data, timestep, runs=None):
         szmsd = np.append(szmsd, msd_data['zmsd'])
         stime = np.append(stime, msd_data['time'])
 
-
-    args = np.argsort(stime)
-
-    smsd_data = {'time': stime[args], 'msd': smsd[args], 'xmsd': sxmsd[args],
-                 'ymsd': symsd[args], 'zmsd': szmsd[args]}
+    smsd_data = {'time': ut.smooth_msd_data(stime, smsd)[0], 
+                 'msd':  ut.smooth_msd_data(stime, smsd)[1], 
+                 'xmsd': ut.smooth_msd_data(stime, sxmsd)[1],
+                 'ymsd': ut.smooth_msd_data(stime, symsd)[1], 
+                 'zmsd': ut.smooth_msd_data(stime, szmsd)[1]}
     return smsd_data
 
 
