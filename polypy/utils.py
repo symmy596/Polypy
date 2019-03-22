@@ -3,6 +3,7 @@ from polypy import write as wr
 from scipy import stats
 from scipy.constants import codata
 from scipy import integrate
+import pandas as pd
 
 kb = codata.value('Boltzmann constant')
 ev = codata.value('electron volt')
