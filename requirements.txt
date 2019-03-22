@@ -5,3 +5,4 @@ coveralls
 coverage
 seaborn
 pandas
+jupyter
