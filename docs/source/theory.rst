@@ -13,19 +13,21 @@ Using the density module you can calculate the number density of atoms
 
 where :math:`\rho_{i}` is the density of atom i and :math:`q_{i}` is its charge.    
 
-Electric Field
+Electric Field and Electrostatic Potential
 --------------
+
+The charge density can be converted into the electric field and the electrostatic potential.
+
+The electric field is calculated according to 
 
 .. math::
     E(z) = \frac{1}{- \epsilon_{0}} \int_{z_{0}}^{z} \rho_{q}(z')dz'
 
-Electrostatic Potential
------------------------
+where :math:`\epsilon_{0}` is the permittivity of the vacuum and :math:`\rho_{q}` is the charge density.  
+The electrostatic potential is calculated according to
 
 .. math::
     \Delta_{\psi}(z) = \int_{z_{0}}^{z} E(z')dz'
-
-
 
 Mean Squared Displacement
 -------------------------
