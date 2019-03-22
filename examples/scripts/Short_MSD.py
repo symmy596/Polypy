@@ -4,9 +4,10 @@ from polypy import utils as ut
 from polypy import write as wr
 import numpy as np
 
+timestep = 0.1
 data_short = rd.read_history("../example_data/HISTORY_short", ["F"])
 msd_data = msd.msd(data_short, timestep)
-wr.msd_plot(msd_data, output="MSD_Theory.png")
+wr.msd_plot(msd_data)
 
 Diff = ut.linear_regression(msd_data['time'], msd_data['msd'])
 Diffusion_Coefficient = ut.three_d_diffusion_coefficient(Diff)
