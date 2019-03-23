@@ -62,7 +62,7 @@ class Density():
         b = (np.average(self.data['lv'][:, val]) / 2)
         c = c + b
         x = ut.get_integer((np.amax(self.data['lv'][:,val])), Bin)
-        bin_array = np.zeros((x))
+        bin_array = np.zeros((x )) 
         c.tolist()
 
         for j in range(0, self.data['trajectories'][:, val].size):
@@ -72,7 +72,7 @@ class Density():
             bin_array[plane] = bin_array[plane] + 1
 
         x = np.arange(0, (bin_array.size))
-        x = (x * Bin) - b
+        x = (x * Bin) 
 
         return x, bin_array
 
