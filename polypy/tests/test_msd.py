@@ -23,3 +23,10 @@ class TestMsd(unittest.TestCase):
         msd_data = msd.smooth_msd(test_data, 0.1)
         expected_msd = np.array([14.25, 27.75, 49, 74, 120, 159, 108, 147])
         assert_almost_equal(msd_data['msd'], expected_msd)
+
+    def test_square_distance(self):
+        sd1 = msd.square_distance(np.array([2, 2, 2]), n=0)
+        sd2 = msd.square_distance(np.array([[2, 2, 2],
+                                            [4, 4, 4]]), n=1)
+        expected_sd1 = 12
+        expected_sd2 = np.array([20, 20, 20])    
