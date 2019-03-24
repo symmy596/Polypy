@@ -133,7 +133,6 @@ class Density():
             ybox = ut.bin_choose(yc[j], box)
             bin_array[ybox, xbox] = bin_array[ybox, xbox] + 1
 
-        bin_array = bin_array / self.data['timesteps']
         x = np.arange((x))
         y = np.arange((y))
         x = ((x * box)) - (np.average(self.data['lv'][:, [val[0]]]) / 2)
@@ -228,8 +227,11 @@ class Density():
         xc = xc + (np.average(self.data['lv'][:, [val[0]]]) / 2)
         yc = self.data['trajectories'][:, val[1]]
         yc = yc + (np.average(self.data['lv'][:, [val[1]]]) / 2)
-        x = ut.get_integer(np.amax(xc), box)
-        y = ut.get_integer(np.amax(yc), box)
+        x = ut.get_integer((np.amax(self.data['lv'][:,val[0]])), box)
+        y = ut.get_integer((np.amax(self.data['lv'][:,val[1]])), box)
+        if x < y:
+            x, y = y, x
+            xc, yc = yc, xc
         od_array = np.zeros((x))
         td_array = np.zeros(((y), (x)))
         xc = xc.tolist()
@@ -244,8 +246,6 @@ class Density():
             od_array[xbox] = od_array[xbox] + 1
             td_array[ybox, xbox] = td_array[ybox, xbox] + 1
 
-        td_array = td_array / self.data['timesteps']
-        od_array = od_array / self.data['timesteps']
         x = np.arange((x))
         y = np.arange((y))
         x = ((x * box)) - (np.average(self.data['lv'][:, [val[0]]]) / 2)
