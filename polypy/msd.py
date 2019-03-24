@@ -286,7 +286,7 @@ def smooth_msd(data, timestep, runs=None):
     trajectories = np.split(data['trajectories'], data['timesteps'])
 
     for i in range(1, runs):
-        start = i * 10
+        start = i * 2
         msd_data = run_msd(trajectories, data['lv'],
                            data['timesteps'],
                            data['natoms'],

@@ -10,7 +10,7 @@ test_config = os.path.join(os.path.dirname(__file__), 'CONFIG')
 test_archive = os.path.join(os.path.dirname(__file__), 'ARCHIVE')
 expected_z = os.path.join(os.path.dirname(__file__), 'Expected_Z')
 
-class TestUtils(unittest.TestCase):
+class TestDensity(unittest.TestCase):
 
     def test_one_dimensional_density(self):
         data = rd.read_history(test_history, ["CA"])
