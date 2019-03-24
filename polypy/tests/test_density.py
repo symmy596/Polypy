@@ -20,3 +20,10 @@ class TestUtils(unittest.TestCase):
         predicted_y = np.zeros(10) + 1
         assert_almost_equal(x, predicted_x)
         assert_almost_equal(y, predicted_y)
+
+    def test_one_dimensional_density_sb(self):
+        data = rd.read_history(test_history, ["CA"])
+        test_density = dens.Density(data)
+        plane = test_density.one_dimensional_density_sb(ll=-2.0, ul=2.0)
+        predicted_plane = 3.0
+        assert plane == predicted_plane
