@@ -1,6 +1,8 @@
 # PolyPy
 
-[![PyPI version](https://badge.fury.io/py/polypy.svg)](https://badge.fury.io/py/polypy) [![Build Status](https://travis-ci.com/symmy596/PolyPy.svg?branch=master)](https://travis-ci.com/symmy596/PolyPy) [![Coverage Status](https://coveralls.io/repos/github/symmy596/PolyPy/badge.svg?branch=master)](https://coveralls.io/github/symmy596/PolyPy?branch=master) [![Documentation Status](https://readthedocs.org/projects/polypy/badge/?version=latest)](https://polypy.readthedocs.io/en/latest/?badge=latest)
+[![PyPI version](https://badge.fury.io/py/polypy.svg)](https://badge.fury.io/py/polypy) [![Build Status](https://travis-ci.com/symmy596/PolyPy.svg?branch=master)](https://travis-ci.com/symmy596/PolyPy)
+ <a href='https://coveralls.io/github/symmy596/PolyPy?branch=master'><img src='https://coveralls.io/repos/github/symmy596/PolyPy/badge.svg?branch=master' alt='Coverage Status' /></a>
+[![Documentation Status](https://readthedocs.org/projects/polypy/badge/?version=latest)](https://polypy.readthedocs.io/en/latest/?badge=latest)
 
 
 This is the documentation for the open-source Python project - `polypy`.
