@@ -72,7 +72,7 @@ class Density():
             bin_array[plane] = bin_array[plane] + 1
 
         x = np.arange(0, (bin_array.size))
-        x = (x * Bin) 
+        x = (x * Bin) - b
 
         return x, bin_array
 
