@@ -9,6 +9,44 @@ from polypy import utils as ut
 sns.set(style="white")
 sns.set_style("ticks")
 
+def line_plot(x, y, xlab, ylab, output, set_style="default", palette="tab10",
+              figsize=None):
+    '''Plots the system volume vs timestep.
+    
+    Parameters
+    ----------
+    x : array like
+        X axis
+    y : array like
+        Y axis
+    xlab : str (optional)
+        X label
+    ylab : str (optional)
+        Y label
+    output : str (optional)
+        Output filename
+    set_style : str (optional)
+        Plot style
+    palette : str (optional)
+        Color palette
+    figsize : bool (optional)
+        Size of plot 
+    '''
+    sns.palette=palette
+    plt.style.use(set_style)
+    fig = plt.figure(figsize=figsize)
+    ax = fig.add_subplot(111)
+
+    ax.plot(x, y)
+    ax.set_xlabel(xlab, fontsize=13)
+    ax.set_ylabel(ylab, fontsize=13)
+    ax.tick_params(labelsize=12)
+    if output:
+        plt.savefig(output, dpi=600)
+    plt.tight_layout()
+    plt.show()
+    plt.close()
+
 
 def msd_plot(msd_data, set_style="default", palette="tab10",
              figsize=None, output=None):
@@ -47,6 +85,7 @@ def msd_plot(msd_data, set_style="default", palette="tab10",
     plt.show()
     plt.close()
 
+
 def volume_plot(x, y, xlab="Timestep (ps)", ylab="System Volume ($\AA$)",
                 output=None, set_style="default", palette="tab10",
                 figsize=None):
@@ -71,20 +110,96 @@ def volume_plot(x, y, xlab="Timestep (ps)", ylab="System Volume ($\AA$)",
     figsize : bool (optional)
         Size of plot 
     '''
-    sns.palette=palette
-    plt.style.use(set_style)
-    fig = plt.figure(figsize=figsize)
-    ax = fig.add_subplot(111)
+    line_plot(x, y, xlab, ylab, output, set_style, palette,
+              figsize)
 
-    ax.plot(x, y)
-    ax.set_xlabel(xlab, fontsize=13)
-    ax.set_ylabel(ylab, fontsize=13)
-    ax.tick_params(labelsize=12)
-    if output:
-        plt.savefig(output, dpi=600)
-    plt.tight_layout()
-    plt.show()
-    plt.close()
+
+def electric_field_plot(x, y, xlab="Coordinate ($\AA$)",
+                        ylab="Electric Field", output=None,
+                        set_style="default", palette="tab10",
+                        figsize=None):
+    '''Plots the electric field of a system.
+        
+    Parameters
+    ----------
+    x : array like
+         X axis values - Coordinates of bins
+    y : array like
+        Y axis values - Electric field
+    xlab : str (optional)
+        X label
+    ylab : str (optional)
+        Y label
+    output : str (optional)
+        Output filename
+    set_style : str (optional)
+        Plot style
+    palette : str (optional)
+        Color palette
+    figsize : bool (optional)
+        Size of plot
+    '''
+    line_plot(x, y, xlab, ylab, output, set_style, palette,
+              figsize)
+
+
+def electrostatic_potential_plot(x, y, xlab="Coordinate ($\AA$)",
+                 ylab="Electrostatic Potential", output=None,
+                 set_style="default", palette="tab10",
+                 figsize=None):
+    '''Plots the electrostatic potential of a system.
+        
+    Parameters
+    ----------
+    x : array like
+         X axis values - Coordinates of bins
+    y : array like
+        Y axis values - Electrostatic potential
+    xlab : str (optional)
+        X label
+    ylab : str (optional)
+        Y label
+    output : str (optional)
+        Output filename
+    set_style : str (optional)
+        Plot style
+    palette : str (optional)
+        Color palette
+    figsize : bool (optional)
+        Size of plot
+    '''
+    line_plot(x, y, xlab, ylab, output, set_style, palette,
+                 figsize)   
+
+
+def one_dimensional_charge_density_plot(x, y, xlab="Coordinate ($\AA$)",
+                                        ylab="Charge Density", output=None,
+                                        set_style="default", palette="tab10",
+                                        figsize=None):
+    '''Plots the charge density of a system in one dimension.
+        
+    Parameters
+    ----------
+    x : array like
+         X axis values - Coordinates of bins
+    y : array like
+        Y axis values - Charge density
+    xlab : str (optional)
+        X label
+    ylab : str (optional)
+        Y label
+    output : str (optional)
+        Output filename
+    set_style : str (optional)
+        Plot style
+    palette : str (optional)
+        Color palette
+    figsize : bool (optional)
+        Size of plot
+    '''
+    line_plot(x, y, xlab, ylab, output, set_style, palette,
+                 figsize) 
+
 
 def one_dimensional_density_plot(x, y, data_labels, xlab="Coordinate ($\AA$)",
                                  ylab="Number Density", output=None, 
@@ -121,125 +236,6 @@ def one_dimensional_density_plot(x, y, data_labels, xlab="Coordinate ($\AA$)",
     ax.set_ylabel(ylab, fontsize=13)
     ax.tick_params(labelsize=12)
     plt.legend()
-    plt.tight_layout()
-    if output:
-        plt.savefig(output, dpi=600)
-    plt.show()
-    plt.close()
-
-
-def electric_field_plot(x, y, xlab="Coordinate ($\AA$)",
-                        ylab="Electric Field", output=None,
-                        set_style="default", palette="tab10",
-                        figsize=None):
-    '''Plots the electric field of a system.
-        
-    Parameters
-    ----------
-    x : array like
-         X axis values - Coordinates of bins
-    y : array like
-        Y axis values - Electric field
-    xlab : str (optional)
-        X label
-    ylab : str (optional)
-        Y label
-    output : str (optional)
-        Output filename
-    set_style : str (optional)
-        Plot style
-    palette : str (optional)
-        Color palette
-    figsize : bool (optional)
-        Size of plot
-    '''
-    sns.palette=palette
-    plt.style.use(set_style)
-    fig = plt.figure(figsize=figsize)
-    ax = fig.add_subplot(111)
-    ax.plot(x, y)
-    ax.set_xlabel(xlab, fontsize=13)
-    ax.set_ylabel(ylab, fontsize=13)
-    ax.tick_params(labelsize=12)
-    plt.tight_layout()
-    if output:
-        plt.savefig(output, dpi=600)
-    plt.show()
-    plt.close()
-
-
-def electrostatic_potential_plot(x, y, xlab="Coordinate ($\AA$)",
-                 ylab="Electrostatic Potential", output=None,
-                 set_style="default", palette="tab10",
-                 figsize=None):
-    '''Plots the electrostatic potential of a system.
-        
-    Parameters
-    ----------
-    x : array like
-         X axis values - Coordinates of bins
-    y : array like
-        Y axis values - Electrostatic potential
-    xlab : str (optional)
-        X label
-    ylab : str (optional)
-        Y label
-    output : str (optional)
-        Output filename
-    set_style : str (optional)
-        Plot style
-    palette : str (optional)
-        Color palette
-    figsize : bool (optional)
-        Size of plot
-    '''
-    sns.palette=palette
-    plt.style.use(set_style)
-    fig = plt.figure(figsize=figsize)
-    ax = fig.add_subplot(111)
-    ax.plot(x, y)
-    ax.set_xlabel(xlab, fontsize=13)
-    ax.set_ylabel(ylab, fontsize=13)
-    ax.tick_params(labelsize=12)
-    plt.tight_layout()
-    if output:
-        plt.savefig(output, dpi=600)
-    plt.show()
-    plt.close()   
-
-def one_dimensional_charge_density_plot(x, y, xlab="Coordinate ($\AA$)",
-                                        ylab="Charge Density", output=None,
-                                        set_style="default", palette="tab10",
-                                        figsize=None):
-    '''Plots the charge density of a system in one dimension.
-        
-    Parameters
-    ----------
-    x : array like
-         X axis values - Coordinates of bins
-    y : array like
-        Y axis values - Charge density
-    xlab : str (optional)
-        X label
-    ylab : str (optional)
-        Y label
-    output : str (optional)
-        Output filename
-    set_style : str (optional)
-        Plot style
-    palette : str (optional)
-        Color palette
-    figsize : bool (optional)
-        Size of plot
-    '''
-    sns.palette=palette
-    plt.style.use(set_style)
-    fig = plt.figure(figsize=figsize)
-    ax = fig.add_subplot(111)
-    ax.plot(x, y)
-    ax.set_xlabel(xlab, fontsize=13)
-    ax.set_ylabel(ylab, fontsize=13)
-    ax.tick_params(labelsize=12)
     plt.tight_layout()
     if output:
         plt.savefig(output, dpi=600)
@@ -332,6 +328,7 @@ def two_dimensional_density_plot(x, y, z, xlab="Coordinate ($\AA$)",
     plt.show()
     plt.close()
     
+
 def combined_density_plot(x, y, z, y2, xlab="Coordinate ($\AA$)",
                  ylab="Coordinate ($\AA$)", y2_lab="Number Density",
                  output=None, set_style="default", palette="gray",
@@ -362,7 +359,6 @@ def combined_density_plot(x, y, z, y2, xlab="Coordinate ($\AA$)",
     figsize : bool (optional)
         Size of plot
     '''
-    
     sns.palette=palette
     plt.style.use(set_style)
 
@@ -379,7 +375,3 @@ def combined_density_plot(x, y, z, y2, xlab="Coordinate ($\AA$)",
     if output:
         plt.savefig(output, dpi=600)
     plt.show()
-
-
-def save_msd(msd_data, output="MSD"):
-    np.save(output, msd_data)

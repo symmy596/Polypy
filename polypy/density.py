@@ -61,7 +61,7 @@ class Density():
         c = self.data['trajectories'][:, val]
         b = (np.average(self.data['lv'][:, val]) / 2)
         c = c + b
-        x = ut.get_integer((np.amax(self.data['lv'][:,val])), Bin)
+        x = ut.bin_choose((np.amax(self.data['lv'][:,val])), Bin) + 1
         bin_array = np.zeros((x )) 
         c.tolist()
 
@@ -115,8 +115,8 @@ class Density():
         xc = xc + (np.average(self.data['lv'][:, [val[0]]]) / 2)
         yc = self.data['trajectories'][:, val[1]]
         yc = yc + (np.average(self.data['lv'][:, [val[1]]]) / 2)
-        x = ut.get_integer((np.amax(self.data['lv'][:,val[0]])), box)
-        y = ut.get_integer((np.amax(self.data['lv'][:,val[1]])), box)
+        x = ut.bin_choose((np.amax(self.data['lv'][:,val[0]])), box) + 1
+        y = ut.bin_choose((np.amax(self.data['lv'][:,val[1]])), box) + 1
 
         if x < y:
             x, y = y, x
@@ -227,8 +227,8 @@ class Density():
         xc = xc + (np.average(self.data['lv'][:, [val[0]]]) / 2)
         yc = self.data['trajectories'][:, val[1]]
         yc = yc + (np.average(self.data['lv'][:, [val[1]]]) / 2)
-        x = ut.get_integer((np.amax(self.data['lv'][:,val[0]])), box)
-        y = ut.get_integer((np.amax(self.data['lv'][:,val[1]])), box)
+        x = ut.bin_choose((np.amax(self.data['lv'][:,val[0]])), box) + 1
+        y = ut.bin_choose((np.amax(self.data['lv'][:,val[1]])), box) + 1
         if x < y:
             x, y = y, x
             xc, yc = yc, xc

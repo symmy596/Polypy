@@ -10,7 +10,7 @@ ev = codata.value('electron volt')
 ev = -ev
 
 
-def system_volume(data, timestep, output=None):
+def system_volume(data, timestep):
     '''Calculate the volume at each timestep and return a volume as a
     function of time plot.
 
@@ -21,8 +21,6 @@ def system_volume(data, timestep, output=None):
         lattice vectors, total number of timesteps and atoms.
     timestep : float
         Timestep of MD simulation
-    output : str
-        Output file name
 
     Returns
     -------
@@ -31,9 +29,6 @@ def system_volume(data, timestep, output=None):
     time : array like
         Time
     '''
-    if output is None:
-        filename = "Volume.png"
-
     volume = np.array([])
     time = np.array([])
 
@@ -185,13 +180,6 @@ def bin_choose(X, Y):
     Z = int(Z)
     Z = Z - 1
     return Z
-
-
-def get_integer(x, y):
-    z = x / y
-    z = round(z, 0)
-    z = int(z)
-    return z
 
 
 def one_dimensional_charge_density(atoms_coords, atom_charges, bin_volume):

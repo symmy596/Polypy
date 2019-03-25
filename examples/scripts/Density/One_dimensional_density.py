@@ -5,7 +5,7 @@ from polypy import write as wr
 import numpy as np
 
 
-data = rd.read_history("../example_data/HISTORY", ["CA", "F"])
+data = rd.read_history("../../example_data/HISTORY", ["CA", "F"])
 
 ca_density = Dens.Density(data, atom_type="CA")
 f_density = Dens.Density(data, atom_type="F")

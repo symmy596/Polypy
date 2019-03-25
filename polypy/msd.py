@@ -253,7 +253,6 @@ def msd(data, timestep):
                        data['natoms'],
                        1,
                        timestep)
-    wr.save_msd(msd_data)
     return msd_data
 
 
