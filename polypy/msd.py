@@ -156,6 +156,11 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
     dco : float
         Diffusion Coefficient for a given atom within a given bin
     '''
+    msd = np.array([])
+    xmsd = np.array([])
+    ymsd = np.array([])
+    zmsd = np.array([])
+    time = np.array([])
     ib = False
     count = 0
     trajectory_slice = np.array([])
@@ -174,7 +179,6 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
                 trajectory_slice = np.split(trajectory_slice,
                                             (trajectory_slice.size / 3))
                 vecs = np.reshape(vecs, (count, 3))
-                do = np.array([])
 
                 for i in range(0, runs):
                     start = i + 5
@@ -184,11 +188,12 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
                                        1,
                                        start,
                                        timestep)
-                    d, intercept, r_value, p_value, std_err = ut.linear_regression(msd_data['time'], msd_data['msd'])
-                    d = ut.three_d_diffusion_coefficient(d)
-                    do = np.append(do, d)
+                    msd = np.append(msd, msd_data['msd'])
+                    xmsd = np.append(xmsd, msd_data['xmsd'])
+                    ymsd = np.append(ymsd, msd_data['ymsd'])
+                    zmsd = np.append(zmsd, msd_data['zmsd'])
+                    time = np.append(time, msd_data['time'])
 
-                dco = np.append(dco, np.average(do))
                 count = 0
                 trajectory_slice = np.array([])
                 vecs = np.array([])
@@ -212,14 +217,25 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
                                1,
                                start,
                                timestep)
-            d, intercept, r_value, p_value, std_err = ut.linear_regression(msd_data['time'], msd_data['msd'])
-            d = ut.three_d_diffusion_coefficient(d)
-            do = np.append(do, d)
 
-        dco = np.append(dco, np.average(do))
+            msd = np.append(msd, msd_data['msd'])
+            xmsd = np.append(xmsd, msd_data['xmsd'])
+            ymsd = np.append(ymsd, msd_data['ymsd'])
+            zmsd = np.append(zmsd, msd_data['zmsd'])
+            time = np.append(time, msd_data['time'])
         count = 0
+#    smsd_data = {'time': ut.smooth_msd_data(time, msd)[0], 
+#                 'msd':  ut.smooth_msd_data(time, msd)[1], 
+#                 'xmsd': ut.smooth_msd_data(time, xmsd)[1],
+#                 'ymsd': ut.smooth_msd_data(time, ymsd)[1], 
+#                 'zmsd': ut.smooth_msd_data(time, zmsd)[1]}
+    smsd_data = {'time': time, 
+                 'msd':  msd, 
+                 'xmsd': xmsd,
+                 'ymsd': ymsd, 
+                 'zmsd': zmsd}
 
-    return dco
+    return smsd_data
 
 
 def msd(data, timestep):
@@ -348,14 +364,27 @@ def plane_msd(data, timestep, runs=None, ul=None, ll=None,
                     data['natoms']))
     trajectories = np.split(data['trajectories'], data['timesteps'])
     trajectories = np.asarray(trajectories)
-    d = np.array([])
-
+    smsd = np.array([])
+    sxmsd = np.array([])
+    symsd = np.array([])
+    szmsd = np.array([])
+    stime = np.array([])
     for i in range(0, (data['natoms'])):
 
-        dd = check_trajectory(trajectories[:, i], xc[:, i], data['lv'],
+        msd_data = check_trajectory(trajectories[:, i], xc[:, i], data['lv'],
                               data['timesteps'], timestep, ul, ll, runs)
-        d = np.append(d, dd)
-    diffusion = np.average(d)
-    return diffusion
+        smsd = np.append(smsd, msd_data['msd'])
+        sxmsd = np.append(sxmsd, msd_data['xmsd'])
+        symsd = np.append(symsd, msd_data['ymsd'])
+        szmsd = np.append(szmsd, msd_data['zmsd'])
+        stime = np.append(stime, msd_data['time'])
 
+    smsd_data = {'time': ut.smooth_msd_data(stime, smsd)[0], 
+                 'msd':  ut.smooth_msd_data(stime, smsd)[1], 
+                 'xmsd': ut.smooth_msd_data(stime, sxmsd)[1],
+                 'ymsd': ut.smooth_msd_data(stime, symsd)[1], 
+                 'zmsd': ut.smooth_msd_data(stime, szmsd)[1]}
+    return smsd_data
 
+# 1.2328
+# 1.19
