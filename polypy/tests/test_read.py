@@ -42,3 +42,26 @@ class TestUtils(unittest.TestCase):
         assert_almost_equal(expected_traj, data['trajectories'])
         assert data['natoms'] == 1
         assert data['timesteps'] == 3
+
+    def test_get_config(self):
+        data = rd.read_history(test_history, ["CA", "F"])
+        expected_config = rd.get_config(data, 0)
+        predicted_config = np.array([[1.00, 1.00, 1.00],
+                                      [10.00, 10.00, 10.00]])
+        assert_almost_equal(expected_config, predicted_config)
+
+
+    def test_get_atom(self):        
+        data = rd.read_history(test_history, ["CA", "F"])
+        expected_ca = rd.get_atom(data, "CA")
+        predicted_ca = np.array([[1.0, 1.0, 1.0],
+                                  [2.0, 2.0, 2.0],
+                                  [3.0, 3.0, 3.0],
+                                  [4.0, 4.0, 4.0],
+                                  [0.0, 0.0, 0.0],
+                                  [-1.0, -1.0, -1.0],
+                                  [-2.0, -2.0, -2.0],
+                                  [-3.0, -3.0, -3.0],
+                                  [-4.0, -4.0, -4.0],
+                                  [-5.0, -5.0, -5.0]])
+        assert_almost_equal(predicted_ca, expected_ca['trajectories'])        
