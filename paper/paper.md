@@ -1,9 +1,9 @@
 ---
-title: 'surfinpy: A Surface Phase Diagram Generator'
+title: 'polypy - '
 tags:
 - Chemistry
 - Physics
-- Density Functional Theory
+- Molecular Dynamics
 - Solid State Chemistry
 - Simulation
 - materials
@@ -11,66 +11,49 @@ authors:
 - name: Adam R. Symington
   orcid: 0000-0001-6059-497X
   affiliation: "1"
-- name: Joshua Tse
-  orcid: 0000-0002-1320-557X
-  affiliation: 2
-- name: Marco Molinari
-  orcid: 0000-0001-7144-6075
-  affiliation: 2
-- name: Arnaud Marmier
-  orcid: 0000-0003-3836-0004
-  affiliation: 3
 - name: Stephen C. Parker
   orcid: 0000-0003-3804-0975
   affiliation: 1
 affiliations:
 - name: Department of Chemistry, University of Bath
   index: 1
-- name: Department of Chemistry, University of Huddersfield
-  index: 2
-- name: FET - Engineering, Design and Mathematics, University of the West of England
-  index: 3
-date: 25 January 2019
+date: 25 March 2019
 bibliography: paper.bib
 ---
 
 # Summary
 
-A surface phase diagram is a graphical representation of the different physical states of a surface under different conditions.
-The surface represents the first point of contact between the material and the environment.
-Thus, understanding the state of surface is crucial for a wide range of problems in materials science concerning the relationship between
-the state of the surface and the surrounding environmental condtions.
-Examples include particle morphologies in solid state batteries [@Canepa2018];
-determining the concentration of adsorbed water at a surface depending on synthesis conditions [@Molinari2012] [@Tegner2017];
-catalytic reactions [@Reuter2003]; or determing the effect of dopants and impurities on the surface stability.  
+A large number of research questions in solid state chemistry can be addressed using molecular dynamics and Monte Carlo simulations. These simulations allow many material properties to be calculated for direct comparison with experiment.  These include, the diffusion coefficients of lithium ions in battery materials or oxygen atoms in SOFCs, segregation behaviour of defects at grain boundaries, the dynamics of water at material surfaces and as well as many others.
 
-Computational modelling can be used to generate surface phase diagrams from energy minimisation data.
-One common research question is how water adsorption affects the surface and material properties.
-The conventional starting point is to perform a series of energy minimisation calculations with varying concentrations of water on several different slabs.
-From the energies, the surface free energy of each calculation (phase) as a function of temperature and pressure can be calculated using a well-established approach [@Molinari2012].
-Once the free energy is known under different constants, the phase which is most stable at a specific temperature and pressure, and thus a phase diagram, can be generated.
+A molecular dynamics trajectory is a snapshot of the positions of each atom as a function time e.g. the trajectory of a single atom would show, sequentially, all of the postiions occupied by that atom throughout the simulaton. The positions of the atoms as a function of time allows the partcle densitites (Figure 1) to be calculated and thus the charge densities. The charge densities can be used to calculate the electric field across the unit cell, and also the electrostatic potential.   
 
-A further degree of complexity can be introduced by considering surface defects, e.g., vacancies or interstitials, or other adsorbants, e.g., carbon dioxide.
-Using surface defects as an example, it is important to consider the relationship between the defective surface, the stoichiometric surface and the adsorbing water molecules.
-A surface phase diagram can be constructed as a function of the chemcial potential of the adsorbing species (water) and the surface defect
-(e.g., oxygen, if oxygen vacancies are being considered). This is done using the method of Marmier & Parker[-@Marmier2004].
+The atomic trajectories as a function of time also allow diffusion coefficients to be calculated using a mean squared displacement. Using a dye molecule in water as an example, the motion of a dye molecule is not simple. As it moves it is jostled by collisions with other molecules, preventing it from moving in a straight path. If the path is examined in close detail, it will be seen to be a good approximation to a random walk. In mathmatics a random walk is a series of steps, each taken in a random direction. This was analysed by Albert Einstein in a study of Brownian motion and he showed that the mean square of the distance travelled by a particle following a random walk is proportional to the time elapsed. 
 
-![An example phase diagram as a function of chemical potential (a), and as a function of temperature and pressure (b).\label{fig:example}](Figure_1.png)
+\begin{align}
+\Big \langle r_{i}^{2} \big \rangle & = 6 D_t + C 
+\end{align}
 
-# `surfinpy`
 
-`surfinpy` is a Python module for generating surface phase diagrams from DFT data.
-It contains two core modules for generating surface phase diagrams using both the methods employed in @Molinari2012 and @Marmier2004.
-These allow fast generation of temperature vs. pressure phase diagrams and phase diagrams as a function of chemcial potential of species A and B.
-The plotting classes take the outputs of the calculation modules and generate phase diagrams using `matplotlib`.
-`surfinpy` is aimed towards theoretical solid state physicist who have a basic familiarity with Python.
+where 
+
+\begin{align}
+\Big \langle r_{i}^{2} \big \rangle = \frac{1}{3} \Big< | r_{i}(t) - r_{i}(0) |^2 \Big>.
+\end{align}
+
+
+where $\Big \langle r^2 \big \rangle$ is the mean squared distance, t is time, $D_t$ is the diffusion rate and C is a constant. If $\Big \langle r_{i}^{2} \big \rangle$ is plotted as a function of time, the gradient of the curve obtained is equal to 6 times the self-diffusion coefficient of particle i.
+
+# `polypy`
+
+`polypy` is a Python module for analysing trajectories generated from molecular dynamics and Monte Carlo data specifically from the DL_POLY and DL_MONTE codes, athough the code is designed for the integration of other codes.
+It contains two core modules for designed to perform density analysis and mean squared displacements.
+These allow the calculation of one and two dimensional particle/charge densities, electric fields, electrostatic potentials and diffusion coefficients. A module allowing easy generation of publication plots from the calculated data is available, but the outputs are returned in a sensible form, allowing further manipulation and plotting.
+`polypy` is aimed towards theoretical solid state physicist who have a basic familiarity with Python.
 The repository contains examples of the core functionality as well as tutorials, implemented in Jupyter notebooks to explain the full theory.
 Furthermore, a detailed description of theory is also available within the documentation.
 
 # Acknowledgements
   
-ARS would like to thank Andrew R. McCluskey for his guidance through this project. This package was written during a PhD funded by AWE and EPSRC (EP/R010366/1). The input
-data for the development and testing of this project was generated using ARCHER UK National Supercomputing Service (http://www.archer.ac.uk) via our membership of
-the UK's HEC Ma-terials Chemistry Consortium funded by EPSRC (EP/L000202).
+ARS would like to thank Andrew R. McCluskey for his guidance through this project and Benjamin Morgan for his help with the Poisson Boltzmann calculation. This package was written during a PhD funded by AWE and EPSRC (EP/R010366/1). The input data for the development and testing of this project was generated using ARCHER UK National Supercomputing Service (http://www.archer.ac.uk) via our membership of the UK's HEC Ma-terials Chemistry Consortium funded by EPSRC (EP/L000202).
 
 # References
