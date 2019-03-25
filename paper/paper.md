@@ -43,6 +43,8 @@ where
 
 where $\Big \langle r^2 \big \rangle$ is the mean squared distance, t is time, $D_t$ is the diffusion rate and C is a constant. If $\Big \langle r_{i}^{2} \big \rangle$ is plotted as a function of time, the gradient of the curve obtained is equal to 6 times the self-diffusion coefficient of particle i.
 
+
+
 # `polypy`
 
 `polypy` is a Python module for analysing trajectories generated from molecular dynamics and Monte Carlo data specifically from the DL_POLY and DL_MONTE codes, athough the code is designed for the integration of other codes.
