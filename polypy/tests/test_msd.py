@@ -32,3 +32,14 @@ class TestMsd(unittest.TestCase):
         expected_sd2 = np.array([12, 48])    
         assert_almost_equal(sd1, expected_sd1)
         assert_almost_equal(sd2, expected_sd2)
+    
+    def test_msd(self):
+        test_data = rd.read_history(test_history, ["CA"])
+        msd_data = msd.run_msd(test_data['trajectories'],
+                               test_data['lv'],
+                               test_data['timesteps'],
+                               test_data['natoms'],
+                               1,
+                               0.1)
+        expected_msd = np.array([3, 12, 27, 3, 12, 27, 48, 75, 108])
+        assert_almost_equal(msd_data['msd'], expected_msd)
