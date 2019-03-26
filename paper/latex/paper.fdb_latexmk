@@ -1,9 +1,16 @@
 # Fdb version 3
-["pdflatex"] 1553533544 "/home/adam/data/adam/progs/PolyPy/First_Release/PolyPy/paper/latex/paper.tex" "paper.pdf" "paper" 1553533544
+["bibtex paper"] 1553613476 "paper.aux" "paper.bbl" "paper" 1553613476
+  "/usr/share/texlive/texmf-dist/bibtex/bst/revtex/apsrev4-1.bst" 1547851249 71518 fec93f06df0c073f83d2330456bd19c2 ""
+  "paper.aux" 1553612701 718 f98e0b489e7ace3c30668dc57e161c75 ""
+  "paper.bcf" 0 -1 0 ""
+  "paperNotes.bib" 1553612701 103 48ad29797468f16e2853d8797278d7af ""
+  (generated)
+  "paper.bbl"
+["pdflatex"] 1553613477 "/home/adam/data/adam/progs/PolyPy/First_Release/PolyPy/paper/latex/paper.tex" "paper.pdf" "paper" 1553613478
   "../Figure_1.png" 1553533154 237559 30e2e9f93ae286eb7406b802770368d1 ""
   "/dev/null" 1553507149 0 d41d8cd98f00b204e9800998ecf8427e ""
   "/etc/texmf/web2c/texmf.cnf" 1544090577 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/adam/data/adam/progs/PolyPy/First_Release/PolyPy/paper/latex/paper.tex" 1553533543 4858 3cabd3498800ad4ab3f3d8fabc3f370f ""
+  "/home/adam/data/adam/progs/PolyPy/First_Release/PolyPy/paper/latex/paper.tex" 1553613476 4750 465609fa65bc243a57f6eca60d861666 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1511824771 3332 103109f5612ad95229751940c61aada0 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1480098698 1004 54797486969f23fa377b128694d548df ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1480098698 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -92,8 +99,8 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1551608819 34566 ab5be96bde1a5acfd4f881dbe566b5fb ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1552648437 3236060 fd056e42459c13cbcb0cc6e0a7cae8d4 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1552648453 4228815 2f7374df8354c1860e7eff43bd5f78f8 ""
-  "paper.aux" 1553533544 468 d956594a2983f1f94e6de18898660492 ""
-  "paper.tex" 1553533543 4858 3cabd3498800ad4ab3f3d8fabc3f370f ""
+  "paper.aux" 1553613478 468 d956594a2983f1f94e6de18898660492 ""
+  "paper.tex" 1553613476 4750 465609fa65bc243a57f6eca60d861666 ""
   (generated)
   "paper.log"
   "paper.pdf"

@@ -59,7 +59,8 @@ class TestUtils(unittest.TestCase):
 
     def test_linear_regression(self):
         a = ut.linear_regression(np.array([1, 2, 3, 4, 5, 6, 7, 8, 9]),
-                                 np.array([5, 10, 15, 20, 25, 30, 35, 40, 45]))[0]
+                                 np.array([5, 10, 15, 20, 25,
+                                          30, 35, 40, 45]))[0]
         expected = 5.0
         assert a == expected
 
@@ -81,35 +82,50 @@ class TestUtils(unittest.TestCase):
         assert a == expected
 
     def test_one_dimensional_charge_density(self):
-        
+
         atoms_coords = [np.array([1, 3, 5, 7, 9]),
                         np.array([2, 4, 6, 8, 10])]
         atom_charges = [1.0, -1.0]
         charge_density = ut.one_dimensional_charge_density(atoms_coords,
                                                            atom_charges,
                                                            1.0)
-        assert_almost_equal(charge_density, np.array([-1.0, -1.0, -1.0, -1.0, -1.0]))
+        assert_almost_equal(charge_density, np.array([-1.0,
+                                                      -1.0,
+                                                      -1.0,
+                                                      -1.0,
+                                                      -1.0]))
 
     def test_two_dimensional_charge_density(self):
-        
+
         atoms_coords = [np.array([[1, 3, 5],
                                   [7, 9, 11]]),
-                        np.array([[2, 4, 6], 
+                        np.array([[2, 4, 6],
                                   [8, 10, 12]])]
         atom_charges = [1.0, -1.0]
         charge_density = ut.two_dimensional_charge_density(atoms_coords,
                                                            atom_charges,
                                                            1.0)
-        assert_almost_equal(charge_density, np.array([[-1.0, -1.0, -1.0], 
+        assert_almost_equal(charge_density, np.array([[-1.0, -1.0, -1.0],
                                                       [-1.0, -1.0, -1.0]]))
-
 
     def test_poisson_solver(self):
         dx, e_field, potential = ut.poisson_solver(np.array([1, 2, 3, 4, 5]),
-                                                   np.array([-1.0, -1.0, -1.0, -1.0, -1.0]),
+                                                   np.array([-1.0,
+                                                             -1.0,
+                                                             -1.0,
+                                                             -1.0,
+                                                             -1.0]),
                                                    1)
-        predicted_e_field = np.array([2.87995168e+01, 1.43997584e+01, 3.55271368e-15, -1.43997584e+01, -2.87995168e+01])
-        predicted_potential = np.array([-0.00000000e+00, -2.15996376e+01, -2.87995168e+01, -2.15996376e+01, -1.06581410e-14])
+        predicted_e_field = np.array([2.87995168e+01,
+                                      1.43997584e+01,
+                                      3.55271368e-15,
+                                      -1.43997584e+01,
+                                      -2.87995168e+01])
+        predicted_potential = np.array([-0.00000000e+00,
+                                        -2.15996376e+01,
+                                        -2.87995168e+01,
+                                        -2.15996376e+01,
+                                        -1.06581410e-14])
         assert_almost_equal(e_field, predicted_e_field)
         assert_almost_equal(potential, predicted_potential)
 

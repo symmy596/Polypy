@@ -1,5 +1,4 @@
 import numpy as np
-from polypy import write as wr
 from scipy import stats
 from scipy.constants import codata
 from scipy import integrate
@@ -206,6 +205,7 @@ def one_dimensional_charge_density(atoms_coords, atom_charges, bin_volume):
                             axis=1) / bin_volume
     return charge_density
 
+
 def two_dimensional_charge_density(atoms_coords, atom_charges, bin_volume):
     """Calculates the charge density
 
@@ -226,7 +226,8 @@ def two_dimensional_charge_density(atoms_coords, atom_charges, bin_volume):
     """
     number_density = np.dstack((atoms_coords))
     charges = np.asarray(atom_charges)
-    charge_density = np.sum(np.multiply(number_density, charges), axis=2) / bin_volume
+    charge_density = np.sum(np.multiply(number_density,
+                                        charges), axis=2) / bin_volume
     return charge_density
 
 
@@ -271,7 +272,7 @@ def smooth_msd_data(x, y):
         Time
     y : array like
         MSD
-    
+
     Returns
     -------
     z : array like
@@ -279,5 +280,4 @@ def smooth_msd_data(x, y):
     '''
     xy = np.column_stack((x, y))
     z = pd.DataFrame(xy).groupby(0, as_index=False)[1].mean().values
-    return z[:,0], z[:,1]
-
+    return z[:, 0], z[:, 1]

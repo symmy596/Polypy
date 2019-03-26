@@ -1,5 +1,4 @@
 import numpy as np
-from polypy import write as wr
 from polypy import read as rd
 from polypy import utils as ut
 
@@ -61,8 +60,8 @@ class Density():
         c = self.data['trajectories'][:, val]
         b = (np.average(self.data['lv'][:, val]) / 2)
         c = c + b
-        x = ut.bin_choose((np.amax(self.data['lv'][:,val])), Bin) + 1
-        bin_array = np.zeros((x )) 
+        x = ut.bin_choose((np.amax(self.data['lv'][:, val])), Bin) + 1
+        bin_array = np.zeros((x))
         c.tolist()
 
         for j in range(0, self.data['trajectories'][:, val].size):
@@ -115,8 +114,8 @@ class Density():
         xc = xc + (np.average(self.data['lv'][:, [val[0]]]) / 2)
         yc = self.data['trajectories'][:, val[1]]
         yc = yc + (np.average(self.data['lv'][:, [val[1]]]) / 2)
-        x = ut.bin_choose((np.amax(self.data['lv'][:,val[0]])), box) + 1
-        y = ut.bin_choose((np.amax(self.data['lv'][:,val[1]])), box) + 1
+        x = ut.bin_choose((np.amax(self.data['lv'][:, val[0]])), box) + 1
+        y = ut.bin_choose((np.amax(self.data['lv'][:, val[1]])), box) + 1
 
         if x < y:
             x, y = y, x
@@ -227,8 +226,8 @@ class Density():
         xc = xc + (np.average(self.data['lv'][:, [val[0]]]) / 2)
         yc = self.data['trajectories'][:, val[1]]
         yc = yc + (np.average(self.data['lv'][:, [val[1]]]) / 2)
-        x = ut.bin_choose((np.amax(self.data['lv'][:,val[0]])), box) + 1
-        y = ut.bin_choose((np.amax(self.data['lv'][:,val[1]])), box) + 1
+        x = ut.bin_choose((np.amax(self.data['lv'][:, val[0]])), box) + 1
+        y = ut.bin_choose((np.amax(self.data['lv'][:, val[1]])), box) + 1
         if x < y:
             x, y = y, x
             xc, yc = yc, xc

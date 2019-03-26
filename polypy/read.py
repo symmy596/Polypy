@@ -269,6 +269,7 @@ def get_atom(data, atom):
 
     return atom_data
 
+
 def get_config(data, timestep):
     """Returns single config from entire trajectory
 

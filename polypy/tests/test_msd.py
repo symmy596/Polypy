@@ -10,6 +10,7 @@ test_config = os.path.join(os.path.dirname(__file__), 'CONFIG')
 test_archive = os.path.join(os.path.dirname(__file__), 'ARCHIVE')
 expected_z = os.path.join(os.path.dirname(__file__), 'Expected_Z')
 
+
 class TestMsd(unittest.TestCase):
 
     def test_msd(self):
@@ -29,11 +30,11 @@ class TestMsd(unittest.TestCase):
         sd2 = msd.square_distance(np.array([[2, 2, 2],
                                             [4, 4, 4]]), n=1)
         expected_sd1 = 12
-        expected_sd2 = np.array([12, 48])    
+        expected_sd2 = np.array([12, 48])
         assert_almost_equal(sd1, expected_sd1)
         assert_almost_equal(sd2, expected_sd2)
-    
-    def test_msd(self):
+
+    def test_run_msd(self):
         test_data = rd.read_history(test_history, ["CA"])
         msd_data = msd.run_msd(test_data['trajectories'],
                                test_data['lv'],

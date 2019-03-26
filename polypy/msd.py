@@ -1,7 +1,6 @@
 import sys as sys
 import numpy as np
 from polypy import utils as ut
-from polypy import write as wr
 from scipy.constants import codata
 
 kb = codata.value('Boltzmann constant')
@@ -182,7 +181,8 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
                                        1,
                                        start,
                                        timestep)
-                    d, intercept, r_value, p_value, std_err = ut.linear_regression(msd_data['time'], msd_data['msd'])
+                    d = ut.linear_regression(msd_data['time'],
+                                             msd_data['msd'])[0]
                     d = ut.three_d_diffusion_coefficient(d)
                     do = np.append(do, d)
 
@@ -210,7 +210,8 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
                                1,
                                start,
                                timestep)
-            d, intercept = ut.linear_regression(msd_data['time'], msd_data['msd'])[0]
+            d = ut.linear_regression(msd_data['time'],
+                                     msd_data['msd'])[0]
             d = ut.three_d_diffusion_coefficient(d)
             do = np.append(do, d)
 
@@ -295,10 +296,10 @@ def smooth_msd(data, timestep, runs=None):
         szmsd = np.append(szmsd, msd_data['zmsd'])
         stime = np.append(stime, msd_data['time'])
 
-    smsd_data = {'time': ut.smooth_msd_data(stime, smsd)[0], 
-                 'msd':  ut.smooth_msd_data(stime, smsd)[1], 
+    smsd_data = {'time': ut.smooth_msd_data(stime, smsd)[0],
+                 'msd':  ut.smooth_msd_data(stime, smsd)[1],
                  'xmsd': ut.smooth_msd_data(stime, sxmsd)[1],
-                 'ymsd': ut.smooth_msd_data(stime, symsd)[1], 
+                 'ymsd': ut.smooth_msd_data(stime, symsd)[1],
                  'zmsd': ut.smooth_msd_data(stime, szmsd)[1]}
     return smsd_data
 
@@ -355,7 +356,3 @@ def plane_msd(data, timestep, runs=None, ul=None, ll=None,
         d = np.append(d, dd)
     diffusion = np.average(d)
     return diffusion
-
-# 1.2328
-# 1.19
-# 1.33
