@@ -17,18 +17,24 @@ The following are examples of plots generated from the one dimensional particle 
 .. image:: Figures/Gallery/1D_Water.png
     :height: 300px
     :align: center
+    :target: tutorial_2.html
 
 .. image:: Figures/Gallery/1D_Particle_Density.png
     :height: 300px
     :align: center
+    :target: tutorial_2.html
 
 .. image:: Figures/Gallery/1D_Charge_Density.png
     :height: 300px
     :align: center
+    :target: tutorial_2.html
 
-.. image:: Figures/Gallery/Electric_Field.png
+.. image:: Figures/Gallery/Electrostatic_Potential.png
     :height: 300px
     :align: center
+    :target: tutorial_2.html
+
+
 
 Two Dimensions
 ~~~~~~~~~~~~~~
@@ -38,10 +44,12 @@ The following are examples of plots generated from the two dimensional particle 
 .. image:: Figures/Gallery/2D_Particle_Density.png
     :height: 300px
     :align: center
+    :target: tutorial_2.html
 
 .. image:: Figures/Gallery/2D_Charge_Density.png
     :height: 300px
     :align: center
+    :target: tutorial_2.html
 
 Mean Squared Displacement
 -------------------------
@@ -49,3 +57,4 @@ Mean Squared Displacement
 .. image:: Figures/Gallery/Smooth_MSD.png
     :height: 300px
     :align: center
+    :target: tutorial_3.html
