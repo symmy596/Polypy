@@ -51,6 +51,12 @@ The following are examples of plots generated from the two dimensional particle 
     :align: center
     :target: tutorial_2.html
 
+One and Two Dimensions
+~~~~~~~~~~~~~~~~~~~~~~
+
+The following example shows a combination of one and two dimensions
+
+
 Mean Squared Displacement
 -------------------------
 
