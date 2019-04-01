@@ -33,7 +33,7 @@ The main features include:
    - Uses the density analysis and the diffusion coefficient to calculate the ionic conductivity. 
 
 <p align="center"> 
-<img src="https://github.com/symmy596/PolyPy/tree/master/docs/source/Figures/Outputs.png?raw=true" width="40%"/>
+<img src="https://github.com/symmy596/PolyPy/tree/master/docs/source/Figures/Outputs.png?raw=true" width="10%"/>
 </p>
 
 The code has been developed to analyse DL_POLY and DL_MONTE calculations however other codes can be incorporated if there is user demand. `polypy` is currently only equipped to deal with orthogonal unit cells, but future development will adress other unit cells. 
