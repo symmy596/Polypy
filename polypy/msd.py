@@ -110,20 +110,27 @@ def run_msd(trajectories, lv, timesteps, natoms, start, timestep):
         msd_data['time'] = np.append(msd_data['time'], ((j - start) * timestep))
 
         if n == 1:
-            msd_data['xmsd'] = np.append(msd_data['xmsd'], (np.average((distance[:, 0] ** 2))))
-            msd_data['ymsd'] = np.append(msd_data['ymsd'], (np.average((distance[:, 1] ** 2))))
-            msd_data['zmsd'] = np.append(msd_data['zmsd'], (np.average((distance[:, 2] ** 2))))
+            msd_data['xmsd'] = np.append(msd_data['xmsd'],
+                               (np.average((distance[:, 0] ** 2))))
+            msd_data['ymsd'] = np.append(msd_data['ymsd'],
+                               (np.average((distance[:, 1] ** 2))))
+            msd_data['zmsd'] = np.append(msd_data['zmsd'],
+                               (np.average((distance[:, 2] ** 2))))
         elif n == 0:
-            msd_data['xmsd'] = np.append(msd_data['xmsd'], (np.average((distance[0] ** 2))))
-            msd_data['ymsd'] = np.append(msd_data['ymsd'], (np.average((distance[1] ** 2))))
-            msd_data['zmsd'] = np.append(msd_data['zmsd'], (np.average((distance[2] ** 2))))
+            msd_data['xmsd'] = np.append(msd_data['xmsd'],
+                               (np.average((distance[0] ** 2))))
+            msd_data['ymsd'] = np.append(msd_data['ymsd'],
+                               (np.average((distance[1] ** 2))))
+            msd_data['zmsd'] = np.append(msd_data['zmsd'],
+                               (np.average((distance[2] ** 2))))
 
     return msd_data
 
 
 def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
-    '''From an assigned bin determine if any part of a trajectory crosses
-    a given 1D bin.
+    '''Given an upper and lower limit of a 1D slice,
+       determine if any part of a trajectory crosses
+       a given 1D bin.
     Parameters
     ----------
     trajectory : array like
@@ -249,7 +256,7 @@ def msd(data, timestep):
     return msd_data
 
 
-def smooth_msd(data, timestep, runs=None):
+def smooth_msd(data, timestep, runs=5):
     '''MSD Launcher for a Smoothed MSD calc.
 
     Parameters
@@ -259,21 +266,20 @@ def smooth_msd(data, timestep, runs=None):
         lattice vectors, total number of timesteps and atoms.
     timestep : float
         simulation timestep
-    runs : int
+    runs : int (optional)
         How many sweeps across the trajectory
 
     Returns
     -------
-    Outputs diffusion info
+    msd_data : dictionary
+        Dictionary containing 3D msd, 1D msd in the x, y, z directions
+        and the time.
     '''
-    if runs is None:
-        runs = 5
-
-    smsd = np.array([])
-    sxmsd = np.array([])
-    symsd = np.array([])
-    szmsd = np.array([])
-    stime = np.array([])
+    smsd_data = {'time': np.array([]),
+                 'msd':  np.array([]),
+                 'xmsd': np.array([]),
+                 'ymsd': np.array([]),
+                 'zmsd': np.array([])}
 
     trajectories = np.split(data['trajectories'], data['timesteps'])
 
@@ -284,22 +290,27 @@ def smooth_msd(data, timestep, runs=None):
                            data['natoms'],
                            start,
                            timestep)
-        smsd = np.append(smsd, msd_data['msd'])
-        sxmsd = np.append(sxmsd, msd_data['xmsd'])
-        symsd = np.append(symsd, msd_data['ymsd'])
-        szmsd = np.append(szmsd, msd_data['zmsd'])
-        stime = np.append(stime, msd_data['time'])
+        smsd_data['msd'] = np.append(smsd_data['msd'], msd_data['msd'])
+        smsd_data['xmsd'] = np.append(smsd_data['xmsd'], msd_data['xmsd'])
+        smsd_data['ymsd'] = np.append(smsd_data['ymsd'], msd_data['ymsd'])
+        smsd_data['zmsd'] = np.append(smsd_data['zmsd'], msd_data['zmsd'])
+        smsd_data['time'] = np.append(smsd_data['time'], msd_data['time'])
 
-    smsd_data = {'time': ut.smooth_msd_data(stime, smsd)[0],
-                 'msd':  ut.smooth_msd_data(stime, smsd)[1],
-                 'xmsd': ut.smooth_msd_data(stime, sxmsd)[1],
-                 'ymsd': ut.smooth_msd_data(stime, symsd)[1],
-                 'zmsd': ut.smooth_msd_data(stime, szmsd)[1]}
-    return smsd_data
+    msd_data = {'time': ut.smooth_msd_data(smsd_data['time'],
+                                           smsd_data['msd'])[0],
+                 'msd':  ut.smooth_msd_data(smsd_data['time'],
+                                            smsd_data['msd'])[1],
+                 'xmsd': ut.smooth_msd_data(smsd_data['time'],
+                                            smsd_data['xmsd'])[1],
+                 'ymsd': ut.smooth_msd_data(smsd_data['time'],
+                                            smsd_data['ymsd'])[1],
+                 'zmsd': ut.smooth_msd_data(smsd_data['time'],
+                                            smsd_data['ymsd'])[1]}
+    return msd_data
 
 
-def plane_msd(data, timestep, runs=None, ul=None, ll=None,
-              direction=None):
+def plane_msd(data, timestep, ul, ll, runs=1,
+              direction="x"):
     '''Calculate an MSD value within a area of a structure.
 
     Parameters
@@ -309,27 +320,20 @@ def plane_msd(data, timestep, runs=None, ul=None, ll=None,
         lattice vectors, total number of timesteps and atoms.
     timestep : float
         Simulation timestep.
-    runs : int
-        Number of trajectory sweeps.
     ul : float
         Upper bin limit.
     ll : float
         Lower bin limit.
-    direction : str
+    runs : int (optional)
+        Number of trajectory sweeps.
+    direction : str (optional)
         Direction normal to slices.
 
     Returns
     -------
-    File containing the result of the calc
+    diffusion : float
+        Diffusion coefficient in region.
     '''
-    if runs is None:
-        runs = 1
-    if ul is None:
-        sys.exit(0)
-    if ll is None:
-        sys.exit(0)
-    if direction is None:
-        direction = "x"
     if direction == "x":
         val = 0
     elif direction == "y":
