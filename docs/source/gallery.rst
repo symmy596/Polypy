@@ -14,25 +14,30 @@ One Dimension
 
 The following are examples of plots generated from the one dimensional particle density. 
 
-.. image:: Figures/Gallery/1D_Water.png
-    :height: 300px
-    :align: center
-    :target: tutorial_2.html
-
 .. image:: Figures/Gallery/1D_Particle_Density.png
     :height: 300px
     :align: center
-    :target: tutorial_2.html
+    :target: density_tutorial_2.html
+
+.. image:: Figures/Gallery/DB_1D_Particle_Density.png
+    :height: 300px
+    :align: center
+    :target: density_tutorial_2.html
+
+.. image:: Figures/Gallery/1D_Water.png
+    :height: 300px
+    :align: center
+    :target: density_tutorial_2.html
 
 .. image:: Figures/Gallery/1D_Charge_Density.png
     :height: 300px
     :align: center
-    :target: tutorial_2.html
+    :target: density_tutorial_2.html
 
 .. image:: Figures/Gallery/Electrostatic_Potential.png
     :height: 300px
     :align: center
-    :target: tutorial_2.html
+    :target: density_tutorial_2.html
 
 
 
@@ -44,17 +49,32 @@ The following are examples of plots generated from the two dimensional particle 
 .. image:: Figures/Gallery/2D_Particle_Density.png
     :height: 300px
     :align: center
-    :target: tutorial_2.html
+    :target: density_tutorial_3.html
 
 .. image:: Figures/Gallery/2D_Charge_Density.png
     :height: 300px
     :align: center
-    :target: tutorial_2.html
+    :target: density_tutorial_3.html
+
+.. image:: Figures/Gallery/db_2d_CG.png
+    :height: 300px
+    :align: center
+    :target: density_tutorial_3.html
+
+.. image:: Figures/Gallery/spec_2d_CG.png
+    :height: 300px
+    :align: center
+    :target: density_tutorial_3.html
 
 One and Two Dimensions
 ~~~~~~~~~~~~~~~~~~~~~~
 
 The following example shows a combination of one and two dimensions
+
+.. image:: Figures/Gallery/spec_comb.png
+    :height: 300px
+    :align: center
+    :target: density_tutorial_3.html
 
 
 Mean Squared Displacement

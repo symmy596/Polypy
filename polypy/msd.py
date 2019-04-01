@@ -127,7 +127,7 @@ def run_msd(trajectories, lv, timesteps, natoms, start, timestep):
     return msd_data
 
 
-def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
+def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs, tol=200):
     '''Given an upper and lower limit of a 1D slice,
        determine if any part of a trajectory crosses
        a given 1D bin.
@@ -167,7 +167,7 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
             vecs = np.append(vecs, lv[i])
 
         elif xc[i] < ll or xc[i] > ul:
-            if count > 200 and ib is True:
+            if count > tol and ib is True:
 
                 trajectory_slice = np.split(trajectory_slice,
                                             (trajectory_slice.size / 3))
@@ -196,7 +196,7 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
                 trajectory_slice = np.array([])
                 vecs = np.array([])
                 count = 0
-    if count > 200 and ib is True:
+    if count > tol and ib is True:
 
         do = np.array([])
         trajectory_slice = np.split(trajectory_slice,
@@ -310,7 +310,7 @@ def smooth_msd(data, timestep, runs=5):
 
 
 def plane_msd(data, timestep, ul, ll, runs=1,
-              direction="x"):
+              direction="x", tol=200):
     '''Calculate an MSD value within a area of a structure.
 
     Parameters
@@ -350,7 +350,7 @@ def plane_msd(data, timestep, ul, ll, runs=1,
     for i in range(0, (data['natoms'])):
 
         dd = check_trajectory(trajectories[:, i], xc[:, i], data['lv'],
-                              data['timesteps'], timestep, ul, ll, runs)
+                              data['timesteps'], timestep, ul, ll, runs, tol)
         d = np.append(d, dd)
     diffusion = np.average(d)
     return diffusion

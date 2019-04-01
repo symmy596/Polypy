@@ -2,6 +2,7 @@ import numpy as np
 import os
 from polypy import read as rd
 from polypy import msd as msd
+from polypy import utils as ut
 import unittest
 from numpy.testing import assert_almost_equal
 
@@ -44,3 +45,16 @@ class TestMsd(unittest.TestCase):
                                0.1)
         expected_msd = np.array([3, 12, 27, 3, 12, 27, 48, 75, 108])
         assert_almost_equal(msd_data['msd'], expected_msd)
+
+#    def test_plane_msd(self):
+#        test_data = rd.read_history(test_history, ["CA"])
+#        msd_data = msd.msd(test_data, 0.1)
+#        expected_diff = ut.linear_regression(msd_data['time'], msd_data['msd'])
+#        expected_diff = ut.three_d_diffusion_coefficient(expected_diff)
+#        expected_plane_diff = msd.plane_msd(test_data, 0.1,
+#                                            ul=np.amax(test_data['trajectories']),
+#                                            ll=np.amin(test_data['trajectories']),
+#                                            runs=1, 
+#                                            direction="x",
+#                                            tol=test_data['timesteps'])
+#        assert_almost_equal(expected_diff, expected_plane_diff)

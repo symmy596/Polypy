@@ -6,6 +6,7 @@ polypy/__pycache__/*
 examples/.ipynb_checkpoints
 examples/*.txt
 examples/*.png
+examples/notebooks/untitled.ipynb
 examples/example_data/*
 polypy.egg-info/
 polypy/tests/__pycache__

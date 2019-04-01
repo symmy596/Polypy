@@ -75,7 +75,7 @@ def msd_plot(msd_data, set_style="default", palette="tab10",
     ax.plot(msd_data['time'], msd_data['zmsd'], label="ZMSD")
     ax.tick_params(labelsize=12)
     ax.set_xlabel("Time (ps)", fontsize=15)
-    ax.set_ylabel("MSD ($AA$)", fontsize=15)
+    ax.set_ylabel("MSD ($\AA$)", fontsize=15)
     plt.legend()
     if output:
         plt.savefig(output, dpi=600)
@@ -83,7 +83,7 @@ def msd_plot(msd_data, set_style="default", palette="tab10",
     plt.close()
 
 
-def volume_plot(x, y, xlab="Timestep (ps)", ylab="System Volume ($AA$)",
+def volume_plot(x, y, xlab="Timestep (ps)", ylab="System Volume ($\AA$)",
                 output=None, set_style="default", palette="tab10",
                 figsize=None):
     '''Plots the system volume vs timestep.
@@ -111,7 +111,7 @@ def volume_plot(x, y, xlab="Timestep (ps)", ylab="System Volume ($AA$)",
               figsize)
 
 
-def electric_field_plot(x, y, xlab="Coordinate ($AA$)",
+def electric_field_plot(x, y, xlab="Coordinate ($\AA$)",
                         ylab="Electric Field", output=None,
                         set_style="default", palette="tab10",
                         figsize=None):
@@ -140,7 +140,7 @@ def electric_field_plot(x, y, xlab="Coordinate ($AA$)",
               figsize)
 
 
-def electrostatic_potential_plot(x, y, xlab="Coordinate ($AA$)",
+def electrostatic_potential_plot(x, y, xlab="Coordinate ($\AA$)",
                                  ylab="Electrostatic Potential", output=None,
                                  set_style="default", palette="tab10",
                                  figsize=None):
@@ -169,7 +169,7 @@ def electrostatic_potential_plot(x, y, xlab="Coordinate ($AA$)",
               figsize)
 
 
-def one_dimensional_charge_density_plot(x, y, xlab="Coordinate ($AA$)",
+def one_dimensional_charge_density_plot(x, y, xlab="Coordinate ($\AA$)",
                                         ylab="Charge Density", output=None,
                                         set_style="default", palette="tab10",
                                         figsize=None):
@@ -198,8 +198,8 @@ def one_dimensional_charge_density_plot(x, y, xlab="Coordinate ($AA$)",
               figsize)
 
 
-def one_dimensional_density_plot(x, y, data_labels, xlab="Coordinate ($AA$)",
-                                 ylab="Number Density", output=None,
+def one_dimensional_density_plot(x, y, data_labels, xlab="X Coordinate ($\AA$)",
+                                 ylab="Particle Density", output=None,
                                  set_style="default", palette="tab10",
                                  figsize=None):
     '''Plots the number density for a list of species.
@@ -240,8 +240,8 @@ def one_dimensional_density_plot(x, y, data_labels, xlab="Coordinate ($AA$)",
     plt.close()
 
 
-def two_dimensional_charge_density_plot(x, y, z, xlab="Coordinate ($AA$)",
-                                        ylab="Coordinate ($AA$)", output=None,
+def two_dimensional_charge_density_plot(x, y, z, xlab="X Coordinate ($\AA$)",
+                                        ylab="Y Coordinate ($\AA$)", output=None,
                                         set_style="default", palette="seismic",
                                         figsize=None):
     '''Plots the charge density of a system in two dimensions.
@@ -284,8 +284,8 @@ def two_dimensional_charge_density_plot(x, y, z, xlab="Coordinate ($AA$)",
     plt.close()
 
 
-def two_dimensional_density_plot(x, y, z, xlab="Coordinate ($AA$)",
-                                 ylab="Coordinate ($AA$)", output=None,
+def two_dimensional_density_plot(x, y, z, xlab="X Coordinate ($\AA$)",
+                                 ylab="Y Coordinate ($\AA$)", output=None,
                                  set_style="default", palette="gray",
                                  figsize=None):
     '''Plots the number density of atoms in a system in two dimensions.
@@ -326,8 +326,8 @@ def two_dimensional_density_plot(x, y, z, xlab="Coordinate ($AA$)",
     plt.close()
 
 
-def combined_density_plot(x, y, z, y2, xlab="Coordinate ($AA$)",
-                          ylab="Coordinate ($AA$)", y2_lab="Number Density",
+def combined_density_plot(x, y, z, y2, xlab="X Coordinate ($\AA$)",
+                          ylab="Y Coordinate ($\AA$)", y2_lab="Particle Density",
                           output=None, set_style="default", palette="gray",
                           figsize=None):
     '''Plots the number density of atoms in a system in two dimensions
