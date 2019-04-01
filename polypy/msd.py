@@ -35,7 +35,7 @@ def square_distance(distance, n):
 
 
 def run_msd(trajectories, lv, timesteps, natoms, start, timestep):
-    '''MSD calculator
+    '''MSD calculator for a trajectory or series of trajectories
 
     Parameters
     ----------
@@ -59,11 +59,11 @@ def run_msd(trajectories, lv, timesteps, natoms, start, timestep):
         and the time.
     '''
     trajectories = np.asarray(trajectories)
-    msd = np.array([])
-    xmsd = np.array([])
-    ymsd = np.array([])
-    time = np.array([])
-    zmsd = np.array([])
+    msd_data = {'msd': np.array([]),
+                'xmsd': np.array([]),
+                'ymsd': np.array([]),
+                'zmsd': np.array([]),
+                'time': np.array([])}
     r0 = trajectories[start-1]
     rOd = trajectories[start-1]
 
@@ -106,23 +106,17 @@ def run_msd(trajectories, lv, timesteps, natoms, start, timestep):
 
         msd_new = square_distance(distance, n)
         msd_new = np.average(msd_new)
-        msd = np.append(msd, (msd_new))
-        time = np.append(time, ((j - start) * timestep))
+        msd_data['msd'] = np.append(msd_data['msd'], (msd_new))
+        msd_data['time'] = np.append(msd_data['time'], ((j - start) * timestep))
 
         if n == 1:
-            xmsd = np.append(xmsd, (np.average((distance[:, 0] ** 2))))
-            ymsd = np.append(ymsd, (np.average((distance[:, 1] ** 2))))
-            zmsd = np.append(zmsd, (np.average((distance[:, 2] ** 2))))
+            msd_data['xmsd'] = np.append(msd_data['xmsd'], (np.average((distance[:, 0] ** 2))))
+            msd_data['ymsd'] = np.append(msd_data['ymsd'], (np.average((distance[:, 1] ** 2))))
+            msd_data['zmsd'] = np.append(msd_data['zmsd'], (np.average((distance[:, 2] ** 2))))
         elif n == 0:
-            xmsd = np.append(xmsd, (np.average((distance[0] ** 2))))
-            ymsd = np.append(ymsd, (np.average((distance[1] ** 2))))
-            zmsd = np.append(zmsd, (np.average((distance[2] ** 2))))
-
-        msd_data = {'msd': msd,
-                    'xmsd': xmsd,
-                    'ymsd': ymsd,
-                    'zmsd': zmsd,
-                    'time': time}
+            msd_data['xmsd'] = np.append(msd_data['xmsd'], (np.average((distance[0] ** 2))))
+            msd_data['ymsd'] = np.append(msd_data['ymsd'], (np.average((distance[1] ** 2))))
+            msd_data['zmsd'] = np.append(msd_data['zmsd'], (np.average((distance[2] ** 2))))
 
     return msd_data
 
