@@ -107,27 +107,29 @@ def run_msd(trajectories, lv, timesteps, natoms, start, timestep):
         msd_new = square_distance(distance, n)
         msd_new = np.average(msd_new)
         msd_data['msd'] = np.append(msd_data['msd'], (msd_new))
-        msd_data['time'] = np.append(msd_data['time'], ((j - start) * timestep))
+        msd_data['time'] = np.append(msd_data['time'],
+                                     ((j - start) * timestep))
 
         if n == 1:
             msd_data['xmsd'] = np.append(msd_data['xmsd'],
-                               (np.average((distance[:, 0] ** 2))))
+                                         (np.average((distance[:, 0] ** 2))))
             msd_data['ymsd'] = np.append(msd_data['ymsd'],
-                               (np.average((distance[:, 1] ** 2))))
+                                         (np.average((distance[:, 1] ** 2))))
             msd_data['zmsd'] = np.append(msd_data['zmsd'],
-                               (np.average((distance[:, 2] ** 2))))
+                                         (np.average((distance[:, 2] ** 2))))
         elif n == 0:
             msd_data['xmsd'] = np.append(msd_data['xmsd'],
-                               (np.average((distance[0] ** 2))))
+                                         (np.average((distance[0] ** 2))))
             msd_data['ymsd'] = np.append(msd_data['ymsd'],
-                               (np.average((distance[1] ** 2))))
+                                         (np.average((distance[1] ** 2))))
             msd_data['zmsd'] = np.append(msd_data['zmsd'],
-                               (np.average((distance[2] ** 2))))
+                                         (np.average((distance[2] ** 2))))
 
     return msd_data
 
 
-def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs, tol=200):
+def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs,
+                     tol=200):
     '''Given an upper and lower limit of a 1D slice,
        determine if any part of a trajectory crosses
        a given 1D bin.
@@ -298,14 +300,14 @@ def smooth_msd(data, timestep, runs=5):
 
     msd_data = {'time': ut.smooth_msd_data(smsd_data['time'],
                                            smsd_data['msd'])[0],
-                 'msd':  ut.smooth_msd_data(smsd_data['time'],
-                                            smsd_data['msd'])[1],
-                 'xmsd': ut.smooth_msd_data(smsd_data['time'],
-                                            smsd_data['xmsd'])[1],
-                 'ymsd': ut.smooth_msd_data(smsd_data['time'],
-                                            smsd_data['ymsd'])[1],
-                 'zmsd': ut.smooth_msd_data(smsd_data['time'],
-                                            smsd_data['ymsd'])[1]}
+                'msd':  ut.smooth_msd_data(smsd_data['time'],
+                                           smsd_data['msd'])[1],
+                'xmsd': ut.smooth_msd_data(smsd_data['time'],
+                                           smsd_data['xmsd'])[1],
+                'ymsd': ut.smooth_msd_data(smsd_data['time'],
+                                           smsd_data['ymsd'])[1],
+                'zmsd': ut.smooth_msd_data(smsd_data['time'],
+                                           smsd_data['ymsd'])[1]}
     return msd_data
 
 

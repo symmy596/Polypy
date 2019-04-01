@@ -16,9 +16,12 @@ class TestDensity(unittest.TestCase):
     def test_one_dimensional_density(self):
         data = rd.read_history(test_history, ["CA"])
         test_density = dens.Density(data)
-        xx, yx = test_density.one_dimensional_density(histogram_width=1.00, direction="x")
-        xy, yy = test_density.one_dimensional_density(histogram_width=1.00, direction="y")
-        xz, yz = test_density.one_dimensional_density(histogram_width=1.00, direction="z")
+        xx, yx = test_density.one_dimensional_density(histogram_width=1.00,
+                                                      direction="x")
+        xy, yy = test_density.one_dimensional_density(histogram_width=1.00,
+                                                      direction="y")
+        xz, yz = test_density.one_dimensional_density(histogram_width=1.00,
+                                                      direction="z")
 
         predicted_x = np.array([-5.0, -4.0, -3.0, -2.0, -1.0,
                                 0.0, 1.0, 2.0, 3.0, 4.0])

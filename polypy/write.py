@@ -198,7 +198,8 @@ def one_dimensional_charge_density_plot(x, y, xlab="Coordinate ($\AA$)",
               figsize)
 
 
-def one_dimensional_density_plot(x, y, data_labels, xlab="X Coordinate ($\AA$)",
+def one_dimensional_density_plot(x, y, data_labels,
+                                 xlab="X Coordinate ($\AA$)",
                                  ylab="Particle Density", output=None,
                                  set_style="default", palette="tab10",
                                  figsize=None):
@@ -241,7 +242,8 @@ def one_dimensional_density_plot(x, y, data_labels, xlab="X Coordinate ($\AA$)",
 
 
 def two_dimensional_charge_density_plot(x, y, z, xlab="X Coordinate ($\AA$)",
-                                        ylab="Y Coordinate ($\AA$)", output=None,
+                                        ylab="Y Coordinate ($\AA$)",
+                                        output=None,
                                         set_style="default", palette="seismic",
                                         figsize=None, colorbar=True):
     '''Plots the charge density of a system in two dimensions.
@@ -336,7 +338,8 @@ def two_dimensional_density_plot(x, y, z, xlab="X Coordinate ($\AA$)",
 
 
 def combined_density_plot(x, y, z, y2, xlab="X Coordinate ($\AA$)",
-                          ylab="Y Coordinate ($\AA$)", y2_lab="Particle Density",
+                          ylab="Y Coordinate ($\AA$)",
+                          y2_lab="Particle Density",
                           output=None, set_style="default", palette="gray",
                           figsize=None):
     '''Plots the number density of atoms in a system in two dimensions
