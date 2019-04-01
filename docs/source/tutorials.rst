@@ -8,6 +8,11 @@ All tutorials use fluorite :math:`CaF_2` as an example.
 Reading Data
 ------------
 
+.. toctree::
+    :maxdepth: 1
+
+    reading_data.rst
+
 Density Analysis
 ----------------
 
@@ -21,11 +26,6 @@ The density module of polypy allows the particle density to be evaluated in one 
     density_tutorial_1.rst
     density_tutorial_2.rst
     density_tutorial_3.rst
-
-.. toctree::
-    :maxdepth: 1
-
-    msd_tutorial.rst
     
 Mean Squared Displacement (MSD)
 -------------------------------

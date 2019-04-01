@@ -243,7 +243,7 @@ def one_dimensional_density_plot(x, y, data_labels, xlab="X Coordinate ($\AA$)",
 def two_dimensional_charge_density_plot(x, y, z, xlab="X Coordinate ($\AA$)",
                                         ylab="Y Coordinate ($\AA$)", output=None,
                                         set_style="default", palette="seismic",
-                                        figsize=None):
+                                        figsize=None, colorbar=True):
     '''Plots the charge density of a system in two dimensions.
 
     Parameters
@@ -266,6 +266,8 @@ def two_dimensional_charge_density_plot(x, y, z, xlab="X Coordinate ($\AA$)",
         Color palette
     figsize : bool (optional)
         Size of plot
+    colorbar : bool (optional)
+        Colorbar on or off
     '''
     sns.palette = palette
     plt.style.use(set_style)
@@ -276,8 +278,9 @@ def two_dimensional_charge_density_plot(x, y, z, xlab="X Coordinate ($\AA$)",
     ax.set_xlabel(xlab, fontsize=15)
     ax.set_ylabel(ylab, fontsize=15)
     ax.tick_params(labelsize=12)
-    cbar = fig.colorbar(CM)
-    cbar.set_label('Charge Density', rotation=270)
+    if colorbar:
+        cbar = fig.colorbar(CM)
+        cbar.set_label('Charge Density', labelpad=-40, y=1.07, rotation=0)
     if output:
         plt.savefig(output, dpi=600)
     plt.show()
@@ -287,7 +290,7 @@ def two_dimensional_charge_density_plot(x, y, z, xlab="X Coordinate ($\AA$)",
 def two_dimensional_density_plot(x, y, z, xlab="X Coordinate ($\AA$)",
                                  ylab="Y Coordinate ($\AA$)", output=None,
                                  set_style="default", palette="gray",
-                                 figsize=None):
+                                 figsize=None, colorbar=True):
     '''Plots the number density of atoms in a system in two dimensions.
 
     Parameters
@@ -310,16 +313,22 @@ def two_dimensional_density_plot(x, y, z, xlab="X Coordinate ($\AA$)",
         Color palette
     figsize : bool (optional)
         Size of plot
+    colorbar : bool (optional)
+        Colorbar on or off
     '''
     sns.palette = palette
     plt.style.use(set_style)
     fig = plt.figure(figsize=figsize)
 
     ax = fig.add_subplot(111)
-    ax.contourf(x, y, z, cmap=palette)
+    CM = ax.contourf(x, y, z, cmap=palette)
     ax.set_xlabel(xlab, fontsize=15)
     ax.set_ylabel(ylab, fontsize=15)
     ax.tick_params(labelsize=12)
+    if colorbar:
+        cbar = fig.colorbar(CM)
+        cbar.set_label('Particle Density', labelpad=-40, y=1.07, rotation=0)
+    plt.tight_layout()
     if output:
         plt.savefig(output, dpi=600)
     plt.show()
@@ -369,6 +378,8 @@ def combined_density_plot(x, y, z, y2, xlab="X Coordinate ($\AA$)",
     ax2.plot(x, y2)
     ax2.set_ylabel(y2_lab, fontsize=15)
     ax2.tick_params(labelsize=12)
+    plt.tight_layout()
+
     if output:
         plt.savefig(output, dpi=600)
     plt.show()
