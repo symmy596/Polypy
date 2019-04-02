@@ -20,9 +20,7 @@ class Density():
     def __init__(self, data, atom_type=None):
         self.data = data
         self.atom_type = atom_type
-        if len(np.unique(self.data['label'])) > 1 and self.atom_type is None:
-            print("Multiple atom types detected - Splitting Coordinates")
-        elif len(np.unique(self.data['label'])) > 1:
+        if atom_type:
             self.data = rd.get_atom(self.data, self.atom_type)
 
     def one_dimensional_density(self, histogram_width=0.1, direction="x"):

@@ -18,7 +18,7 @@ def read_atom(fp, output_style):
 
         if( output_style > 1):
             dict_atom['force'] = rd_ut.fetch_line_as_floats(fp)
-    
+
     except:
          return("Error")
 

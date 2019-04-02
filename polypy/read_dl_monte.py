@@ -2,7 +2,6 @@ import numpy as np
 from polypy import read_utils as rd_ut
 
 
-
 def check_tmp_string(tmp_str, lst_require):
     '''Check whether tmp_string is in list of tmp_strings'''
 

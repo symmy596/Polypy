@@ -1,4 +1,4 @@
-Demsity in Two Dimensions
+Density in Two Dimensions
 =========================
 
 Many problems in material chemistry can be investigated through understanding the particle density. `polypy` allows the calculation of particle densities in two dimensions. This is the next logical step up from the one dimensional approach. 
@@ -12,8 +12,6 @@ The first step is to read the data. We want the data for both species so need to
     from polypy import utils as ut
     from polypy import write as wr
     import numpy as np  
-
-    ["CA", "F"]
 
     data = rd.read_history("../example_data/HISTORY", ["CA", "F"])
 
