@@ -18,7 +18,7 @@ def read_atom(fp, output_style):
 
         if( output_style > 1):
             dict_atom['force'] = rd_ut.fetch_line_as_floats(fp)
-    
+
     except:
          return("Error")
 
@@ -124,7 +124,7 @@ def read_trajectory(archive_file):
 
     dict_traj = {}
     iconfig = 0
-
+    dict_traj['trajectory_type'] = "DLPOLY"
     dict_traj['title'] = rd_ut.read_config_title(fp)
     dict_traj['style'] = rd_ut.read_config_style(fp)
 

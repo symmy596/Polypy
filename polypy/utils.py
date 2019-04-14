@@ -9,17 +9,13 @@ ev = codata.value('electron volt')
 ev = -ev
 
 
-def system_volume(data, timestep):
+def system_volume(lvs):
     '''Calculate the volume at each timestep and return a volume as a
     function of time plot.
 
     Parameters
     ----------
-    data : dictionary
-        Dictionary containing atom labels, trajectories,
-        lattice vectors, total number of timesteps and atoms.
-    timestep : float
-        Timestep of MD simulation
+
 
     Returns
     -------
@@ -29,12 +25,11 @@ def system_volume(data, timestep):
         Time
     '''
     volume = np.array([])
-    time = np.array([])
+    step = np.arange(0, len(lvs))
 
-    for i in range(0, data['timesteps']):
-        volume = np.append(volume, (np.prod(data['lv'][i])))
-        time = np.append(time, (i * timestep))
-    return volume, time
+    for i in range(len(lvs)):
+        volume = np.append(volume, (np.dot(lvs[i][0,:] , np.cross( lvs[i][1,:], lvs[i][2,:]))))
+    return volume, step
 
 
 def conductivity(plane, volume, diff, temperature):

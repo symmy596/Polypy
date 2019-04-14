@@ -11,19 +11,17 @@ class Density():
 
     Parameters
     ----------
-    data : dict
-        dictionary containing the atomic atom labels, trajectories,
-        lattice vectors, number of timesteps and atoms.
+    data : obj
+        Class object containing the trajectory
     atom_type : list (optional)
         atoms to be analysed
     '''
     def __init__(self, data, atom_type=None):
         self.data = data
         self.atom_type = atom_type
-        if len(np.unique(self.data['label'])) > 1 and self.atom_type is None:
-            print("Multiple atom types detected - Splitting Coordinates")
-        elif len(np.unique(self.data['label'])) > 1:
-            self.data = rd.get_atom(self.data, self.atom_type)
+        if atom_type:
+            self.coords = self.data.atom_coordinates(atom_type)
+        self.lv = self.data.lattice_vectors()
 
     def one_dimensional_density(self, histogram_width=0.1, direction="x"):
         '''Calculate the particle density within one dimensional
@@ -49,15 +47,15 @@ class Density():
             val = 1
         elif direction == "z":
             val = 2
-        c = self.data['trajectories'][:, val]
-        b = (np.average(self.data['lv'][:, val]) / 2)
+        c = self.coords[:, val]
+        b = (np.average(self.lv[:, val]) / 2)
         c = c + b
-        x = ut.bin_choose((np.amax(self.data['lv'][:, val])),
+        x = ut.bin_choose((np.amax(self.lv[:, val])),
                           histogram_width) + 1
         histograms = np.zeros((x))
         c.tolist()
 
-        for j in range(0, self.data['trajectories'][:, val].size):
+        for j in range(0, self.coords[:, val].size):
 
             plane = 0
             plane = ut.bin_choose(c[j], histogram_width)
@@ -95,12 +93,12 @@ class Density():
         elif direction == "z":
             val = [0, 1]
 
-        xc = self.data['trajectories'][:, val[0]]
-        xc = xc + (np.average(self.data['lv'][:, [val[0]]]) / 2)
-        yc = self.data['trajectories'][:, val[1]]
-        yc = yc + (np.average(self.data['lv'][:, [val[1]]]) / 2)
-        x = ut.bin_choose((np.amax(self.data['lv'][:, val[0]])), box) + 1
-        y = ut.bin_choose((np.amax(self.data['lv'][:, val[1]])), box) + 1
+        xc = self.coords[:, val[0]]
+        xc = xc + (np.average(self.lv[:, [val[0]]]) / 2)
+        yc = self.coords[:, val[1]]
+        yc = yc + (np.average(self.lv[:, [val[1]]]) / 2)
+        x = ut.bin_choose((np.amax(self.lv[:, val[0]])), box) + 1
+        y = ut.bin_choose((np.amax(self.lv[:, val[1]])), box) + 1
 
         if x < y:
             x, y = y, x
@@ -109,7 +107,7 @@ class Density():
         xc = xc.tolist()
         yc = yc.tolist()
 
-        for j in range(0, self.data['trajectories'][:, val[0]].size):
+        for j in range(0, self.coords[:, val[0]].size):
 
             xbox = 0
             ybox = 0
@@ -119,7 +117,7 @@ class Density():
 
         x = np.arange((x))
         y = np.arange((y))
-        x = ((x * box)) - (np.average(self.data['lv'][:, [val[0]]]) / 2)
+        x = ((x * box)) - (np.average(self.lv[:, [val[0]]]) / 2)
         y = ((y * box))
         z = bin_array + 0.001
 
@@ -150,11 +148,11 @@ class Density():
         elif direction == "z":
             val = 2
 
-        c = self.data['trajectories'][:, val]
+        c = self.coords[:, val]
         c.tolist()
         plane = 0
 
-        for j in range(0, self.data['trajectories'][:, val].size):
+        for j in range(0, self.coords[:, val].size):
 
             if c[j] > ll and c[j] < ul:
                 plane = plane + 1
@@ -191,12 +189,12 @@ class Density():
         elif direction == "z":
             val = [0, 1]
 
-        xc = self.data['trajectories'][:, val[0]]
-        xc = xc + (np.average(self.data['lv'][:, [val[0]]]) / 2)
-        yc = self.data['trajectories'][:, val[1]]
-        yc = yc + (np.average(self.data['lv'][:, [val[1]]]) / 2)
-        x = ut.bin_choose((np.amax(self.data['lv'][:, val[0]])), box) + 1
-        y = ut.bin_choose((np.amax(self.data['lv'][:, val[1]])), box) + 1
+        xc = self.coords[:, val[0]]
+        xc = xc + (np.average(self.lv[:, [val[0]]]) / 2)
+        yc = self.coords[:, val[1]]
+        yc = yc + (np.average(self.lv[:, [val[1]]]) / 2)
+        x = ut.bin_choose((np.amax(self.lv[:, val[0]])), box) + 1
+        y = ut.bin_choose((np.amax(self.lv[:, val[1]])), box) + 1
         if x < y:
             x, y = y, x
             xc, yc = yc, xc
@@ -205,7 +203,7 @@ class Density():
         xc = xc.tolist()
         yc = yc.tolist()
 
-        for j in range(0, self.data['trajectories'][:, val[0]].size):
+        for j in range(0, self.coords[:, val[0]].size):
 
             xbox = 0
             ybox = 0
@@ -216,7 +214,7 @@ class Density():
 
         x = np.arange((x))
         y = np.arange((y))
-        x = ((x * box)) - (np.average(self.data['lv'][:, [val[0]]]) / 2)
+        x = ((x * box)) - (np.average(self.lv[:, [val[0]]]) / 2)
         y = ((y * box))
         z = z + 0.001
         histograms = histograms + 0.001
