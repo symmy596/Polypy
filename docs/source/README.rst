@@ -26,7 +26,8 @@ The main features include:
    - Calculates the diffusion coefficient.
    - Uses the density analysis and the diffusion coefficient to calculate the ionic conductivity. 
 
-The code has been developed to analyse DL_POLY and DL_MONTE calculations however other codes can be incorporated if there is user demand.
+The code has been developed to analyse DL_POLY and DL_MONTE calculations however other codes can be incorporated if there is user demand. 
+`polypy` is currently only equipped to deal with orthogonal unit cells, but future development will adress other unit cells. 
 `polypy` was developed during a PhD project and as such the functionality focuses on the research questions encountered during that project, which we should clarify
 are wide ranging. Code contributions aimed at expanding the code to new of problems are encouraged.
 

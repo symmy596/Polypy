@@ -33,12 +33,12 @@ class PolyTrajectory():
             array of a,b,c lattice vectors.
         """
         iconfig_lvs = np.array([])
-
         for i in range(self.traj['numconfigs']):
             iconfig_lvs = np.append(iconfig_lvs, self.traj[i]['lvs'])
         iconfig_lvs = np.split(iconfig_lvs, self.get_nconfigs())
         for i in range(len(iconfig_lvs)):
             iconfig_lvs[i] = np.reshape(iconfig_lvs[i], (3, 3))
+        iconfig_lvs = np.asarray(iconfig_lvs)
         return iconfig_lvs
 
 
@@ -61,9 +61,12 @@ class PolyTrajectory():
         float
             Timestep - Time between records.
         """
-        timestep = float(self.traj[0]['timestep'][4])
-        step_length = float(self.traj[1]['timestep'][0]) - float(self.traj[0]['timestep'][0])
-        return (timestep * step_length)
+        if self.traj['trajectory_type'] != "DLPOLY":
+            print("Monte Carlo does not have a timestep")
+        else:       
+            timestep = float(self.traj[0]['timestep'][4])
+            step_length = float(self.traj[1]['timestep'][0]) - float(self.traj[0]['timestep'][0])
+            return (timestep * step_length)
 
 
     def get_title(self):
@@ -143,17 +146,7 @@ class PolyTrajectory():
         if self.traj['trajectory_type'] == "DLPOLY":
             return self.get_dlpoly_natom(atom_label)
         elif self.traj['trajectory_type'] == "DLMONTE":
-            return self.get_dlmonte_natom(atom_label)
-
-
-    def reciprocal_lv(self):
-        '''Calculate reciprocal lattice vectors if they exist
-        The rcp vectors are the inverse of the transpose R = (L^T)^{-1}'''
-
-        try:
-            rlvs = la.inv( np.transpose( self.lvs ) )
-        except:
-            print('Unable to calculate reciprocal lattice vectors')    
+            return self.get_dlmonte_natom(atom_label) 
 
 
     def get_dlmonte_total_natoms(self):
@@ -182,6 +175,7 @@ class PolyTrajectory():
                 if self.traj[i]['atoms'][j]['label'] == atom_label:
                     atom_coords.append(self.traj[i]['atoms'][j]['coor'])
         atom_coords = np.asarray(atom_coords)
+        atom_coords = np.split(atom_coords, self.traj['numconfigs'])
         return atom_coords
 
 
@@ -193,6 +187,7 @@ class PolyTrajectory():
                     if self.traj[i]['mols'][j]['atoms'][k]['label'] == atom_label:
                         atom_coords.append(self.traj[i]['mols'][j]['atoms'][k]['coor'])
         atom_coords = np.asarray(atom_coords)
+        atom_coords = np.split(atom_coords, self.traj['numconfigs'])
         return atom_coords
 
 

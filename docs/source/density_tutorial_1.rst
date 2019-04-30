@@ -13,8 +13,6 @@ The first step is to read the data. We want the data for both species so need to
     from polypy import write as wr
     import numpy as np  
 
-    ["CA", "F"]
-
     data = rd.read_history("../example_data/HISTORY", ["CA", "F"])
 
 The next step is to create the density object for both species.

@@ -16,12 +16,12 @@ class Density():
     atom_type : list (optional)
         atoms to be analysed
     '''
-    def __init__(self, data, atom_type=None):
+    def __init__(self, data, atom_type):
         self.data = data
         self.atom_type = atom_type
-        if atom_type:
-            self.coords = self.data.atom_coordinates(atom_type)
+        self.coords = np.concatenate(self.data.atom_coordinates(self.atom_type), axis=0)
         self.lv = self.data.lattice_vectors()
+        
 
     def one_dimensional_density(self, histogram_width=0.1, direction="x"):
         '''Calculate the particle density within one dimensional
@@ -48,11 +48,10 @@ class Density():
         elif direction == "z":
             val = 2
         c = self.coords[:, val]
-        b = (np.average(self.lv[:, val]) / 2)
-        c = c + b
-        x = ut.bin_choose((np.amax(self.lv[:, val])),
-                          histogram_width) + 1
-        histograms = np.zeros((x))
+        largest_cell = np.argmax(ut.system_volume(self.lv)[0])
+        lengths = ut.lengths(self.lv[largest_cell])
+        x = np.ceil( lengths / histogram_width ).astype(int)
+        histograms = np.zeros((x[val]))
         c.tolist()
 
         for j in range(0, self.coords[:, val].size):
@@ -62,7 +61,7 @@ class Density():
             histograms[plane] = histograms[plane] + 1
 
         x = np.arange(0, (histograms.size))
-        x = (x * histogram_width) - b
+        x = (x * histogram_width)
 
         return x, histograms
 
