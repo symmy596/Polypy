@@ -3,6 +3,7 @@ from scipy import stats
 from scipy.constants import codata
 from scipy import integrate
 import pandas as pd
+from numpy import linalg as la
 
 kb = codata.value('Boltzmann constant')
 ev = codata.value('electron volt')
@@ -276,3 +277,13 @@ def smooth_msd_data(x, y):
     xy = np.column_stack((x, y))
     z = pd.DataFrame(xy).groupby(0, as_index=False)[1].mean().values
     return z[:, 0], z[:, 1]
+
+
+def cart2frac(position, lv):
+    rlvs = la.inv(np.transpose(lv))
+    x = np.matmul(rlvs, position)
+    frac = np.mod(x, 1 )
+    return frac
+
+def lengths(lvs):
+    return la.norm( lvs, axis = 1 )

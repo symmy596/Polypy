@@ -5,8 +5,8 @@ from polypy import read_dl_monte as dlmpy
 import unittest
 from numpy.testing import assert_almost_equal
 
-test_history = os.path.join(os.path.dirname(__file__), 'dlppy_test_data/sample_configs/ARCHIVE1')
-test_config1 = os.path.join(os.path.dirname(__file__), 'dlppy_test_data/sample_configs/CONFIG1')
+test_history = os.path.join(os.path.dirname(__file__), 'dlmpy_test_data/sample_configs/ARCHIVE1')
+test_config1 = os.path.join(os.path.dirname(__file__), 'dlmpy_test_data/sample_configs/CONFIG1')
 
 class TestReadDlpoly(unittest.TestCase):
 
@@ -14,19 +14,14 @@ class TestReadDlpoly(unittest.TestCase):
         '''Read entire configuration from CONFIG
         Check that molecules numbers match'''
 
-        config_file = test_data_dir+'sample_configs/CONFIG1'
-
-        config = dlmpy.open_config(config_file)
-
+        config = dlmpy.open_config(test_config1)
         assert config['nummols'] == len(config['mols'])
 
     def test_open_config_moleculenames(self):
         '''Read entire configuration from CONFIG
         Check that molecules names match'''
 
-        config_file = test_data_dir+'sample_configs/CONFIG1'
-
-        config = dlmpy.open_config(config_file)
+        config = dlmpy.open_config(test_config1)
 
         expect_mol_names = [ 'bob', 'charlie' ]
 
@@ -37,9 +32,7 @@ class TestReadDlpoly(unittest.TestCase):
         '''Read entire configuration from CONFIG
         Check that atom numberss match'''
 
-        config_file = test_data_dir+'sample_configs/CONFIG1'
-
-        config = dlmpy.open_config(config_file)
+        config = dlmpy.open_config(test_config1)
 
         expect_numatoms = [1, 2]
 
@@ -50,9 +43,7 @@ class TestReadDlpoly(unittest.TestCase):
         '''Read entire configuration from CONFIG
         Check that atom labels match'''
 
-        config_file = test_data_dir+'sample_configs/CONFIG1'
-
-        config = dlmpy.open_config(config_file)
+        config = dlmpy.open_config(test_config1)
 
         expect_atom_labels = {0: ["A"], 1: ["B", "C"] }
 
@@ -64,9 +55,7 @@ class TestReadDlpoly(unittest.TestCase):
         '''Read entire configuration from CONFIG
         Check that atom coors match'''
 
-        config_file = test_data_dir+'sample_configs/CONFIG1'
-
-        config = dlmpy.open_config(config_file)
+        config = dlmpy.open_config(test_config1)
 
         expect_atom_coors = {0: [ np.array([0.1,0.2,0.3]) ], 
                             1: np.array([ [0.5, 0.6, 0.7], [1.0, 1.5, 2.0] ]) }
@@ -81,9 +70,7 @@ class TestReadDlpoly(unittest.TestCase):
         '''Read entire trajectory from ARCHIVE
         Check that number of configurations match'''
 
-        archive_file = test_data_dir+'sample_configs/ARCHIVE1'
-
-        traj = dlmpy.read_trajectory(archive_file)
+        traj = dlmpy.read_trajectory(test_history)
 
         expect_configs = 3
 
@@ -93,9 +80,7 @@ class TestReadDlpoly(unittest.TestCase):
         '''Read entire trajectory from ARCHIVE
         Check that labels of atoms in configurations match'''
 
-        archive_file = test_data_dir+'sample_configs/ARCHIVE1'
-
-        traj = dlmpy.read_trajectory(archive_file)
+        traj = dlmpy.read_trajectory(test_history)
 
         expect_labels = [ [ ["A"], ["B", "C"] ] , 
                         [ ["D"], ["E", "F"] ] ,

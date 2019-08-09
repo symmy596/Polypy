@@ -6,7 +6,7 @@ from polypy import trajectory
 import unittest
 from numpy.testing import assert_almost_equal
 
-test_history = os.path.join(os.path.dirname(__file__), 'HISTORY')
+test_history = os.path.join(os.path.dirname(__file__), 'dlppy_test_data/sample_configs/HISTORY1')
 test_config = os.path.join(os.path.dirname(__file__), 'CONFIG')
 expected_z = os.path.join(os.path.dirname(__file__), 'Expected_Z')
 
@@ -17,7 +17,7 @@ class TestDensity(unittest.TestCase):
         data = dlpy.read_trajectory(test_history)
         traj_obj = trajectory.PolyTrajectory(data)
 
-        test_density = dens.Density(traj_obj)
+        test_density = dens.Density(traj_obj, "CA")
         xx, yx = test_density.one_dimensional_density(histogram_width=1.00,
                                                       direction="x")
         xy, yy = test_density.one_dimensional_density(histogram_width=1.00,

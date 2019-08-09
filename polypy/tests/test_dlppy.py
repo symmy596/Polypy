@@ -7,8 +7,8 @@ from numpy.testing import assert_almost_equal
  
 test_history = os.path.join(os.path.dirname(__file__), 'dlppy_test_data/sample_configs/HISTORY1')
 test_config1 = os.path.join(os.path.dirname(__file__), 'dlppy_test_data/sample_configs/CONFIG1')
-test_config2 = os.path.join(os.path.dirname(__file__), 'dlppy_test_data/sample_configs/CONFIG1')
-test_config3 = os.path.join(os.path.dirname(__file__), 'dlppy_test_data/sample_configs/CONFIG1')
+test_config2 = os.path.join(os.path.dirname(__file__), 'dlppy_test_data/sample_configs/CONFIG2')
+test_config3 = os.path.join(os.path.dirname(__file__), 'dlppy_test_data/sample_configs/CONFIG3')
 
 class TestReadDlpoly(unittest.TestCase):
 

@@ -15,7 +15,10 @@ class TestUtils(unittest.TestCase):
     def test_system_volume(self):
         traj = dlppy.read_trajectory(test_history)
         traj_ob = trajectory.PolyTrajectory(traj)
-        volume = ut.volume
+        lvs = traj_ob.lattice_vectors()
+        volume, steps = ut.system_volume(lvs)
+        expected_volume = np.array([1.978, 1.978, 1.978])
+        assert_almost_equal(volume, expected_volume)
 
     def test_conductivity(self):
         a = ut.conductivity(1, 2, 3, 4)
