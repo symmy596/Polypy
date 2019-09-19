@@ -224,7 +224,7 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs,
     return dco
 
 
-def msd(data, timestep):
+def msd(data, atom):
     '''Function that runs all of the parts of the MSD calcualtion.
 
     Parameters
@@ -241,24 +241,24 @@ def msd(data, timestep):
         Dictionary containing 3D msd, 1D msd in the x, y, z directions
         and the time.
     '''
-    if data['timesteps'] == 1:
+    if data.get_file_type() == "DLMONTE":
+        print("Monte Carlo is not time resolved")
+    if data.get_nconfigs() == 1:
         print("ERROR: - Only one timestep has been found")
-    if data['timesteps'] < 100:
+    if data.get_nconfigs() < 100:
         print("WARNING: Small number of timesteps - Poor statistics likely")
-    if len(np.unique(data['label'])) > 1:
-        print("ERROR: MSD can only handle one atom type. Exiting")
-        sys.exit(0)
 
-    trajectories = np.split(data['trajectories'], data['timesteps'])
-    msd_data = run_msd(trajectories, data['lv'],
-                       data['timesteps'],
-                       data['natoms'],
+    
+    trajectories = np.split(data.atom_coordinates(atom), data.get_nconfigs())
+    msd_data = run_msd(trajectories, data.lattice_vectors(),
+                       data.get_nconfigs(),
+                       data.get_natoms(atom),
                        1,
-                       timestep)
+                       data.timestep())
     return msd_data
 
 
-def smooth_msd(data, timestep, runs=5):
+def smooth_msd(data, atom, runs=5):
     '''MSD Launcher for a Smoothed MSD calc.
 
     Parameters
@@ -283,15 +283,15 @@ def smooth_msd(data, timestep, runs=5):
                  'ymsd': np.array([]),
                  'zmsd': np.array([])}
 
-    trajectories = np.split(data['trajectories'], data['timesteps'])
+    trajectories = np.split(data.atom_coordinates(atom), data.get_nconfigs())
 
     for i in range(1, runs):
         start = i * 2
-        msd_data = run_msd(trajectories, data['lv'],
-                           data['timesteps'],
-                           data['natoms'],
+        msd_data = run_msd(trajectories, data.lattice_vectors(),
+                           data.get_nconfigs(),
+                           data.get_natoms(atom),
                            start,
-                           timestep)
+                           data.timestep())
         smsd_data['msd'] = np.append(smsd_data['msd'], msd_data['msd'])
         smsd_data['xmsd'] = np.append(smsd_data['xmsd'], msd_data['xmsd'])
         smsd_data['ymsd'] = np.append(smsd_data['ymsd'], msd_data['ymsd'])
@@ -311,7 +311,7 @@ def smooth_msd(data, timestep, runs=5):
     return msd_data
 
 
-def plane_msd(data, timestep, ul, ll, runs=1,
+def plane_msd(data, atom, ul, ll, runs=1,
               direction="x", tol=200):
     '''Calculate an MSD value within a area of a structure.
 
@@ -342,17 +342,17 @@ def plane_msd(data, timestep, ul, ll, runs=1,
         val = 1
     elif direction == "z":
         val = 2
-
-    xc = np.reshape(data['trajectories'][:, val], ((data['timesteps']),
-                    data['natoms']))
-    trajectories = np.split(data['trajectories'], data['timesteps'])
+    lv = data.lattice_vectors()
+    xc = np.reshape(data.atom_coordinates(atom)[:, val], (data.get_nconfigs(),
+                    data.get_natoms(atom)))
+    trajectories = np.split(data.atom_coordinates(atom), data.get_nconfigs())
     trajectories = np.asarray(trajectories)
     d = np.array([])
 
-    for i in range(0, (data['natoms'])):
+    for i in range(0, (data.get_natoms(atom))):
 
-        dd = check_trajectory(trajectories[:, i], xc[:, i], data['lv'],
-                              data['timesteps'], timestep, ul, ll, runs, tol)
+        dd = check_trajectory(trajectories[:, i], xc[:, i], lv,
+                              data.get_nconfigs(), data.timestep(), ul, ll, runs, tol)
         d = np.append(d, dd)
     diffusion = np.average(d)
     return diffusion

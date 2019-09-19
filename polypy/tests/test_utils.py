@@ -1,45 +1,20 @@
 import numpy as np
 from polypy import utils as ut
+from polypy import read_dl_poly as dlppy
+from polypy import trajectory 
 import unittest
 from numpy.testing import assert_almost_equal
 
 
-test_volume = {'label': np.array(["H", "H", "H", "H", "H", "H", "H", "H",
-                                  "H", "H"]),
-               'trajectories': np.array([[15.00,	15.00,	15.00],
-                                         [16.00,	16.00,	16.00],
-                                         [17.00,	17.00,	17.00],
-                                         [18.00,	18.00,	18.00],
-                                         [19.00,	19.00,	19.00],
-                                         [20.00,	20.00,	20.00],
-                                         [21.00,	21.00,	21.00],
-                                         [22.00,	22.00,	22.00],
-                                         [23.00,	23.00,	23.00],
-                                         [24.00,	24.00,	24.00]]),
-               'lv': np.array([[15.00,	15.00,	15.00],
-                               [16.00,	16.00,	16.00],
-                               [17.00,	17.00,	17.00],
-                               [18.00,	18.00,	18.00],
-                               [19.00,	19.00,	19.00],
-                               [20.00,	20.00,	20.00],
-                               [21.00,	21.00,	21.00],
-                               [22.00,	22.00,	22.00],
-                               [23.00,	23.00,	23.00],
-                               [24.00,	24.00,	24.00]]),
-               'timesteps': 10,
-               'natoms': 10}
+test_history = os.path.join(os.path.dirname(__file__), 'dlppy_test_data/sample_configs/HISTORY1')
 
 
 class TestUtils(unittest.TestCase):
 
     def test_system_volume(self):
-        expected_vol = np.array([3375.000, 4096.000, 4913.000, 5832.000,
-                                6859.000, 8000.000, 9261.000, 10648.000,
-                                12167.000, 13824.000])
-        expected_time = np.arange(10) * 10
-        a, b = ut.system_volume(test_volume, 10)
-        assert_almost_equal(expected_vol, a)
-        assert_almost_equal(expected_time, b)
+        traj = dlppy.read_trajectory(test_history)
+        traj_ob = trajectory.PolyTrajectory(traj)
+        volume = ut.volume
 
     def test_conductivity(self):
         a = ut.conductivity(1, 2, 3, 4)

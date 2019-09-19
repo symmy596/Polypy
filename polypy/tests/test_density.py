@@ -1,21 +1,23 @@
 import numpy as np
 import os
-from polypy import read as rd
+from polypy import read_dl_poly as dlpy
 from polypy import density as dens
+from polypy import trajectory
 import unittest
 from numpy.testing import assert_almost_equal
 
 test_history = os.path.join(os.path.dirname(__file__), 'HISTORY')
 test_config = os.path.join(os.path.dirname(__file__), 'CONFIG')
-test_archive = os.path.join(os.path.dirname(__file__), 'ARCHIVE')
 expected_z = os.path.join(os.path.dirname(__file__), 'Expected_Z')
 
 
 class TestDensity(unittest.TestCase):
 
     def test_one_dimensional_density(self):
-        data = rd.read_history(test_history, ["CA"])
-        test_density = dens.Density(data)
+        data = dlpy.read_trajectory(test_history)
+        traj_obj = trajectory.PolyTrajectory(data)
+
+        test_density = dens.Density(traj_obj)
         xx, yx = test_density.one_dimensional_density(histogram_width=1.00,
                                                       direction="x")
         xy, yy = test_density.one_dimensional_density(histogram_width=1.00,
@@ -34,15 +36,19 @@ class TestDensity(unittest.TestCase):
         assert_almost_equal(yz, predicted_y)
 
     def test_one_dimensional_density_sb(self):
-        data = rd.read_history(test_history, ["CA"])
-        test_density = dens.Density(data)
+        data = dlpy.read_trajectory(test_history)
+        traj_obj = trajectory.PolyTrajectory(data)
+
+        test_density = dens.Density(traj_obj)
         plane = test_density.one_dimensional_density_sb(ll=-2.0, ul=2.0)
         predicted_plane = 3.0
         assert plane == predicted_plane
 
     def test_two_dimensional_density(self):
-        data = rd.read_history(test_history, ["CA"])
-        test_density = dens.Density(data)
+        data = dlpy.read_trajectory(test_history)
+        traj_obj = trajectory.PolyTrajectory(data)
+
+        test_density = dens.Density(traj_obj)
         x, y, z = test_density.two_dimensional_density(box=1.0)
         predicted_x = np.array([-5.0, -4.0, -3.0, -2.0,
                                 -1.0, 0.0, 1.0, 2.0, 3.0, 4.0])
@@ -54,8 +60,10 @@ class TestDensity(unittest.TestCase):
         assert_almost_equal(z, predicted_z)
 
     def test_one_and_two_dimension_overlay(self):
-        data = rd.read_history(test_history, ["CA"])
-        test_density = dens.Density(data)
+        data = dlpy.read_trajectory(test_history)
+        traj_obj = trajectory.PolyTrajectory(data)
+
+        test_density = dens.Density(traj_obj)
         x, y, z, y2 = test_density.one_and_two_dimension_overlay(box=1.0)
         predicted_x = np.array([-5.0, -4.0, -3.0, -2.0,
                                 -1.0, 0.0, 1.0, 2.0, 3.0, 4.0])

@@ -57,11 +57,11 @@ def read_history(file, atom_list):
         vec = np.array([])
         lv = np.split(lv, timesteps)
 
-        for i in range(0, timesteps):
+#        for i in range(0, timesteps):
 
-            vec = np.append(vec, (lv[i].sum(axis=0)))
+#            vec = np.append(vec, (lv[i].sum(axis=0)))
 
-        lv = np.reshape(vec, (timesteps, 3))
+#        lv = np.reshape(vec, (timesteps, 3))
         data = {'label': atname,
                 'trajectories': trajectories,
                 'lv': lv,
@@ -213,11 +213,11 @@ def read_config(file, atom_list):
         coords = np.asarray(coords, dtype=float)
         atname = np.asarray(atname, dtype=str)
         natoms = int(count)
-        vec = lv.sum(axis=0)
+    #    vec = lv.sum(axis=0)
 
         data = {'label': atname,
                 'trajectories': coords,
-                'lv': vec,
+                'lv': lv,
                 'timesteps': 1,
                 'natoms': natoms}
     else:

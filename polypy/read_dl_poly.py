@@ -124,7 +124,7 @@ def read_trajectory(archive_file):
 
     dict_traj = {}
     iconfig = 0
-
+    dict_traj['trajectory_type'] = "DLPOLY"
     dict_traj['title'] = rd_ut.read_config_title(fp)
     dict_traj['style'] = rd_ut.read_config_style(fp)
 
