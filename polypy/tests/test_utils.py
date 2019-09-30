@@ -4,6 +4,7 @@ from polypy import read_dl_poly as dlppy
 from polypy import trajectory 
 import unittest
 from numpy.testing import assert_almost_equal
+import os
 
 
 test_history = os.path.join(os.path.dirname(__file__), 'dlppy_test_data/sample_configs/HISTORY1')

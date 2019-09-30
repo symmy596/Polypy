@@ -36,10 +36,24 @@ class PolyTrajectory():
         iconfig_lvs = np.array([])
 
         for i in range(self.traj['numconfigs']):
-            iconfig_lvs = np.append(iconfig_lvs, np.sum(self.traj[i]['lvs'], axis=1))
-        iconfig_lvs = np.reshape(iconfig_lvs, (self.traj['numconfigs'], 3))
+            iconfig_lvs = np.append(iconfig_lvs, self.traj[i]['lvs'])
+        iconfig_lvs = np.split(iconfig_lvs, self.get_nconfigs())
+        for i in range(len(iconfig_lvs)):
+            iconfig_lvs[i] = np.reshape(iconfig_lvs[i], (3, 3))
+        iconfig_lvs = np.asarray(iconfig_lvs)
         return iconfig_lvs
                 
+
+    def get_nconfigs(self):
+        """Returns the total number of configs found in the HISTORY file.
+
+        Returns
+        -------
+        int
+            Total number of configs in the history file.
+        """
+        return int(self.traj['numconfigs']) 
+   
 
     def get_nconfigs(self):
         """Returns the total number of configs found in the HISTORY file.
@@ -64,6 +78,17 @@ class PolyTrajectory():
         step_length = float(self.traj[1]['timestep'][0]) - float(self.traj[0]['timestep'][0])
         return (timestep * step_length)
 
+        Returns
+        -------
+        float
+            Timestep - Time between records.
+        """
+        if self.traj['trajectory_type'] != "DLPOLY":
+            print("Monte Carlo does not have a timestep")
+        else:       
+            timestep = float(self.traj[0]['timestep'][4])
+            step_length = float(self.traj[1]['timestep'][0]) - float(self.traj[0]['timestep'][0])
+            return (timestep * step_length)
 
     def get_title(self):
         """Returns the title of the HISTORY file.
@@ -171,6 +196,7 @@ class PolyTrajectory():
                 if self.traj[i]['atoms'][j]['label'] == atom_label:
                     atom_coords.append(self.traj[i]['atoms'][j]['coor'])
         atom_coords = np.asarray(atom_coords)
+        atom_coords = np.split(atom_coords, self.traj['numconfigs'])
         return atom_coords
 
 

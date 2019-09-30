@@ -243,7 +243,7 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
     return msd_data, conductivity_count
 
 
-def msd(data, timestep):
+def msd(data, atom):
     '''Function that runs all of the parts of the MSD calcualtion.
 
     Parameters
@@ -264,9 +264,11 @@ def msd(data, timestep):
         Dictionary containing 3D msd, 1D msd in the x, y, z directions
         and the time.
     '''
-    if data['timesteps'] == 1:
+    if data.get_file_type() == "DLMONTE":
+        print("Monte Carlo is not time resolved")
+    if data.get_nconfigs() == 1:
         print("ERROR: - Only one timestep has been found")
-    if data['timesteps'] < 100:
+    if data.get_nconfigs() < 100:
         print("WARNING: Small number of timesteps - Poor statistics likely")
     if len(np.unique(data['label'])) > 1:
         print("ERROR: MSD can only handle one atom type. Exiting")
@@ -277,7 +279,7 @@ def msd(data, timestep):
                        data['timesteps'],
                        data['natoms'],
                        1,
-                       timestep)
+                       data.timestep())
     return msd_data
 
 
