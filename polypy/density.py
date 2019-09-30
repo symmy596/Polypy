@@ -19,9 +19,14 @@ class Density():
     def __init__(self, data, atom_type=None):
         self.data = data
         self.atom_type = atom_type
-        if atom_type:
-            self.coords = self.data.atom_coordinates(atom_type)
-        self.lv = self.data.lattice_vectors()
+        if len(np.unique(self.data['label'])) > 1 and self.atom_type is None:
+            print("Multiple atom types detected - Splitting Coordinates")
+        elif len(np.unique(self.data['label'])) > 1:
+            self.data = rd.get_atom(self.data, self.atom_type)
+        self.rcplvs, self.lengths = ut.calculate_rcplvs(data['lv'][-1])
+        self.frac_coords = ut.cart_2_frac(self.data['trajectories'], self.lengths, self.rcplvs)
+     #   self.frac_coords = data['fractional']
+
 
     def one_dimensional_density(self, histogram_width=0.1, direction="x"):
         '''Calculate the particle density within one dimensional
@@ -47,24 +52,17 @@ class Density():
             val = 1
         elif direction == "z":
             val = 2
-        c = self.coords[:, val]
-        b = (np.average(self.lv[:, val]) / 2)
-        c = c + b
-        x = ut.bin_choose((np.amax(self.lv[:, val])),
-                          histogram_width) + 1
-        histograms = np.zeros((x))
+        c = self.frac_coords[:, val]
+        x = np.ceil(self.lengths[val] / histogram_width).astype(int)
+        bin_array = np.zeros(x)
         c.tolist()
-
-        for j in range(0, self.coords[:, val].size):
-
+        for j in range(0, self.frac_coords[:,val].size):
             plane = 0
-            plane = ut.bin_choose(c[j], histogram_width)
-            histograms[plane] = histograms[plane] + 1
-
-        x = np.arange(0, (histograms.size))
-        x = (x * histogram_width) - b
-
-        return x, histograms
+            plane = (c[j] * x).astype(int)
+            bin_array[plane] = bin_array[plane] + 1
+        x = (np.arange(0, bin_array.size))
+        x = x * histogram_width
+        return x, bin_array
 
     def two_dimensional_density(self, box=0.1, direction="x"):
         '''Calculate the atomic number density within two dimensional
@@ -92,14 +90,12 @@ class Density():
             val = [0, 2]
         elif direction == "z":
             val = [0, 1]
-
-        xc = self.coords[:, val[0]]
-        xc = xc + (np.average(self.lv[:, [val[0]]]) / 2)
-        yc = self.coords[:, val[1]]
-        yc = yc + (np.average(self.lv[:, [val[1]]]) / 2)
-        x = ut.bin_choose((np.amax(self.lv[:, val[0]])), box) + 1
-        y = ut.bin_choose((np.amax(self.lv[:, val[1]])), box) + 1
-
+        xc = self.frac_coords[:, val[0]]
+        yc = self.frac_coords[:, val[1]]
+        x = np.ceil(self.lengths[val][0] / box).astype(int)
+        y = np.ceil(self.lengths[val][1] / box).astype(int)
+        print(xc[0])
+        print(self.data['trajectories'][0])
         if x < y:
             x, y = y, x
             xc, yc = yc, xc
@@ -107,18 +103,16 @@ class Density():
         xc = xc.tolist()
         yc = yc.tolist()
 
-        for j in range(0, self.coords[:, val[0]].size):
+        for j in range(0, self.frac_coords[:, val[0]].size):
 
             xbox = 0
             ybox = 0
-            xbox = ut.bin_choose(xc[j], box)
-            ybox = ut.bin_choose(yc[j], box)
+            xbox = (xc[j] * x).astype(int)
+            ybox = (yc[j] * y).astype(int)
             bin_array[ybox, xbox] = bin_array[ybox, xbox] + 1
 
-        x = np.arange((x))
-        y = np.arange((y))
-        x = ((x * box)) - (np.average(self.lv[:, [val[0]]]) / 2)
-        y = ((y * box))
+        x = (np.arange(0, x)) * box
+        y = (np.arange(0, y)) * box
         z = bin_array + 0.001
 
         return x, y, z

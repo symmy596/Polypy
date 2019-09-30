@@ -1,7 +1,7 @@
 import os as os
 import sys as sys
 import numpy as np
-
+from polypy import utils as ut
 
 def read_history(file, atom_list):
     '''Read a DL_POLY HISTORY file.
@@ -21,6 +21,8 @@ def read_history(file, atom_list):
     '''
     if os.path.isfile(file):
         trajectories = []
+        frac_trajectories = []
+        rcplv = []
         atname = []
         lv = []
         timesteps = 0
@@ -29,18 +31,29 @@ def read_history(file, atom_list):
         name = False
         tstep = False
         history = open(file, 'r')
+        current_lv = []
 
         for line in history:
             x = line.split()
             if c == 3:
                 c = 0
                 tstep = False
+                current_lv = np.asarray(current_lv, dtype=float)
+                rcplvs, lengths = ut.calculate_rcplvs(current_lv)
+                current_lv = []
+                rcplv.append(rcplvs)
+
             if c < 3 and tstep is True:
                 lv.append(line.split())
+                current_lv.append(line.split())
                 c = c + 1
             if name:
                 name = False
                 trajectories.append(line.split())
+                frac = np.matmul( rcplvs, np.asarray(line.split(), dtype=float))
+                frac = np.mod( frac, 1 )
+                frac_trajectories.append(frac)
+
             if x[0] in atom_list:
                 atname.append(x[0])
                 name = True
@@ -50,20 +63,22 @@ def read_history(file, atom_list):
                 tstep = True
 
         trajectories = np.asarray(trajectories, dtype=float)
+        frac_trajectories = np.asarray(frac_trajectories, dtype=float)
+
         atname = np.asarray(atname, dtype=str)
+
         lv = np.asarray(lv, dtype=float)
+        #rcplvs = np.asarray(rcplvs, dtype=float)
+
         natoms = count / timesteps
         natoms = int(natoms)
-        vec = np.array([])
+
         lv = np.split(lv, timesteps)
 
-#        for i in range(0, timesteps):
-
-#            vec = np.append(vec, (lv[i].sum(axis=0)))
-
-#        lv = np.reshape(vec, (timesteps, 3))
         data = {'label': atname,
                 'trajectories': trajectories,
+                'frac_trajectories': frac_trajectories,
+                'rcplvs': rcplvs,
                 'lv': lv,
                 'timesteps': timesteps,
                 'natoms': natoms}
@@ -191,25 +206,29 @@ def read_config(file, atom_list):
         count = 0
         lv = []
         atname = []
-
+        frac_trajectories  = []
         title = config.readline()
         stuff = config.readline()
 
         for i in range(0, 3):
             l = config.readline()
             lv.append(l.split())
-
+        lv = np.asarray(lv, dtype="float")
+        print(lv)
+        rcplvs, lengths = ut.calculate_rcplvs(lv)
         for line in config:
             x = line.split()
             if name:
                 name = False
                 coords.append(line.split())
+                frac = np.matmul( rcplvs, np.asarray(line.split(), dtype=float))
+                frac = np.mod( frac, 1 )
+                frac_trajectories.append(frac)
             if x[0] in atom_list:
                 atname.append(x[0])
                 name = True
                 count = count + 1
 
-        lv = np.asarray(lv, dtype=float)
         coords = np.asarray(coords, dtype=float)
         atname = np.asarray(atname, dtype=str)
         natoms = int(count)
@@ -217,6 +236,7 @@ def read_config(file, atom_list):
 
         data = {'label': atname,
                 'trajectories': coords,
+                'fractional': frac_trajectories,
                 'lv': lv,
                 'timesteps': 1,
                 'natoms': natoms}

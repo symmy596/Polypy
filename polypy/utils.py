@@ -3,13 +3,14 @@ from scipy import stats
 from scipy.constants import codata
 from scipy import integrate
 import pandas as pd
+from numpy import linalg as la
 
 kb = codata.value('Boltzmann constant')
 ev = codata.value('electron volt')
 ev = -ev
 
 
-def system_volume(lvs):
+def system_volume(data):
     '''Calculate the volume at each timestep and return a volume as a
     function of time plot.
 
@@ -27,8 +28,8 @@ def system_volume(lvs):
     volume = np.array([])
     step = np.array([])
 
-    for i in range(data.get_nconfigs()):
-        volume = np.append(volume, (np.prod(lvs[i])))
+    for i in range(data['timesteps']):
+        volume = np.append(volume, (np.dot(data['lv'][i][0,:] , np.cross(data['lv'][i][1,:], data['lv'][i][2,:] ))))
         step = np.append(step, i)
     return volume, step
 
@@ -112,7 +113,7 @@ def linear_regression(x, y):
     return slope, intercept, r_value, p_value, std_err
 
 
-def pbc(rnew, rold, vec):
+def pbc(rnew, rold):
     '''Periodic boundary conditions for an msd calculation
 
     Parameters
@@ -131,24 +132,22 @@ def pbc(rnew, rold, vec):
     new : float
         New position
     '''
-    shift = abs((rold - rnew) / vec)
-    shift = round(shift, 0)
-    shift = int(shift)
+    shift = np.floor(rnew-rold)
     cross = False
 
     if shift < 2:
-        if (rnew - rold) > vec * 0.5:
-            rnew = rnew - vec
+        if (rnew - rold) > 0.5:
+            rnew = rnew - 1.0
             cross = True
-        elif -(rnew - rold) > vec * 0.5:
-            rnew = rnew + vec
+        elif -(rnew - rold) > 0.5:
+            rnew = rnew + 1.0
             cross = True
     else:
-        if (rnew - rold) > vec * 0.5:
-            rnew = rnew - (vec * shift)
+        if (rnew - rold) > 0.5:
+            rnew = rnew - (1 + shift)
             cross = True
-        elif -(rnew - rold) > vec * 0.5:
-            rnew = rnew + (vec * shift)
+        elif -(rnew - rold) > 0.5:
+            rnew = rnew + (1 + shift)
             cross = True
 
     return cross, rnew
@@ -277,3 +276,27 @@ def smooth_msd_data(x, y):
     xy = np.column_stack((x, y))
     z = pd.DataFrame(xy).groupby(0, as_index=False)[1].mean().values
     return z[:, 0], z[:, 1]
+
+
+def calculate_rcplvs(lv):
+    rcplvs = la.inv(np.transpose(lv))
+    lengths = la.norm(lv, axis=1)
+    return rcplvs, lengths
+
+
+def cart_2_frac(coord, lengths, rcplvs):
+    coords = []
+   # print(coord.shape)
+   # print(coord.size)
+    if coord.size > 3:
+        for i in range(0, coord[:,0].size):
+            frac = np.matmul( rcplvs, coord[i] )
+            frac = np.mod( frac, 1 )
+            coords.append(frac)
+        coords = np.asarray(coords, dtype=float)
+        coords = np.reshape(coords, (coord[:,0].size, 3))
+    else:
+        frac = np.matmul(rcplvs, coord)
+        coords = np.mod(frac, 1)
+
+    return coords

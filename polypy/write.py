@@ -276,7 +276,7 @@ def two_dimensional_charge_density_plot(x, y, z, xlab="X Coordinate ($\AA$)",
     fig = plt.figure(figsize=figsize)
 
     ax = fig.add_subplot(111)
-    CM = ax.contourf(x, y, z, cmap=palette)
+    CM = ax.contourf(x, y, z, 50, cmap=palette)
     ax.set_xlabel(xlab, fontsize=15)
     ax.set_ylabel(ylab, fontsize=15)
     ax.tick_params(labelsize=12)
