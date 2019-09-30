@@ -24,7 +24,7 @@ class Density():
         elif len(np.unique(self.data['label'])) > 1:
             self.data = rd.get_atom(self.data, self.atom_type)
         self.rcplvs, self.lengths = ut.calculate_rcplvs(data['lv'][-1])
-        self.frac_coords = ut.cart_2_frac(self.data['trajectories'], self.lengths, self.rcplvs)
+     #   self.frac_coords = ut.cart_2_frac(self.data['trajectories'], self.lengths, self.rcplvs)
      #   self.frac_coords = data['fractional']
 
 
@@ -52,11 +52,11 @@ class Density():
             val = 1
         elif direction == "z":
             val = 2
-        c = self.frac_coords[:, val]
+        c = self.data['frac_trajectories'][:, val]
         x = np.ceil(self.lengths[val] / histogram_width).astype(int)
         bin_array = np.zeros(x)
         c.tolist()
-        for j in range(0, self.frac_coords[:,val].size):
+        for j in range(0, self.data['frac_trajectories'][:, val].size):
             plane = 0
             plane = (c[j] * x).astype(int)
             bin_array[plane] = bin_array[plane] + 1
@@ -90,12 +90,10 @@ class Density():
             val = [0, 2]
         elif direction == "z":
             val = [0, 1]
-        xc = self.frac_coords[:, val[0]]
-        yc = self.frac_coords[:, val[1]]
+        xc = self.data['frac_trajectories'][:, val[0]]
+        yc = self.data['frac_trajectories'][:, val[1]]
         x = np.ceil(self.lengths[val][0] / box).astype(int)
         y = np.ceil(self.lengths[val][1] / box).astype(int)
-        print(xc[0])
-        print(self.data['trajectories'][0])
         if x < y:
             x, y = y, x
             xc, yc = yc, xc
@@ -103,7 +101,7 @@ class Density():
         xc = xc.tolist()
         yc = yc.tolist()
 
-        for j in range(0, self.frac_coords[:, val[0]].size):
+        for j in range(0, self.data['frac_trajectories'][:, val[0]].size):
 
             xbox = 0
             ybox = 0

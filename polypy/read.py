@@ -271,18 +271,21 @@ def get_atom(data, atom):
     """
     if len(np.unique(data['label'])) == 1:
         return data
-
+    frac_coords = []
     coords = []
     count = 0
     for i in range(0, data['label'].size):
         if data['label'][i] == atom:
             coords.append(data['trajectories'][i])
+            frac_coords.append(data['frac_trajectories'][i])
             count = count + 1
 
     coords = np.asarray(coords)
+    frac_coords = np.asarray(frac_coords)
     natoms = int(count / data['timesteps'])
     atom_data = {'label': atom,
                  'trajectories': coords,
+                 'frac_trajectories': frac_coords,
                  'lv': data['lv'],
                  'timesteps': data['timesteps'],
                  'natoms': natoms}

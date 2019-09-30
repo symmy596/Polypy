@@ -1,8 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-sns.set(style="white")
-sns.set_style("ticks")
+
 
 
 def line_plot(x, y, xlab, ylab, output, set_style="default", palette="tab10",
