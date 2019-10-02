@@ -40,12 +40,16 @@ def read_history(file, atom_list):
                 tstep = False
                 current_lv = np.asarray(current_lv, dtype=float)
                 rcplvs, lengths = ut.calculate_rcplvs(current_lv)
-                current_lv = []
+                lv.append(current_lv)
                 rcplv.append(rcplvs)
-
+                current_lv = []
             if c < 3 and tstep is True:
-                lv.append(line.split())
-                current_lv.append(line.split())
+                if c == 4:
+                  #  lv.insert(0, line.split())
+                    current_lv.insert(0, line.split())
+                else:
+                   # lv.append(line.split())
+                    current_lv.append(line.split())
                 c = c + 1
             if name:
                 name = False
@@ -73,7 +77,7 @@ def read_history(file, atom_list):
         natoms = count / timesteps
         natoms = int(natoms)
 
-        lv = np.split(lv, timesteps)
+       # lv = np.split(lv, timesteps)
 
         data = {'label': atname,
                 'trajectories': trajectories,

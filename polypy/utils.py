@@ -113,7 +113,7 @@ def linear_regression(x, y):
     return slope, intercept, r_value, p_value, std_err
 
 
-def pbc(rnew, rold):
+def pbc(rnew, rold, i):
     '''Periodic boundary conditions for an msd calculation
 
     Parameters
@@ -132,9 +132,18 @@ def pbc(rnew, rold):
     new : float
         New position
     '''
-    shift = np.floor(rnew-rold)
+    shift = abs(rold - rnew)
+  #  if i == 1:
+  #      print(shift)
+    shift = round(shift, 0)
+  #  if i == 1:
+  #      print(shift)
+    shift = int(shift)
+  #  if i == 1:
+  #      print(shift)
     cross = False
-
+  #  if i == 1:
+  #      print("Old", rold, "New", rnew, "Org", r0, "timestep", j, "distance", distance)
     if shift < 2:
         if (rnew - rold) > 0.5:
             rnew = rnew - 1.0
@@ -144,11 +153,13 @@ def pbc(rnew, rold):
             cross = True
     else:
         if (rnew - rold) > 0.5:
-            rnew = rnew - (1 + shift)
+            rnew = rnew - shift
             cross = True
         elif -(rnew - rold) > 0.5:
-            rnew = rnew + (1 + shift)
+            rnew = rnew + shift 
             cross = True
+   # if i == 1:
+   #     print("New", rnew, "Old", rold, "Shift", shift, "New_Distance", (rnew-r0))
 
     return cross, rnew
 
@@ -286,8 +297,6 @@ def calculate_rcplvs(lv):
 
 def cart_2_frac(coord, lengths, rcplvs):
     coords = []
-   # print(coord.shape)
-   # print(coord.size)
     if coord.size > 3:
         for i in range(0, coord[:,0].size):
             frac = np.matmul( rcplvs, coord[i] )

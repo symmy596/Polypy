@@ -60,27 +60,24 @@ def run_msd(trajectories, lv, timesteps, natoms, start, timestep):
     '''
     trajectories = np.asarray(trajectories)
 
-    msd = np.array([])
-    xmsd = np.array([])
-    ymsd = np.array([])
-    time = np.array([])
-    zmsd = np.array([])
+    msd = np.zeros(timesteps-1)
+    xmsd = np.zeros(timesteps-1)
+    ymsd = np.zeros(timesteps-1)
+    zmsd = np.zeros(timesteps-1)
+    time = np.zeros(timesteps-1)
 
     r0 = trajectories[start-1]
     rOd = trajectories[start-1]
-
     for j in range((start), timesteps):
         r1 = trajectories[j]
-
         distance_new = r1 - r0
         r1.tolist()
         rOd.tolist()
-
         if distance_new.size > 3:
             n = 1
             for k in range(0, distance_new[:, 0].size):
                 for i in range(0, 3):
-                    cross, r_new = ut.pbc(r1[k, i], rOd[k, i])
+                    cross, r_new = ut.pbc(r1[k, i], rOd[k, i], i)
                     if cross is True:
                         r1[k, i] = r_new
                         distance_new[k, i] = r_new - r0[k, i]
@@ -92,11 +89,13 @@ def run_msd(trajectories, lv, timesteps, natoms, start, timestep):
             distance_new = distance_new.flatten()
 
             for i in range(0, 3):
-                cross, r_new = ut.pbc(r1[i], rOd[i])
+                cross, r_new = ut.pbc(r1[i], rOd[i], i)
+               # print(j, r0[i], rOd[i], r1[i], r_new, distance_new[i])
+
                 if cross is True:
+                    #print("Pay Attention")
                     r1[i] = r_new
                     distance_new[i] = r_new - r0[i]
-
         if n == 0:
             distance = distance_new.flatten()
         else:
@@ -116,27 +115,27 @@ def run_msd(trajectories, lv, timesteps, natoms, start, timestep):
             d = np.matmul(lv[j], distance)
             distance_n = np.append(distance_n, d)
         msd_new = square_distance(distance_n, n)
-        
+       # print(j, lv[j], d, distance_n)
+
         msd_new = np.average(msd_new)
 
-        msd = np.append(msd, (msd_new))
-        time = np.append(time, ((j - start) * timestep))
-
+        msd[j-start] = msd_new
+        time[j-start] = ((j- start) * timestep) 
+      #  print(time)
         if n == 1:
-            xmsd = np.append(xmsd, (np.average((distance_n[:, 0] ** 2))))
-            ymsd = np.append(ymsd, (np.average((distance_n[:, 1] ** 2))))
-            zmsd = np.append(zmsd, (np.average((distance_n[:, 2] ** 2))))
+            xmsd[j-start] = (np.average((distance_n[:, 0] ** 2)))
+            ymsd[j-start] = (np.average((distance_n[:, 1] ** 2)))
+            zmsd[j-start] = (np.average((distance_n[:, 2] ** 2)))
         elif n == 0:
-            xmsd = np.append(xmsd, (np.average((distance_n[0] ** 2))))
-            ymsd = np.append(ymsd, (np.average((distance_n[1] ** 2))))
-            zmsd = np.append(zmsd, (np.average((distance_n[2] ** 2))))
+            xmsd[j-start] = (np.average((distance_n[0] ** 2)))
+            ymsd[j-start] = (np.average((distance_n[1] ** 2)))
+            zmsd[j-start] = (np.average((distance_n[2] ** 2)))
 
         msd_data = {'msd': msd,
                     'xmsd': xmsd,
                     'ymsd': ymsd,
                     'zmsd': zmsd,
                     'time': time}
-        #print(msd_data['msd'])
     return msd_data
 
 
@@ -172,11 +171,11 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
     count = 0
     trajectory_slice = np.array([])
     vecs = []
-    msd = np.array([])
-    xmsd = np.array([])
-    ymsd = np.array([])
-    zmsd = np.array([])
-    time = np.array([])
+    msd = np.array([0])
+    xmsd = np.array([0])
+    ymsd = np.array([0])
+    zmsd = np.array([0])
+    time = np.array([0])
     conductivity_count = 0
     for i in range(0, xc.size):
         if xc[i] > ll and xc[i] < ul:
@@ -235,15 +234,22 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
             time = np.append(time, msd_data['time'])
 
         count = 0
-        msd_data = {'time': ut.smooth_msd_data(time, msd)[0],
-                    'msd':  ut.smooth_msd_data(time, msd)[1],
-                    'xmsd': ut.smooth_msd_data(time, xmsd)[1],
-                    'ymsd': ut.smooth_msd_data(time, ymsd)[1],
-                    'zmsd': ut.smooth_msd_data(time, zmsd)[1]}
+   # msd_data = {'time': ut.smooth_msd_data(time, msd)[0],
+   #             'msd':  ut.smooth_msd_data(time, msd)[1],
+   #             'xmsd': ut.smooth_msd_data(time, xmsd)[1],
+   #             'ymsd': ut.smooth_msd_data(time, ymsd)[1],
+   #             'zmsd': ut.smooth_msd_data(time, zmsd)[1]}
+
+    msd_data = {'time': time,
+                'msd': msd,
+                'xmsd': xmsd,
+                'ymsd': ymsd,
+                'zmsd': zmsd}
+
     return msd_data, conductivity_count
 
 
-def msd(data, atom):
+def msd(data, timestep):
     '''Function that runs all of the parts of the MSD calcualtion.
 
     Parameters
@@ -264,11 +270,9 @@ def msd(data, atom):
         Dictionary containing 3D msd, 1D msd in the x, y, z directions
         and the time.
     '''
-    if data.get_file_type() == "DLMONTE":
-        print("Monte Carlo is not time resolved")
-    if data.get_nconfigs() == 1:
+    if data['timesteps'] == 1:
         print("ERROR: - Only one timestep has been found")
-    if data.get_nconfigs() < 100:
+    if data['timesteps'] < 100:
         print("WARNING: Small number of timesteps - Poor statistics likely")
     if len(np.unique(data['label'])) > 1:
         print("ERROR: MSD can only handle one atom type. Exiting")
@@ -279,7 +283,7 @@ def msd(data, atom):
                        data['timesteps'],
                        data['natoms'],
                        1,
-                       data.timestep())
+                       timestep)
     return msd_data
 
 
@@ -400,23 +404,29 @@ def plane_msd(data, timestep, runs=None, ul=None, ll=None,
         ymsd = np.append(ymsd, msd_dat['ymsd'])
         zmsd = np.append(zmsd, msd_dat['zmsd'])
         time = np.append(time, msd_dat['time'])
+    timesteps, counts = np.unique(time, return_counts=True)
+    msd_data = {'time': ut.smooth_msd_data(time,
+                                           msd)[0],
+                'msd':  ut.smooth_msd_data(time,
+                                           msd)[1],
+                'xmsd': ut.smooth_msd_data(time,
+                                           xmsd)[1],
+                'ymsd': ut.smooth_msd_data(time,
+                                           ymsd)[1],
+                'zmsd': ut.smooth_msd_data(time,
+                                           zmsd)[1]}
 
-        msd_data = {'time': ut.smooth_msd_data(time,
-                                               msd)[0],
-                    'msd':  ut.smooth_msd_data(time,
-                                             msd)[1],
-                    'xmsd': ut.smooth_msd_data(time,
-                                             xmsd)[1],
-                    'ymsd': ut.smooth_msd_data(time,
-                                              ymsd)[1],
-                    'zmsd': ut.smooth_msd_data(time,
-                                            zmsd)[1]}
 
-        np.savetxt("Diffusion_Output.csv", np.array([msd_data['time'],
-                                                    msd_data['msd'], 
-                                                    msd_data['xmsd'], 
-                                                    msd_data['ymsd'], 
-                                                    msd_data['zmsd'], 
-                                                    ]))
+   # msd_data = {'time': time,
+   #             'msd': msd,
+   #             'xmsd': xmsd,
+   #             'ymsd': ymsd,
+   #             'zmsd': zmsd}
+        #np.savetxt("Diffusion_Output.csv", np.array([msd_data['time'],
+        #                                            msd_data['msd'], 
+        #                                            msd_data['xmsd'], 
+        #                                            msd_data['ymsd'], 
+        #                                            msd_data['zmsd'], 
+        #                                            ]))
 
-    return msd_data, np.sum(bin_atoms)
+    return msd_data, np.sum(bin_atoms), timesteps, counts

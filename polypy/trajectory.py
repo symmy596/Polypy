@@ -66,29 +66,24 @@ class PolyTrajectory():
         return int(self.traj['numconfigs']) 
    
 
-    def timestep(self):
-        """Calculates the simulation timestep.
+  #  def timestep(self):
+  #      """Calculates the simulation timestep.#
 
-        Returns
-        -------
-        float
-            Timestep - Time between records.
-        """
-        timestep = float(self.traj[0]['timestep'][4])
-        step_length = float(self.traj[1]['timestep'][0]) - float(self.traj[0]['timestep'][0])
-        return (timestep * step_length)
+#        Returns
+ #       -------
+  #      float
+   #         Timestep - Time between records.
+    #    """
+     #   timestep = float(self.traj[0]['timestep'][4])
+      #  step_length = float(self.traj[1]['timestep'][0]) - float(self.traj[0]['timestep'][0])
+       # return (timestep * step_length)
 
-        Returns
-        -------
-        float
-            Timestep - Time between records.
-        """
-        if self.traj['trajectory_type'] != "DLPOLY":
-            print("Monte Carlo does not have a timestep")
-        else:       
-            timestep = float(self.traj[0]['timestep'][4])
-            step_length = float(self.traj[1]['timestep'][0]) - float(self.traj[0]['timestep'][0])
-            return (timestep * step_length)
+ #       if self.traj['trajectory_type'] != "DLPOLY":
+  #          print("Monte Carlo does not have a timestep")
+   #     else:       
+    #        timestep = float(self.traj[0]['timestep'][4])
+     #       step_length = float(self.traj[1]['timestep'][0]) - float(self.traj[0]['timestep'][0])
+      #      return (timestep * step_length)
 
     def get_title(self):
         """Returns the title of the HISTORY file.
