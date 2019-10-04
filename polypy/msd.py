@@ -176,6 +176,10 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
     ymsd = np.array([0])
     zmsd = np.array([0])
     time = np.array([0])
+    do = np.array([])
+    dx = np.array([])
+    dy = np.array([])
+    dz = np.array([])
     conductivity_count = 0
     for i in range(0, xc.size):
         if xc[i] > ll and xc[i] < ul:
@@ -204,7 +208,23 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
                     ymsd = np.append(ymsd, msd_data['ymsd'])
                     zmsd = np.append(zmsd, msd_data['zmsd'])
                     time = np.append(time, msd_data['time'])
+                    d = ut.linear_regression(msd_data['time'],
+                                             msd_data['msd'])[0]
+                    xd = ut.linear_regression(msd_data['time'],
+                                              msd_data['xmsd'])[0]
+                    yd = ut.linear_regression(msd_data['time'],
+                                              msd_data['ymsd'])[0]            
+                    zd = ut.linear_regression(msd_data['time'],
+                                              msd_data['zmsd'])[0]
 
+                    d = ut.three_d_diffusion_coefficient(d)
+                    xd = ut.one_d_diffusion_coefficient(xd)
+                    yd = ut.one_d_diffusion_coefficient(yd)
+                    zd = ut.one_d_diffusion_coefficient(zd)
+                    do = np.append(do, d)
+                    dx = np.append(dx, xd)
+                    dy = np.append(dy, yd)
+                    dz = np.append(dz, zd)
 
                 count = 0
                 trajectory_slice = np.array([])
@@ -232,13 +252,25 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
             ymsd = np.append(ymsd, msd_data['ymsd'])
             zmsd = np.append(zmsd, msd_data['zmsd'])
             time = np.append(time, msd_data['time'])
+            d = ut.linear_regression(msd_data['time'],
+                                     msd_data['msd'])[0]
+            xd = ut.linear_regression(msd_data['time'],
+                                     msd_data['xmsd'])[0]
+            yd = ut.linear_regression(msd_data['time'],
+                                     msd_data['ymsd'])[0]            
+            zd = ut.linear_regression(msd_data['time'],
+                                     msd_data['zmsd'])[0]
+
+            d = ut.three_d_diffusion_coefficient(d)
+            xd = ut.one_d_diffusion_coefficient(xd)
+            yd = ut.one_d_diffusion_coefficient(yd)
+            zd = ut.one_d_diffusion_coefficient(zd)
+            do = np.append(do, d)
+            dx = np.append(dx, xd)
+            dy = np.append(dy, yd)
+            dz = np.append(dz, zd)
 
         count = 0
-   # msd_data = {'time': ut.smooth_msd_data(time, msd)[0],
-   #             'msd':  ut.smooth_msd_data(time, msd)[1],
-   #             'xmsd': ut.smooth_msd_data(time, xmsd)[1],
-   #             'ymsd': ut.smooth_msd_data(time, ymsd)[1],
-   #             'zmsd': ut.smooth_msd_data(time, zmsd)[1]}
 
     msd_data = {'time': time,
                 'msd': msd,
@@ -246,7 +278,7 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
                 'ymsd': ymsd,
                 'zmsd': zmsd}
 
-    return msd_data, conductivity_count
+    return msd_data, conductivity_count, do, dx, dy, dz
 
 
 def msd(data, timestep):
@@ -394,39 +426,46 @@ def plane_msd(data, timestep, runs=None, ul=None, ll=None,
     trajectories = np.split(data['frac_trajectories'], data['timesteps'])
     trajectories = np.asarray(trajectories)
     bin_atoms = np.array([])
+    diffusion = np.array([])
+    xdiffusion = np.array([])
+    ydiffusion = np.array([])
+    zdiffusion = np.array([])
+
     for i in range(0, (data['natoms'])):
 
-        msd_dat, conductivity_count = check_trajectory(trajectories[:, i], xc[:, i], data['lv'],
+        msd_dat, conductivity_count, do, dx, dy, dz = check_trajectory(trajectories[:, i], xc[:, i], data['lv'],
                               data['timesteps'], timestep, ul, ll, runs)
+        diffusion = np.append(diffusion, do)
+        xdiffusion = np.append(xdiffusion, dx)
+        ydiffusion = np.append(ydiffusion, dy)
+        zdiffusion = np.append(zdiffusion, dz)
+
         bin_atoms = np.append(bin_atoms, conductivity_count)
         msd = np.append(msd, msd_dat['msd'])
         xmsd = np.append(xmsd, msd_dat['xmsd'])
         ymsd = np.append(ymsd, msd_dat['ymsd'])
         zmsd = np.append(zmsd, msd_dat['zmsd'])
         time = np.append(time, msd_dat['time'])
+    
+    diffusion = np.average(diffusion)
+    xdiffusion = np.average(xdiffusion)
+    ydiffusion = np.average(ydiffusion)
+    zdiffusion = np.average(zdiffusion)
+
     timesteps, counts = np.unique(time, return_counts=True)
-    msd_data = {'time': ut.smooth_msd_data(time,
-                                           msd)[0],
-                'msd':  ut.smooth_msd_data(time,
-                                           msd)[1],
-                'xmsd': ut.smooth_msd_data(time,
-                                           xmsd)[1],
-                'ymsd': ut.smooth_msd_data(time,
-                                           ymsd)[1],
-                'zmsd': ut.smooth_msd_data(time,
-                                           zmsd)[1]}
+ 
+    msd_data = {'time': time,
+                  'msd':  msd,
+                  'xmsd': xmsd,
+                  'ymsd': ymsd,
+                  'zmsd': zmsd,
+                  'timesteps' : timesteps, 
+                  'stats': counts}
 
+    transport_data = {'Diffusion': diffusion,
+                      'XDiffusion': xdiffusion,
+                      'YDiffusion': ydiffusion,
+                      'ZDiffusion': zdiffusion,
+                      'TotalAtoms': np.sum(bin_atoms) / data['timesteps']}
 
-   # msd_data = {'time': time,
-   #             'msd': msd,
-   #             'xmsd': xmsd,
-   #             'ymsd': ymsd,
-   #             'zmsd': zmsd}
-        #np.savetxt("Diffusion_Output.csv", np.array([msd_data['time'],
-        #                                            msd_data['msd'], 
-        #                                            msd_data['xmsd'], 
-        #                                            msd_data['ymsd'], 
-        #                                            msd_data['zmsd'], 
-        #                                            ]))
-
-    return msd_data, np.sum(bin_atoms), timesteps, counts
+    return msd_data, transport_data

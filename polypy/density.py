@@ -212,3 +212,43 @@ class Density():
         histograms = histograms + 0.001
 
         return x, y, z, histograms
+
+
+def regional_residence_time(data, ul, ll, direction, timestep):
+    if direction == "x":
+        val = 0
+    elif direction == "y":
+        val = 1
+    elif direction == "z":
+        val = 2
+
+    times = np.array([])
+    for i in range(data['natoms']):
+        trajectory = rd.get_trajectory(data, i)
+        in_region = False
+        time_in_box = 0
+        previously_in = False
+        for j in range(trajectory[:,0].size):
+           # print(trajectory[i,val])
+
+            if trajectory[j,val] > ll and trajectory[j,val] < ul:
+                if previously_in == True:  
+                    time_in_box = time_in_box + 1
+
+                if in_region == False:
+                    previously_in = True
+
+                in_region = True            
+            elif trajectory[j,val] < ll or trajectory[j,val] > ul:
+                if in_region == True:
+                    in_region = False
+                    previously_in = False
+                    if time_in_box > 10:
+                        times = np.append(times, time_in_box)
+                    time_in_box = 0
+            
+           # print(trajectory[j,val], in_region, previously_in, j, i, time_in_box)
+    print(times)
+    steps = np.average(times)
+    times = steps * timestep
+    return steps, times

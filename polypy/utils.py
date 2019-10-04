@@ -69,7 +69,7 @@ def three_d_diffusion_coefficient(x):
     Parameters
     ----------
     x : float
-        Gradient of 1D diffusion
+        Gradient of 3D diffusion
 
     Returns
     ------

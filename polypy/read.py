@@ -315,3 +315,8 @@ def get_config(data, timestep):
     """
     configs = np.split(data['trajectories'], data['timesteps'])
     return configs[timestep]
+
+def get_trajectory(data, atom):
+    configs = np.split(data['trajectories'], data['timesteps'])
+    configs = np.asarray(configs)
+    return configs[:,atom]
