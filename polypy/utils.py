@@ -53,8 +53,8 @@ def conductivity(plane, volume, diff, temperature):
     conductivity : float
         Conductivity
     '''
-    volume = volume * (10 ** -30)
-    diff = diff * (10 ** -9)
+    volume = volume * (10 ** -24)
+    diff = diff * (10 ** -8)
     conc = plane / volume
     EV = ev ** 2
     constants = kb * temperature
@@ -77,6 +77,21 @@ def three_d_diffusion_coefficient(x):
         Overal Diffusion coefficient
     '''
     return ((np.average(x)) / 6) * 10
+
+def two_d_diffusion_coefficient(x):
+    '''Calculate the diffusion coefficient from the slope of MSD vs Time
+
+    Parameters
+    ----------
+    x : float
+        Gradient of 1D diffusion
+
+    Returns
+    ------
+    float
+        Overal Diffusion coefficient
+    '''
+    return ((np.average(x)) / 4) * 10
 
 
 def one_d_diffusion_coefficient(x):

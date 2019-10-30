@@ -8,6 +8,38 @@ ev = codata.value('electron volt')
 ev = -ev
 
 
+def two_dimension_square_distance(distance, n, direction):
+    '''Calculate the MSD for a series of distances
+
+    Parameters
+    ----------
+    distance : array like
+        Distance between atomic coordinates
+    n : integer
+        1 = 2D array, 0 = 1D array
+    direction : str
+        which directions
+    Returns
+    -------
+    msd : array like
+        squared displacement
+    '''
+    if direction == 'x':
+        val = [0, 1]
+    elif direction == 'y':
+        val = [0, 2]
+    else:
+        val = [1, 2]
+
+    if n == 1:
+        msd = (distance[:, val[0]] ** 2) + (
+               distance[:, val[1]] ** 2)
+    elif n == 0:
+        msd = (distance[val[0]] ** 2) + (
+               distance[val[1]] ** 2)
+    return msd
+
+
 def square_distance(distance, n):
     '''Calculate the MSD for a series of distances
 
@@ -64,6 +96,9 @@ def run_msd(trajectories, lv, timesteps, natoms, start, timestep):
     xmsd = np.zeros(timesteps-1)
     ymsd = np.zeros(timesteps-1)
     zmsd = np.zeros(timesteps-1)
+    xymsd = np.zeros(timesteps-1)
+    xzmsd = np.zeros(timesteps-1)
+    yzmsd = np.zeros(timesteps-1)
     time = np.zeros(timesteps-1)
 
     r0 = trajectories[start-1]
@@ -115,13 +150,23 @@ def run_msd(trajectories, lv, timesteps, natoms, start, timestep):
             d = np.matmul(lv[j], distance)
             distance_n = np.append(distance_n, d)
         msd_new = square_distance(distance_n, n)
-       # print(j, lv[j], d, distance_n)
+        xy_msd = two_dimension_square_distance(distance_n, n, 'x')
+        xz_msd = two_dimension_square_distance(distance_n, n, 'y')
+        yz_msd = two_dimension_square_distance(distance_n, n, 'z')
 
         msd_new = np.average(msd_new)
+        xy_msd = np.average(xy_msd)
+        xz_msd = np.average(xz_msd)
+        yz_msd = np.average(yz_msd)
+
 
         msd[j-start] = msd_new
-        time[j-start] = ((j- start) * timestep) 
-      #  print(time)
+        xymsd[j-start] = xy_msd
+        xzmsd[j-start] = xz_msd
+        yzmsd[j-start] = yz_msd
+
+        time[j-start] = ((j- start) * timestep)
+ 
         if n == 1:
             xmsd[j-start] = (np.average((distance_n[:, 0] ** 2)))
             ymsd[j-start] = (np.average((distance_n[:, 1] ** 2)))
@@ -132,6 +177,9 @@ def run_msd(trajectories, lv, timesteps, natoms, start, timestep):
             zmsd[j-start] = (np.average((distance_n[2] ** 2)))
 
         msd_data = {'msd': msd,
+                    'xymsd': xymsd,
+                    'xzmsd': xzmsd,
+                    'yzmsd': yzmsd,
                     'xmsd': xmsd,
                     'ymsd': ymsd,
                     'zmsd': zmsd,
@@ -190,7 +238,7 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
             vecs.append(lv[i])
 
         elif xc[i] < ll or xc[i] > ul:
-            if count > 200 and ib is True:
+            if count > 100 and ib is True:
 
                 trajectory_slice = np.split(trajectory_slice,
                                             (trajectory_slice.size / 3))
@@ -235,7 +283,7 @@ def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
                 vecs = []
                 count = 0
 
-    if count > 200 and ib is True:
+    if count > 100 and ib is True:
 
         trajectory_slice = np.split(trajectory_slice,
                                     (trajectory_slice.size / 3))
@@ -340,6 +388,9 @@ def smooth_msd(data, timestep, runs=None):
         runs = 5
 
     smsd = np.array([])
+    sxymsd = np.array([])
+    sxzmsd = np.array([])
+    syzmsd = np.array([])
     sxmsd = np.array([])
     symsd = np.array([])
     szmsd = np.array([])
@@ -355,18 +406,33 @@ def smooth_msd(data, timestep, runs=None):
                            start,
                            timestep)
         smsd = np.append(smsd, msd_data['msd'])
+        sxymsd = np.append(sxymsd, msd_data['xymsd'])
+        sxymsd = np.append(sxzmsd, msd_data['xzmsd'])
+        sxymsd = np.append(syzmsd, msd_data['yzmsd'])
         sxmsd = np.append(sxmsd, msd_data['xmsd'])
         symsd = np.append(symsd, msd_data['ymsd'])
         szmsd = np.append(szmsd, msd_data['zmsd'])
         stime = np.append(stime, msd_data['time'])
 
-    smsd_data = {'time': stime, 'msd': smsd, 'xmsd': sxmsd,
-                 'ymsd': symsd, 'zmsd': szmsd}
+    smsd_data = {'time': stime, 
+                 'msd': smsd, 
+                 'xymsd': sxymsd, 
+                 'xzmsd': sxzmsd, 
+                 'yzmsd': syzmsd, 
+                 'xmsd': sxmsd,
+                 'ymsd': symsd, 
+                 'zmsd': szmsd}
 
     msd_data = {'time': ut.smooth_msd_data(smsd_data['time'],
                                            smsd_data['msd'])[0],
                 'msd':  ut.smooth_msd_data(smsd_data['time'],
                                            smsd_data['msd'])[1],
+                'xymsd': ut.smooth_msd_data(smsd_data['time'],
+                                           smsd_data['xymsd'])[1],
+                'xzmsd': ut.smooth_msd_data(smsd_data['time'],
+                                           smsd_data['xzmsd'])[1],
+                'yzmsd': ut.smooth_msd_data(smsd_data['time'],
+                                           smsd_data['yzmsd'])[1],                
                 'xmsd': ut.smooth_msd_data(smsd_data['time'],
                                            smsd_data['xmsd'])[1],
                 'ymsd': ut.smooth_msd_data(smsd_data['time'],
@@ -467,5 +533,7 @@ def plane_msd(data, timestep, runs=None, ul=None, ll=None,
                       'YDiffusion': ydiffusion,
                       'ZDiffusion': zdiffusion,
                       'TotalAtoms': np.sum(bin_atoms) / data['timesteps']}
+
+
 
     return msd_data, transport_data
