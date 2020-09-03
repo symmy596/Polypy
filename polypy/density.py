@@ -16,19 +16,50 @@ class Density():
     atom_type : list (optional)
         atoms to be analysed
     '''
-    def __init__(self, data, atom_type=None):
+    def __init__(self, data, histogram_size=0.1, atom=None):
         self.data = data
-        self.atom_type = atom_type
-        if len(np.unique(self.data['label'])) > 1 and self.atom_type is None:
-            print("Multiple atom types detected - Splitting Coordinates")
-        elif len(np.unique(self.data['label'])) > 1:
-            self.data = rd.get_atom(self.data, self.atom_type)
-        self.rcplvs, self.lengths = ut.calculate_rcplvs(data['lv'][-1])
-     #   self.frac_coords = ut.cart_2_frac(self.data['trajectories'], self.lengths, self.rcplvs)
-     #   self.frac_coords = data['fractional']
+        self.histogram_size = histogram_size
+        self.atom = atom
+        if self.atom is None and len(self.data.atom_list) > 1:
+            print("There are multiple different atoms in the trajectory, subsequent analysis may be incorrect")
+        elif len(self.data.atom_list) > 1 and self.atom:
+            self.data = self.data.get_atom(atom)
+        self.lengths = self.data.cell_lengths
+        self.x_lim = None
+        self.y_lim = None
+        self.z_lim = None
+        self.x = None
+        self.y = None
+        self.z = None
+        self.find_limits()
+        self.coords_map = np.zeros((self.x_lim , self.y_lim , self.z_lim ))
+        self.build_map()
 
+    def find_limits(self):
 
-    def one_dimensional_density(self, histogram_width=0.1, direction="x"):
+        self.x_lim = np.ceil(np.amax(self.lengths[:, 0]) / self.histogram_size).astype(int)
+        self.y_lim = np.ceil(np.amax(self.lengths[:, 1]) / self.histogram_size).astype(int)
+        self.z_lim = np.ceil(np.amax(self.lengths[:, 2]) / self.histogram_size).astype(int)
+        self.x = (np.arange(0, self.x_lim)) * self.histogram_size
+        self.y = (np.arange(0, self.y_lim)) * self.histogram_size
+        self.z = (np.arange(0, self.z_lim)) * self.histogram_size
+
+    def update_map(self, position):
+
+            xbox = (position[0] * self.x_lim).astype(int)
+            ybox = (position[1] * self.y_lim).astype(int)
+            zbox = (position[2] * self.z_lim).astype(int)
+            self.coords_map[ybox, xbox, zbox] = self.coords_map[ybox, xbox, zbox] + 1
+
+    def build_map(self):
+
+        positions = self.data.fractional_trajectory.tolist()
+
+        for position in positions:
+            
+            self.update_map(position)
+
+    def one_dimensional_density(self, direction="x"):
         '''Calculate the particle density within one dimensional
         slices of a structure.
 
@@ -47,22 +78,18 @@ class Density():
             total number of species in each histograms.
         '''
         if direction == "x":
-            val = 0
+            val = [1, 2]
+            x = self.x
         elif direction == "y":
-            val = 1
+            val = [0, 2]
+            x = self.y
         elif direction == "z":
-            val = 2
-        c = self.data['frac_trajectories'][:, val]
-        x = np.ceil(self.lengths[val] / histogram_width).astype(int)
-        bin_array = np.zeros(x)
-        c.tolist()
-        for j in range(0, self.data['frac_trajectories'][:, val].size):
-            plane = 0
-            plane = (c[j] * x).astype(int)
-            bin_array[plane] = bin_array[plane] + 1
-        x = (np.arange(0, bin_array.size))
-        x = x * histogram_width
-        return x, bin_array
+            val = [0, 1]
+            x = self.z
+        tmp = np.sum(self.coords_map, axis=val[1])
+        y = np.sum(tmp, axis=val[0])
+        bin_volume = 0.1 * np.mean(self.data.cell_lengths[:,val[0]]) * np.mean(self.data.cell_lengths[:,val[1]])
+        return x, y, bin_volume
 
     def two_dimensional_density(self, box=0.1, direction="x"):
         '''Calculate the atomic number density within two dimensional
@@ -85,35 +112,21 @@ class Density():
             Total number of species in each box as a function of x and y.
         '''
         if direction == "x":
-            val = [1, 2]
+            val = 0
+            x = self.y
+            y = self.z
         elif direction == "y":
-            val = [0, 2]
+            val = 1
+            x = self.x
+            y = self.z
         elif direction == "z":
-            val = [0, 1]
-        xc = self.data['frac_trajectories'][:, val[0]]
-        yc = self.data['frac_trajectories'][:, val[1]]
-        x = np.ceil(self.lengths[val][0] / box).astype(int)
-        y = np.ceil(self.lengths[val][1] / box).astype(int)
-        if x < y:
-            x, y = y, x
-            xc, yc = yc, xc
-        bin_array = np.zeros(((y), (x)))
-        xc = xc.tolist()
-        yc = yc.tolist()
+            val = 2
+            x = self.x
+            y = self.y
+        z = np.sum(self.coords_map, axis=val)
+        box_volume = 0.1 * 0.1 * np.mean(self.data.cell_lengths[:,val])
+        return x, y, z, box_volume
 
-        for j in range(0, self.data['frac_trajectories'][:, val[0]].size):
-
-            xbox = 0
-            ybox = 0
-            xbox = (xc[j] * x).astype(int)
-            ybox = (yc[j] * y).astype(int)
-            bin_array[ybox, xbox] = bin_array[ybox, xbox] + 1
-
-        x = (np.arange(0, x)) * box
-        y = (np.arange(0, y)) * box
-        z = bin_array + 0.001
-
-        return x, y, z
 
     def one_dimensional_density_sb(self, ul, ll, direction="x"):
         '''Calculate the total number of a given species within a
@@ -150,69 +163,6 @@ class Density():
                 plane = plane + 1
 
         return plane
-
-    def one_and_two_dimension_overlay(self, box=0.1, direction="x"):
-        '''Combination of the one and two dimensional density functions.
-        Calculates both total number of atoms in one and two dimensions
-        and overlays them in one plot.
-
-        Parameters
-        ----------
-        box : float (optional)
-            size of the boxes and bins
-        direction : string (optional)
-            direction perpendicular to the planes
-
-        Returns
-        -------
-        x : array like
-            X axis coordinates.
-        y : array like
-            Y axis coordinates.
-        histograms : array like
-            Total number of species within each histogram.
-        z : array like
-            Total number of species within each box.
-        '''
-        if direction == "x":
-            val = [1, 2]
-        elif direction == "y":
-            val = [0, 2]
-        elif direction == "z":
-            val = [0, 1]
-
-        xc = self.coords[:, val[0]]
-        xc = xc + (np.average(self.lv[:, [val[0]]]) / 2)
-        yc = self.coords[:, val[1]]
-        yc = yc + (np.average(self.lv[:, [val[1]]]) / 2)
-        x = ut.bin_choose((np.amax(self.lv[:, val[0]])), box) + 1
-        y = ut.bin_choose((np.amax(self.lv[:, val[1]])), box) + 1
-        if x < y:
-            x, y = y, x
-            xc, yc = yc, xc
-        histograms = np.zeros((x))
-        z = np.zeros(((y), (x)))
-        xc = xc.tolist()
-        yc = yc.tolist()
-
-        for j in range(0, self.coords[:, val[0]].size):
-
-            xbox = 0
-            ybox = 0
-            xbox = ut.bin_choose(xc[j], box)
-            ybox = ut.bin_choose(yc[j], box)
-            histograms[xbox] = histograms[xbox] + 1
-            z[ybox, xbox] = z[ybox, xbox] + 1
-
-        x = np.arange((x))
-        y = np.arange((y))
-        x = ((x * box)) - (np.average(self.lv[:, [val[0]]]) / 2)
-        y = ((y * box))
-        z = z + 0.001
-        histograms = histograms + 0.001
-
-        return x, y, z, histograms
-
 
 def regional_residence_time(data, ul, ll, direction, timestep):
     if direction == "x":
