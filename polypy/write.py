@@ -1,3 +1,11 @@
+"""
+Write functions
+"""
+
+# Copyright (c) Adam R. Symington
+# Distributed under the terms of the MIT License
+# author: Adam R. Symington
+
 import numpy as np
 import matplotlib.pyplot as plt
 from polypy import fig_params
@@ -6,25 +14,6 @@ from polypy import fig_params
 def line_plot(x, y, xlab, ylab, output, set_style="default", palette="tab10",
               figsize=None):
     '''Plots the system volume vs timestep.
-
-    Parameters
-    ----------
-    x : array like
-        X axis
-    y : array like
-        Y axis
-    xlab : str (optional)
-        X label
-    ylab : str (optional)
-        Y label
-    output : str (optional)
-        Output filename
-    set_style : str (optional)
-        Plot style
-    palette : str (optional)
-        Color palette
-    figsize : bool (optional)
-        Size of plot
     '''
     fig = plt.figure()
 
@@ -42,20 +31,6 @@ def line_plot(x, y, xlab, ylab, output, set_style="default", palette="tab10",
 def msd_plot(msd_data, set_style="default", palette="tab10",
              figsize=None, output=None):
     '''
-    MSDPlot - Plot MSD
-
-    Parameters
-    ----------
-    msd_data  : Dictionary {'msd': msd, 'xmsd': xmsd,
-                'ymsd': ymsd, 'zmsd': zmsd, 'time': time}
-    set_style : str (optional)
-        Plot style
-    palette : str (optional)
-        Color palette
-    figsize : bool (optional)
-        Size of plot
-    output : str (optional)
-        Output filename
     '''
 
     fig = plt.figure()
@@ -82,26 +57,7 @@ def msd_plot(msd_data, set_style="default", palette="tab10",
 def volume_plot(x, y, xlab="Timestep (ps)", ylab="System Volume ($\AA$)",
                 output=None, set_style="default", palette="tab10",
                 figsize=None):
-    '''Plots the system volume vs timestep.
-
-    Parameters
-    ----------
-    x : array like
-        Timesteps
-    y : array like
-        Volume
-    xlab : str (optional)
-        X label
-    ylab : str (optional)
-        Y label
-    output : str (optional)
-        Output filename
-    set_style : str (optional)
-        Plot style
-    palette : str (optional)
-        Color palette
-    figsize : bool (optional)
-        Size of plot
+    '''
     '''
     line_plot(x, y, xlab, ylab, output, set_style, palette,
               figsize)
@@ -112,25 +68,6 @@ def electric_field_plot(x, y, xlab="Coordinate ($\AA$)",
                         set_style="default", palette="tab10",
                         figsize=None):
     '''Plots the electric field of a system.
-
-    Parameters
-    ----------
-    x : array like
-         X axis values - Coordinates of bins
-    y : array like
-        Y axis values - Electric field
-    xlab : str (optional)
-        X label
-    ylab : str (optional)
-        Y label
-    output : str (optional)
-        Output filename
-    set_style : str (optional)
-        Plot style
-    palette : str (optional)
-        Color palette
-    figsize : bool (optional)
-        Size of plot
     '''
     line_plot(x, y, xlab, ylab, output, set_style, palette,
               figsize)
@@ -141,25 +78,6 @@ def electrostatic_potential_plot(x, y, xlab="Coordinate ($\AA$)",
                                  set_style="default", palette="tab10",
                                  figsize=None):
     '''Plots the electrostatic potential of a system.
-
-    Parameters
-    ----------
-    x : array like
-         X axis values - Coordinates of bins
-    y : array like
-        Y axis values - Electrostatic potential
-    xlab : str (optional)
-        X label
-    ylab : str (optional)
-        Y label
-    output : str (optional)
-        Output filename
-    set_style : str (optional)
-        Plot style
-    palette : str (optional)
-        Color palette
-    figsize : bool (optional)
-        Size of plot
     '''
     line_plot(x, y, xlab, ylab, output, set_style, palette,
               figsize)
@@ -170,25 +88,6 @@ def one_dimensional_charge_density_plot(x, y, xlab="Coordinate ($\AA$)",
                                         set_style="default", palette="tab10",
                                         figsize=None):
     '''Plots the charge density of a system in one dimension.
-
-    Parameters
-    ----------
-    x : array like
-         X axis values - Coordinates of bins
-    y : array like
-        Y axis values - Charge density
-    xlab : str (optional)
-        X label
-    ylab : str (optional)
-        Y label
-    output : str (optional)
-        Output filename
-    set_style : str (optional)
-        Plot style
-    palette : str (optional)
-        Color palette
-    figsize : bool (optional)
-        Size of plot
     '''
     line_plot(x, y, xlab, ylab, output, set_style, palette,
               figsize)
@@ -200,25 +99,6 @@ def one_dimensional_density_plot(x, y, data_labels,
                                  set_style="default", palette="tab10",
                                  figsize=None):
     '''Plots the number density for a list of species.
-
-    Parameters
-    ----------
-    x : list
-        X axis values - Coordinates of bins
-    y : list
-        Y axis values - Number dnesity
-    xlab : str (optional)
-        X label
-    ylab : str (optional)
-        Y label
-    output : str (optional)
-        Output filename
-    set_style : str (optional)
-        Plot style
-    palette : str (optional)
-        Color palette
-    figsize : bool (optional)
-        Size of plot
     '''
 
     fig = plt.figure()

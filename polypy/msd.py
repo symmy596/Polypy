@@ -1,673 +1,419 @@
+"""
+Msd functions
+"""
+
+# Copyright (c) Adam R. Symington
+# Distributed under the terms of the MIT License
+# author: Adam R. Symington
+
 import sys as sys
 import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from polypy import fig_params
 from polypy import utils as ut
+from polypy.read import Trajectory 
 from scipy.constants import codata
-
-kb = codata.value('Boltzmann constant')
-ev = codata.value('electron volt')
-ev = -ev
+from scipy import stats
 
 class MSDContainer():
-    
-    def __init__(self, timesteps):
-        self.msd = np.zeros(timesteps-1)
-        self.xymsd = np.zeros(timesteps-1)
-        self.xzmsd = np.zeros(timesteps-1)
-        self.yzmsd = np.zeros(timesteps-1)
-        self.xmsd = np.zeros(timesteps-1)
-        self.ymsd = np.zeros(timesteps-1)
-        self.zmsd = np.zeros(timesteps-1)
-        self.time = np.zeros(timesteps-1)
+    """
+    The :py:class:`polypy.msd.MSDContainer` class stores the output from the msd calculation.
+    """
+    def __init__(self):
+        self.msd = np.array([])
+        self.xymsd = np.array([])
+        self.xzmsd = np.array([])
+        self.yzmsd = np.array([])
+        self.xmsd = np.array([])
+        self.ymsd = np.array([])
+        self.zmsd = np.array([])
+        self.time = np.array([])
         self.sd = np.array([])
         self.sd_time = np.array([])
 
-class MSD():
+    def clean_data(self):
+        """
+        Converts the data into a user friendly format.
+        """
+        time, self.msd = self.smooth_msd_data(self.time, self.msd)
+        self.xymsd = self.smooth_msd_data(self.time, self.xymsd)[1]
+        self.xzmsd = self.smooth_msd_data(self.time, self.xzmsd)[1]
+        self.yzmsd = self.smooth_msd_data(self.time, self.yzmsd)[1]
+        self.xmsd = self.smooth_msd_data(self.time, self.xmsd)[1]
+        self.ymsd = self.smooth_msd_data(self.time, self.ymsd)[1]
+        self.zmsd = self.smooth_msd_data(self.time, self.zmsd)[1]
+        self.time = time
 
-    def __init__(self, data, timestep):
+    def smooth_msd_data(self, x, y):
+        """
+        Smooths the data from the smoothed msd function. The data consists
+        of multiple msd runs but the data is unordered. This function will
+        order the data and average all y values with equivalent x values.
+
+        Args:
+            x (:py:attr:`array_like`): Time data
+            y (:py:attr:`array_like`): MSD data
+        
+        Returns:
+            z (:py:attr:`array_like`): Time / MSD data
+        """
+        xy = np.column_stack((x, y))
+        z = pd.DataFrame(xy).groupby(0, as_index=False)[1].mean().values
+        return z[:, 0], z[:, 1]
+
+    def xyz_diffusion_coefficient(self):
+        """
+        Calculates the three dimensional xyz diffusion coefficient
+
+        Returns:
+            (:py:attr:`float`): xyx Diffusion coefficient
+        """
+        gradient = stats.linregress(self.time, self.msd)[0]
+        return (gradient / 6) * 10
+
+    def xy_diffusion_coefficient(self):
+        """
+        Calculates the two dimensional xy diffusion coefficient
+
+        Returns:
+            (:py:attr:`float`): xy Diffusion coefficient
+        """
+        gradient = stats.linregress(self.time, self.xymsd)[0]
+        return (gradient / 4) * 10
+
+    def xz_diffusion_coefficient(self):
+        """
+        Calculates the two dimensional xz diffusion coefficient
+
+        Returns:
+            (:py:attr:`float`): xz Diffusion coefficient
+        """
+        gradient = stats.linregress(self.time, self.xzmsd)[0]
+        return (gradient / 4) * 10
+
+    def yz_diffusion_coefficient(self):
+        """
+        Calculates the two dimensional yz diffusion coefficient
+
+        Returns:
+            (:py:attr:`float`): yz Diffusion coefficient
+        """
+        gradient = stats.linregress(self.time, self.yzmsd)[0]
+        return (gradient / 4) * 10
+
+    def x_diffusion_coefficient(self):
+        """
+        Calculates the one dimensional x diffusion coefficient
+
+        Returns:
+            (:py:attr:`float`): x Diffusion coefficient
+        """
+        gradient = stats.linregress(self.time, self.xmsd)[0]
+        return (gradient / 2) * 10
+    
+    def y_diffusion_coefficient(self):
+        """
+        Calculates the one dimensional y diffusion coefficient
+
+        Returns:
+            (:py:attr:`float`): y Diffusion coefficient
+        """
+        gradient = stats.linregress(self.time, self.ymsd)[0]
+        return (gradient / 2) * 10
+
+    def z_diffusion_coefficient(self):
+        """
+        Calculates the one dimensional z diffusion coefficient
+
+        Returns:
+            (:py:attr:`float`): z Diffusion coefficient
+        """
+        gradient = stats.linregress(self.time, self.zmsd)[0]
+        return (gradient / 2) * 10
+
+    def msd_plot(self):
+        """
+        Plots the mean squared displacements
+        """
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.set_ylim(ymin=0, ymax=np.amax(self.msd))
+        ax.set_xlim(xmin=0, xmax=np.amax(self.time))
+        ax.plot(self.time, self.msd, label="XYZMSD")
+        ax.plot(self.time, self.xymsd, label="XYMSD")
+        ax.plot(self.time, self.xzmsd, label="XZMSD")
+        ax.plot(self.time, self.yzmsd, label="YZMSD")
+        ax.plot(self.time, self.xmsd, label="XMSD")
+        ax.plot(self.time, self.ymsd, label="YMSD")
+        ax.plot(self.time, self.zmsd, label="ZMSD")
+        ax.tick_params()
+        ax.set_xlabel("Time (ps)")
+        ax.set_ylabel("MSD ($\AA$)")
+        plt.legend()
+        if output:
+            plt.savefig(output, dpi=600)
+        plt.show()
+        plt.close()
+
+
+class MSD():
+    """
+    The :py:class:`polypy.msd.MSD` class calculates the mean squared displacements for a given atom
+
+    Args:
+        data (:py:class:`polypy.read.Trajectory`): Object containing the information from the HISTORY or ARCHIVE files.
+        timestep (:py:attr:`float`): Simulation timestep
+        sweeps (:py:attr:`int`, optional): How many times should the starting timestep be changed.
+    """
+    def __init__(self, data, timestep, sweeps=1):
         self.data = data
         self.timestep = timestep
+        self.sweeps = sweeps
         if self.data.timesteps == 1:
             raise ValueError("ERROR: - Only one timestep has been found")
         if len(np.unique(data.atom_name)) > 1:
             raise ValueError("ERROR: MSD can only handle one atom type. Exiting")
-        
-        self.msd_information = MSDContainer(data.timesteps)
-
+        self.distances = []
+        self.msd_information = MSDContainer()
 
     def msd(self):
-        '''Function that runs all of the parts of the MSD calcualtion.
+        """
+        Calculates the mean squared displacement for the trajectory.
 
-        Parameters
-        ----------
-        data : dictionary
-            Dictionary containing atom labels, trajectories,
-            lattice vectors, total number of timesteps and atoms.
-        timestep : float
-            Simulation timestep.
-        conductivity : bool
-            True/False True - calculate conductivity.
-        temperature : int
-            Temperature of the simulation - needed for conductivity.
-
-        Returns
-        -------
-        msd_data : dictionary
-            Dictionary containing 3D msd, 1D msd in the x, y, z directions
-            and the time.
-        '''
-
-        trajectories = np.split(self.data.fractional_trajectory, self.data.timesteps)
-        self.run_msd(trajectories, 1)
+        Returns:
+            (:py:class:`polypy.msd.MSDContainer`): Object containing the information for the MSD
+        """
+        for i in range(1, self.sweeps+1):
+            trajectories = np.split(self.data.fractional_trajectory, self.data.timesteps)
+            distances, timestamp = self.calculate_distances(trajectories, i * 5)
+            distances = np.asarray(distances)
+            self.msd_information.time = np.append(self.msd_information.time, timestamp)
+            self.squared_displacements(distances, i * 5)
+        self.msd_information.clean_data()
         return self.msd_information
 
-    def run_msd(self, trajectories, start):
-        '''MSD calculator
+    def calculate_distances(self, trajectories, start):
+        """
+        Calculates the distances.
 
-        Parameters
-        ----------
-        trajectories : array like
-            atomic coordinates
-        lv : array like
-            Lattive Vectors
-        timesteps : int
-            Total Number of Timesteps
-        natoms : int
-            Total Number of Atoms
-        start : int
-            Total number of trajectory loops
-        timestep : int
-            Timestep of the simulation
+        Args:
+            trajectories (:py:attr:`array_like`): Fractional coordinates
+            start (:py:attr:`float`): Timestep to start the calculation
 
-        Returns
-        -------
-        msd_data : dictionary
-            Dictionary containing 3D msd, 1D msd in the x, y, z directions
-            and the time.
-        '''
+        Returns:
+            distances (:py:attr:`array_like`): Distances
+            timestamp (:py:attr:`array_like`): Timesteps
+        """
+        distances = []
+        timestamp = []
         trajectories = np.asarray(trajectories)
         r0 = trajectories[start-1]
         rOd = trajectories[start-1]
 
         for j in range((start), self.data.timesteps):
             r1 = trajectories[j]
-            distance_new = r1 - r0
+            fractional_distance = r1 - r0
             r1.tolist()
             rOd.tolist()
-            if distance_new.size > 3:
-                n = 1
-                for k in range(0, distance_new[:, 0].size):
-                    for i in range(0, 3):
-                        cross, r_new = ut.pbc(r1[k, i], rOd[k, i], i)
-                        if cross is True:
-                            r1[k, i] = r_new
-                            distance_new[k, i] = r_new - r0[k, i]
-            else:
-                n = 0
-                r1 = r1.flatten()
-                rOd = rOd.flatten()
-                r0 = r0.flatten()
-                distance_new = distance_new.flatten()
 
+            for k in range(0, fractional_distance[:, 0].size):
                 for i in range(0, 3):
-                    cross, r_new = ut.pbc(r1[i], rOd[i], i)
-
+                    cross, r_new = ut.pbc(r1[k, i], rOd[k, i])
                     if cross is True:
-                        r1[i] = r_new
-                        distance_new[i] = r_new - r0[i]
-            if n == 0:
-                distance = distance_new.flatten()
-            else:
-                distance = distance_new
-
+                        r1[k, i] = r_new
+                        fractional_distance[k, i] = r_new - r0[k, i]
+                cartesian_distance = np.matmul(self.data.lv[j], fractional_distance[k])
+                distances.append(cartesian_distance)
+            timestamp.append(j * self.timestep)
             r1 = np.asarray(r1)
             rOd = np.asarray(rOd)
             rOd = r1
-            distance_n = np.array([])
-            if distance.size > 3:
-                for i in range(distance[:,0].size):
-                    d = np.matmul(self.data.lv[j], distance[i])
-                    distance_n = np.append(distance_n, d)
-                distance_n = np.reshape(distance_n, (int((distance_n.size / 3)), 3) )
+        return distances, timestamp
 
-            else:
-                d = np.matmul(self.data.lv[j], distance)
-                distance_n = np.append(distance_n, d)
-                
-            squared_displacements = square_distance(distance_n, n)
-            xy_squared_displacements = two_dimension_square_distance(distance_n, n, 'x')
-            xz_squared_displacements = two_dimension_square_distance(distance_n, n, 'y')
-            yz_squared_displacements = two_dimension_square_distance(distance_n, n, 'z')
+    def squared_displacements(self, distances, run):
+        """
+        Calculates the squared distances.
 
-            timestep_msd = np.average(squared_displacements)
-            xy_msd = np.average(xy_squared_displacements)
-            xz_msd = np.average(xz_squared_displacements)
-            yz_msd = np.average(yz_squared_displacements)
+        Args:
+            distances (:py:attr:`array_like`): Distances
+            run (:py:attr:`float`): Timestep to start the calculation
+        """
+        squared_displacements = distances ** 2
+        self.three_dimension_square_distance(squared_displacements, run)
+        self.two_dimension_square_distance(squared_displacements, run)
+        self.one_dimension_square_distance(squared_displacements, run)
 
-            self.msd_information.msd[j-start] = timestep_msd
-            self.msd_information.xymsd[j-start] = xy_msd
-            self.msd_information.xzmsd[j-start] = xz_msd
-            self.msd_information.yzmsd[j-start] = yz_msd
-            self.msd_information.time[j-start] = ((j- start) * self.timestep)
-    
-            if n == 1:
-                self.msd_information.xmsd[j-start] = (np.average((distance_n[:, 0] ** 2)))
-                self.msd_information.ymsd[j-start] = (np.average((distance_n[:, 1] ** 2)))
-                self.msd_information.zmsd[j-start] = (np.average((distance_n[:, 2] ** 2)))
-            elif n == 0:
-                self.msd_information.xmsd[j-start] = (np.average((distance_n[0] ** 2)))
-                self.msd_information.ymsd[j-start] = (np.average((distance_n[1] ** 2)))
-                self.msd_information.zmsd[j-start] = (np.average((distance_n[2] ** 2)))
+    def three_dimension_square_distance(self, distances, run):
+        """
+        Calculate the MSD in three dimensions
 
-           # displacements = np.append(displacements, squared_displacements)
-          #  msd_return_time = np.zeros(squared_displacements.size) + ((j- start) * timestep)
-          #  sd_time = np.append(sd_time, (msd_return_time))
+        Args:
+            distances (:py:attr:`array_like`): Distances
+            run (:py:attr:`float`): Timestep to start the calculation
+        """
+        summed_distances = np.sum(distances, axis=1)
+        reshaped_array = np.reshape(summed_distances, (self.data.timesteps-run, self.data.total_atoms))
+        msd = np.mean(reshaped_array, axis=1)
+        self.msd_information.msd = np.append(self.msd_information.msd, msd)
 
-def two_dimension_square_distance(distance, n, direction):
-    '''Calculate the MSD for a series of distances
+    def two_dimension_square_distance(self, distances, run):
+        """
+        Calculate the MSD in two dimensions
 
-    Parameters
-    ----------
-    distance : array like
-        Distance between atomic coordinates
-    n : integer
-        1 = 2D array, 0 = 1D array
-    direction : str
-        which directions
-    Returns
-    -------
-    msd : array like
-        squared displacement
-    '''
-    if direction == 'x':
-        val = [0, 1]
-    elif direction == 'y':
-        val = [0, 2]
-    else:
-        val = [1, 2]
+        Args:
+            distances (:py:attr:`array_like`): Distances
+            run (:py:attr:`float`): Timestep to start the calculation
+        """
+        xy_distances = np.sum(np.array([distances[:,0], distances[:,1]]), axis=0)
+        xz_distances = np.sum(np.array([distances[:,0], distances[:,2]]), axis=0)
+        yz_distances = np.sum(np.array([distances[:,1], distances[:,2]]), axis=0)
+        xy_array = np.reshape(xy_distances, (self.data.timesteps-run, self.data.total_atoms))
+        xz_array = np.reshape(xz_distances, (self.data.timesteps-run, self.data.total_atoms))
+        yz_array = np.reshape(yz_distances, (self.data.timesteps-run, self.data.total_atoms))
 
-    if n == 1:
-        msd = (distance[:, val[0]] ** 2) + (
-               distance[:, val[1]] ** 2)
-    elif n == 0:
-        msd = (distance[val[0]] ** 2) + (
-               distance[val[1]] ** 2)
-    return msd
+        xy_msd = np.mean(xy_array, axis=1)
+        xz_msd = np.mean(xz_array, axis=1)
+        yz_msd = np.mean(yz_array, axis=1)
 
+        self.msd_information.xymsd = np.append(self.msd_information.xymsd, xy_msd)
+        self.msd_information.xzmsd = np.append(self.msd_information.xzmsd, xz_msd)
+        self.msd_information.yzmsd = np.append(self.msd_information.yzmsd, yz_msd)
 
-def square_distance(distance, n):
-    '''Calculate the MSD for a series of distances
+    def one_dimension_square_distance(self, distances, run):
+        """
+        Calculate the MSD in one dimension.
 
-    Parameters
-    ----------
-    distance : array like
-        Distance between atomic coordinates
-    n : integer
-        1 = 2D array, 0 = 1D array
+        Args:
+            distances (:py:attr:`array_like`): Distances
+            run (:py:attr:`float`): Timestep to start the calculation
+        """
+        x_array = np.reshape(distances[:,0], (self.data.timesteps-run, self.data.total_atoms))
+        y_array = np.reshape(distances[:,1], (self.data.timesteps-run, self.data.total_atoms))
+        z_array = np.reshape(distances[:,2], (self.data.timesteps-run, self.data.total_atoms))
 
-    Returns
-    -------
-    msd : array like
-        squared displacement
-    '''
-    if n == 1:
-        msd = (distance[:, 0] ** 2) + (
-               distance[:, 1] ** 2) + (
-               distance[:, 2] ** 2)
-    elif n == 0:
-        msd = (distance[0] ** 2) + (
-               distance[1] ** 2) + (
-               distance[2] ** 2)
-    return msd
+        x_msd = np.mean(x_array, axis=1)
+        y_msd = np.mean(y_array, axis=1)
+        z_msd = np.mean(z_array, axis=1)
+
+        self.msd_information.xmsd = np.append(self.msd_information.xmsd, x_msd)
+        self.msd_information.ymsd = np.append(self.msd_information.ymsd, y_msd)
+        self.msd_information.zmsd = np.append(self.msd_information.zmsd, z_msd)
 
 
-def run_msd(trajectories, lv, timesteps, natoms, start, timestep):
-    '''MSD calculator
+class RegionalMSD():
+    """
+    The :py:class:`polypy.msd.RegionalMSD` class calculates the mean squared displacements for a given atom in a specific 
+    region of a simulation cell. 
 
-    Parameters
-    ----------
-    trajectories : array like
-        atomic coordinates
-    lv : array like
-        Lattive Vectors
-    timesteps : int
-        Total Number of Timesteps
-    natoms : int
-        Total Number of Atoms
-    start : int
-        Total number of trajectory loops
-    timestep : int
-        Timestep of the simulation
+    Args:
+        data (:py:class:`polypy.read.Trajectory`): Object containing the information from the HISTORY or ARCHIVE files.
+        lower_boundary (:py:attr:`float`): Coordinate of the lower limit of the region of interest.
+        upper_boundary (:py:attr:`int`, optional): Coordinate of the upper limit of the region of interest.
+        timestep (:py:attr:`float`): Simulation timestep
+        dimension (:py:attr:`int`, optional): Direction perpedicular to the region of interest.
+        sweeps (:py:attr:`int`, optional): How many times should the starting timestep be changed.
+    """
+    def __init__(self, data, lower_boundary, upper_boundary, timestep, dimension='x', sweeps=1):
+        self.data = data
+        if self.data.timesteps == 1:
+            raise ValueError("ERROR: - Only one timestep has been found")
+        if len(np.unique(data.atom_name)) > 1:
+            raise ValueError("ERROR: MSD can only handle one atom type. Exiting")
+        self.lower_boundary = lower_boundary
+        self.upper_boundary = upper_boundary
+        self.sweeps = sweeps
+        self.timestep = timestep
+        if dimension == "x":
+            self.dimension = 0
+        elif dimension == "y":
+            self.dimension = 1
+        elif dimension == "z":
+            self.dimension = 2
 
-    Returns
-    -------
-    msd_data : dictionary
-        Dictionary containing 3D msd, 1D msd in the x, y, z directions
-        and the time.
-    '''
-    trajectories = np.asarray(trajectories)
-    msd = np.zeros(timesteps-1)
-    xmsd = np.zeros(timesteps-1)
-    ymsd = np.zeros(timesteps-1)
-    zmsd = np.zeros(timesteps-1)
-    xymsd = np.zeros(timesteps-1)
-    xzmsd = np.zeros(timesteps-1)
-    yzmsd = np.zeros(timesteps-1)
-    time = np.zeros(timesteps-1)
-    displacements = np.array([])
-    sd_time = np.array([])
+    def analyse_trajectory(self):
+        """
+        Analyse the trajectory object
 
-    r0 = trajectories[start-1]
-    rOd = trajectories[start-1]
-    print(trajectories[0].shape)
-    for j in range((start), timesteps):
-        r1 = trajectories[j]
-        distance_new = r1 - r0
-        r1.tolist()
-        rOd.tolist()
-        if distance_new.size > 3:
-            n = 1
-            for k in range(0, distance_new[:, 0].size):
-                for i in range(0, 3):
-                    cross, r_new = ut.pbc(r1[k, i], rOd[k, i], i)
-                    if cross is True:
-                        r1[k, i] = r_new
-                        distance_new[k, i] = r_new - r0[k, i]
-        else:
-            n = 0
-            r1 = r1.flatten()
-            rOd = rOd.flatten()
-            r0 = r0.flatten()
-            distance_new = distance_new.flatten()
+        Returns:
+            msd_information (:py:class:`polypy.msd.MSDContainer`): MSDContainer object - MSD information
+        """
+        xc = np.reshape(self.data.fractional_trajectory[:, self.dimension], ((self.data.timesteps),
+                        self.data.total_atoms))
 
-            for i in range(0, 3):
-                cross, r_new = ut.pbc(r1[i], rOd[i], i)
-               # print(j, r0[i], rOd[i], r1[i], r_new, distance_new[i])
+        trajectories = np.split(self.data.fractional_trajectory, self.data.timesteps)
+        trajectories = np.asarray(trajectories)
+        self.msd_information = MSDContainer()
+        for i in range(0, self.data.total_atoms):
+            self.check_trajectory(trajectories[:, i], xc[:, i])
+        self.msd_information.clean_data()
+        return self.msd_information
 
-                if cross is True:
-                    #print("Pay Attention")
-                    r1[i] = r_new
-                    distance_new[i] = r_new - r0[i]
-        if n == 0:
-            distance = distance_new.flatten()
-        else:
-            distance = distance_new
+    def initialise_new_trajectory(self):
+        """
+        Create a new MSDContainer object, specific to slice of a trajectory.
 
-        r1 = np.asarray(r1)
-        rOd = np.asarray(rOd)
-        rOd = r1
-        distance_n = np.array([])
-        if distance.size > 3:
-            for i in range(distance[:,0].size):
-                d = np.matmul(lv[j], distance[i])
-                distance_n = np.append(distance_n, d)
-            distance_n = np.reshape(distance_n, (int((distance_n.size / 3)), 3) )
+        Returns:
+            new_trajectory (:py:class:`polypy.msd.MSDContainer`): MSDContainer object
+        """
+        new_trajectory = Trajectory(self.data.atom_list, "DLPOLY HISTORY")
+        new_trajectory.total_atoms = 1
+        new_trajectory.timesteps = self.data.timesteps
+        return new_trajectory
 
-        else:
-            d = np.matmul(lv[j], distance)
-            distance_n = np.append(distance_n, d)
-        squared_displacements = square_distance(distance_n, n)
-        xy_squared_displacements = two_dimension_square_distance(distance_n, n, 'x')
-        xz_squared_displacements = two_dimension_square_distance(distance_n, n, 'y')
-        yz_squared_displacements = two_dimension_square_distance(distance_n, n, 'z')
+    def update_msd_info(self, container):
+        """
+        Adds the information calculated for a single atom to the information 
+        of the whole trajectory.
 
-        timestep_msd = np.average(squared_displacements)
-        xy_msd = np.average(xy_squared_displacements)
-        xz_msd = np.average(xz_squared_displacements)
-        yz_msd = np.average(yz_squared_displacements)
+        Args:
+            container (:py:class:`polypy.msd.MSDContainer`): MSDContainer object - single atom
+        """       
+        self.msd_information.msd = np.append(self.msd_information.msd, container.msd)
+        self.msd_information.xymsd = np.append(self.msd_information.xymsd, container.xymsd)
+        self.msd_information.xzmsd = np.append(self.msd_information.xzmsd, container.xzmsd)
+        self.msd_information.yzmsd = np.append(self.msd_information.yzmsd, container.yzmsd)
+        self.msd_information.xmsd = np.append(self.msd_information.xmsd, container.xmsd)
+        self.msd_information.ymsd = np.append(self.msd_information.ymsd, container.ymsd)
+        self.msd_information.zmsd = np.append(self.msd_information.zmsd, container.zmsd)
+        self.msd_information.time = np.append(self.msd_information.time, container.time)
 
-        msd[j-start] = timestep_msd
-        xymsd[j-start] = xy_msd
-        xzmsd[j-start] = xz_msd
-        yzmsd[j-start] = yz_msd
+    def check_trajectory(self, trajectory, xc):
+        """
+        Analyse the trajectory of an individual atom
 
-        time[j-start] = ((j- start) * timestep)
- 
-        if n == 1:
-            xmsd[j-start] = (np.average((distance_n[:, 0] ** 2)))
-            ymsd[j-start] = (np.average((distance_n[:, 1] ** 2)))
-            zmsd[j-start] = (np.average((distance_n[:, 2] ** 2)))
-        elif n == 0:
-            xmsd[j-start] = (np.average((distance_n[0] ** 2)))
-            ymsd[j-start] = (np.average((distance_n[1] ** 2)))
-            zmsd[j-start] = (np.average((distance_n[2] ** 2)))
-
-        displacements = np.append(displacements, squared_displacements)
-        msd_return_time = np.zeros(squared_displacements.size) + ((j- start) * timestep)
-        sd_time = np.append(sd_time, (msd_return_time))
-
-    msd_data = {'msd': msd,
-                    'xymsd': xymsd,
-                    'xzmsd': xzmsd,
-                    'yzmsd': yzmsd,
-                    'xmsd': xmsd,
-                    'ymsd': ymsd,
-                    'zmsd': zmsd,
-                    'time': time,
-                    'sd_time': sd_time,
-                    'squared_displacements': displacements}
-    return msd_data
-
-
-def check_trajectory(trajectory, xc, lv, timesteps, timestep, ul, ll, runs):
-    '''From an assigned bin determine if any part of a trajectory crosses
-    a given 1D bin.
-
-    Parameters
-    ----------
-    trajectory : array like
-        Trajectories
-    xc : array like
-        Coordinates for one dimension
-    lv : array like
-        Lattice vectors
-    timesteps : int
-        Total Number of Timesteps
-    timestep : float
-        Timestep of simulation
-    ul : float
-        Upper Bin limit
-    ll : float
-        Lower Bin Limit
-    runs : float
-        Number of trajectory sweeps
-
-    Return
-    ------
-    dco : float
-        Diffusion Coefficient for a given atom within a given bin
-    '''
-    ib = False
-    count = 0
-    trajectory_slice = np.array([])
-    vecs = []
-    msd = np.array([0])
-    xmsd = np.array([0])
-    ymsd = np.array([0])
-    zmsd = np.array([0])
-    time = np.array([0])
-    do = np.array([])
-    dx = np.array([])
-    dy = np.array([])
-    dz = np.array([])
-    conductivity_count = 0
-    for i in range(0, xc.size):
-        if xc[i] > ll and xc[i] < ul:
-            ib = True
-            count = count + 1
-            conductivity_count = conductivity_count + 1
-            trajectory_slice = np.append(trajectory_slice, trajectory[i])
-            vecs.append(lv[i])
-
-        elif xc[i] < ll or xc[i] > ul:
-            if count > 100 and ib is True:
-
-                trajectory_slice = np.split(trajectory_slice,
-                                            (trajectory_slice.size / 3))
-
-                for i in range(0, runs):
-                    start = i + 5
-                    msd_data = run_msd(trajectory_slice,
-                                       vecs,
-                                       count,
-                                       1,
-                                       start,
-                                       timestep)
-                    msd = np.append(msd, msd_data['msd'])
-                    xmsd = np.append(xmsd, msd_data['xmsd'])
-                    ymsd = np.append(ymsd, msd_data['ymsd'])
-                    zmsd = np.append(zmsd, msd_data['zmsd'])
-                    time = np.append(time, msd_data['time'])
-                    d = ut.linear_regression(msd_data['time'],
-                                             msd_data['msd'])[0]
-                    xd = ut.linear_regression(msd_data['time'],
-                                              msd_data['xmsd'])[0]
-                    yd = ut.linear_regression(msd_data['time'],
-                                              msd_data['ymsd'])[0]            
-                    zd = ut.linear_regression(msd_data['time'],
-                                              msd_data['zmsd'])[0]
-
-                    d = ut.three_d_diffusion_coefficient(d)
-                    xd = ut.one_d_diffusion_coefficient(xd)
-                    yd = ut.one_d_diffusion_coefficient(yd)
-                    zd = ut.one_d_diffusion_coefficient(zd)
-                    do = np.append(do, d)
-                    dx = np.append(dx, xd)
-                    dy = np.append(dy, yd)
-                    dz = np.append(dz, zd)
-
-                count = 0
-                trajectory_slice = np.array([])
-                vecs = []
-            else:
-                ib = False
-                trajectory_slice = np.array([])
-                vecs = []
-                count = 0
-
-    if count > 100 and ib is True:
-
-        trajectory_slice = np.split(trajectory_slice,
-                                    (trajectory_slice.size / 3))
-        for i in range(0, runs):
-            start = i + 5
-            msd_data = run_msd(trajectory_slice,
-                               vecs,
-                               count,
-                               1,
-                               start,
-                               timestep)
-            msd = np.append(msd, msd_data['msd'])
-            xmsd = np.append(xmsd, msd_data['xmsd'])
-            ymsd = np.append(ymsd, msd_data['ymsd'])
-            zmsd = np.append(zmsd, msd_data['zmsd'])
-            time = np.append(time, msd_data['time'])
-            d = ut.linear_regression(msd_data['time'],
-                                     msd_data['msd'])[0]
-            xd = ut.linear_regression(msd_data['time'],
-                                     msd_data['xmsd'])[0]
-            yd = ut.linear_regression(msd_data['time'],
-                                     msd_data['ymsd'])[0]            
-            zd = ut.linear_regression(msd_data['time'],
-                                     msd_data['zmsd'])[0]
-
-            d = ut.three_d_diffusion_coefficient(d)
-            xd = ut.one_d_diffusion_coefficient(xd)
-            yd = ut.one_d_diffusion_coefficient(yd)
-            zd = ut.one_d_diffusion_coefficient(zd)
-            do = np.append(do, d)
-            dx = np.append(dx, xd)
-            dy = np.append(dy, yd)
-            dz = np.append(dz, zd)
-
+        Args:
+            trajectory (:py:class:`polypy.read.Trajectory`): Trajectory object
+            xc (:py:attr:`array_like`): Coordinates perpendicular to the region of interest.
+        """
+        ib = False
         count = 0
+        conductivity_count = 0
+        new_trajectory = self.initialise_new_trajectory()
 
-    msd_data = {'time': time,
-                'msd': msd,
-                'xmsd': xmsd,
-                'ymsd': ymsd,
-                'zmsd': zmsd}
+        for i in range(0, xc.size):
+            if xc[i] > self.lower_boundary and xc[i] < self.upper_boundary:
+                ib = True
+                count = count + 1
+                conductivity_count = conductivity_count + 1
+                new_trajectory.fractional_trajectory.append(trajectory[i])
+                new_trajectory.lv.append(self.data.lv[i])
 
-    return msd_data, conductivity_count, do, dx, dy, dz
+            elif xc[i] < self.lower_boundary or xc[i] > self.upper_boundary:
+                if count > 100 and ib is True:
+                    new_trajectory._clean_data()
+                    atom_msd = MSD(new_trajectory, self.timestep, self.sweeps)
+                    msd = atom_msd.msd()
+                    self.update_msd_info(msd)
+                    count = 0
+                    new_trajectory = self.initialise_new_trajectory()
+                else:
+                    ib = False
+                    new_trajectory = self.initialise_new_trajectory()
+                    count = 0
 
-
-
-
-
-def smooth_msd(data, timestep, runs=None):
-    '''MSD Launcher for a Smoothed MSD calc.
-
-    Parameters
-    ----------
-    data : dictionary
-        Dictionary containing atom labels, trajectories,
-        lattice vectors, total number of timesteps and atoms.
-    timestep : float
-        simulation timestep
-    runs : int
-        How many sweeps across the trajectory
-
-    Returns
-    -------
-    Outputs diffusion info
-    '''
-    if runs is None:
-        runs = 5
-
-    smsd = np.array([])
-    sxymsd = np.array([])
-    sxzmsd = np.array([])
-    syzmsd = np.array([])
-    sxmsd = np.array([])
-    symsd = np.array([])
-    szmsd = np.array([])
-    stime = np.array([])
-    ssd_time = np.array([])
-    ssquared_displacements = np.array([])
-
-    trajectories = np.split(data['frac_trajectories'], data['timesteps'])
-
-    for i in range(1, runs):
-        start = i * 10
-        msd_data = run_msd(trajectories, data['lv'],
-                           data['timesteps'],
-                           data['natoms'],
-                           start,
-                           timestep)
-        smsd = np.append(smsd, msd_data['msd'])
-        sxymsd = np.append(sxymsd, msd_data['xymsd'])
-        sxzmsd = np.append(sxzmsd, msd_data['xzmsd'])
-        syzmsd = np.append(syzmsd, msd_data['yzmsd'])
-        sxmsd = np.append(sxmsd, msd_data['xmsd'])
-        symsd = np.append(symsd, msd_data['ymsd'])
-        szmsd = np.append(szmsd, msd_data['zmsd'])
-        stime = np.append(stime, msd_data['time'])
-        ssquared_displacements = np.append(ssquared_displacements, msd_data['squared_displacements'])
-        ssd_time = np.append(ssd_time, msd_data['sd_time'])
-
-    smsd_data = {'time': stime, 
-                 'msd': smsd, 
-                 'xymsd': sxymsd, 
-                 'xzmsd': sxzmsd, 
-                 'yzmsd': syzmsd, 
-                 'xmsd': sxmsd,
-                 'ymsd': symsd, 
-                 'zmsd': szmsd, 
-                 'squared_displacements': ssquared_displacements,
-                 'sd_time': ssd_time}
-
-    msd_data = {'time': ut.smooth_msd_data(smsd_data['time'],
-                                           smsd_data['msd'])[0],
-                'msd':  ut.smooth_msd_data(smsd_data['time'],
-                                           smsd_data['msd'])[1],
-                'xymsd': ut.smooth_msd_data(smsd_data['time'],
-                                           smsd_data['xymsd'])[1],
-                'xzmsd': ut.smooth_msd_data(smsd_data['time'],
-                                           smsd_data['xzmsd'])[1],
-                'yzmsd': ut.smooth_msd_data(smsd_data['time'],
-                                           smsd_data['yzmsd'])[1],                
-                'xmsd': ut.smooth_msd_data(smsd_data['time'],
-                                           smsd_data['xmsd'])[1],
-                'ymsd': ut.smooth_msd_data(smsd_data['time'],
-                                           smsd_data['ymsd'])[1],
-                'zmsd': ut.smooth_msd_data(smsd_data['time'],
-                                           smsd_data['zmsd'])[1],
-                'squared_displacements': ssquared_displacements,
-                'sd_time': ssd_time}
-    return msd_data
-
-
-def plane_msd(data, timestep, runs=None, ul=None, ll=None,
-              direction=None):
-    '''Calculate an MSD value within a area of a structure.
-
-    Parameters
-    ----------
-    data : dictionary
-        Dictionary containing atom labels, trajectories,
-        lattice vectors, total number of timesteps and atoms.
-    timestep : float
-        Simulation timestep.
-    runs : int
-        Number of trajectory sweeps.
-    ul : float
-        Upper bin limit.
-    ll : float
-        Lower bin limit.
-    direction : str
-        Direction normal to slices.
-
-    Returns
-    -------
-    File containing the result of the calc
-    '''
-    if runs is None:
-        runs = 1
-    if ul is None:
-        sys.exit(0)
-    if ll is None:
-        sys.exit(0)
-    if direction is None:
-        direction = "x"
-    if direction == "x":
-        val = 0
-    elif direction == "y":
-        val = 1
-    elif direction == "z":
-        val = 2
-    msd = np.array([])
-    xmsd = np.array([])
-    ymsd = np.array([])
-    zmsd = np.array([])
-    time = np.array([])
-
-    xc = np.reshape(data['trajectories'][:, val], ((data['timesteps']),
-                    data['natoms']))
-
-    trajectories = np.split(data['frac_trajectories'], data['timesteps'])
-    trajectories = np.asarray(trajectories)
-    bin_atoms = np.array([])
-    diffusion = np.array([])
-    xdiffusion = np.array([])
-    ydiffusion = np.array([])
-    zdiffusion = np.array([])
-
-    for i in range(0, (data['natoms'])):
-
-        msd_dat, conductivity_count, do, dx, dy, dz = check_trajectory(trajectories[:, i], xc[:, i], data['lv'],
-                              data['timesteps'], timestep, ul, ll, runs)
-        diffusion = np.append(diffusion, do)
-        xdiffusion = np.append(xdiffusion, dx)
-        ydiffusion = np.append(ydiffusion, dy)
-        zdiffusion = np.append(zdiffusion, dz)
-
-        bin_atoms = np.append(bin_atoms, conductivity_count)
-        msd = np.append(msd, msd_dat['msd'])
-        xmsd = np.append(xmsd, msd_dat['xmsd'])
-        ymsd = np.append(ymsd, msd_dat['ymsd'])
-        zmsd = np.append(zmsd, msd_dat['zmsd'])
-        time = np.append(time, msd_dat['time'])
-    
-    diffusion = np.average(diffusion)
-    xdiffusion = np.average(xdiffusion)
-    ydiffusion = np.average(ydiffusion)
-    zdiffusion = np.average(zdiffusion)
-
-    timesteps, counts = np.unique(time, return_counts=True)
- 
-    msd_data = {'time': time,
-                  'msd':  msd,
-                  'xmsd': xmsd,
-                  'ymsd': ymsd,
-                  'zmsd': zmsd,
-                  'timesteps' : timesteps, 
-                  'stats': counts}
-
-    transport_data = {'Diffusion': diffusion,
-                      'XDiffusion': xdiffusion,
-                      'YDiffusion': ydiffusion,
-                      'ZDiffusion': zdiffusion,
-                      'TotalAtoms': np.sum(bin_atoms) / data['timesteps']}
-
-
-
-    return msd_data, transport_data
+        if count > 100 and ib is True:
+            new_trajectory._clean_data()
+            atom_msd = MSD(new_trajectory, self.timestep, self.sweeps)
+            msd = atom_msd.msd()
+            self.update_msd_info(msd)

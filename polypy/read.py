@@ -1,10 +1,25 @@
+"""
+Read functions
+"""
+
+# Copyright (c) Adam R. Symington
+# Distributed under the terms of the MIT License
+# author: Adam R. Symington
+
 import os as os
 import sys as sys
 import numpy as np
 from polypy import utils as ut
 
-class Trajectory():
 
+class Trajectory():
+    """
+    The :py:class:`polypy.read.Trajectory` class evaluates the positions of all atoms in the simulation.
+
+    Args:
+        atom_list (:py:class:`list`): List of unique atom names in trajectory.
+        datatype (:py:attr:`str`): Datatype of the original dataset e.g. DL_POLY HISTORY or CONFIG.
+    """
     def __init__(self, atom_list, datatype):
         self.atom_list = atom_list
         self.data_type = datatype
@@ -16,69 +31,104 @@ class Trajectory():
         self.cell_lengths = []
         self.atoms_in_history = 0
         self.timesteps = 0
-        self.total_atoms = 0  
+        self.total_atoms = 0
+        self.atoms_at_timestep = []
 
-    def _list_to_arrays(self):
-        self.cartesian_trajectory = np.asarray(self.cartesian_trajectory, dtype=float)
-        self.fractional_trajectory = np.asarray(self.fractional_trajectory, dtype=float)
+    def _clean_data(self):
+        """
+        Converts the data into a more user friendly format.
+        """
+        self.cartesian_trajectory = np.asarray(self.cartesian_trajectory,
+                                               dtype=float)
+        self.fractional_trajectory = np.asarray(self.fractional_trajectory,
+                                                dtype=float)
         self.atom_name = np.asarray(self.atom_name, dtype=str)
         self.lv = np.asarray(self.lv, dtype=float)
         self.reciprocal_lv = np.asarray(self.reciprocal_lv, dtype=float)
         self.cell_lengths = np.asarray(self.cell_lengths, dtype=float)
+        self.timesteps = int(self.timesteps)
+        self.total_atoms = int(self.total_atoms)
 
     def get_config(self, timestep):
+        """
+        Isolates a specific DL_POLY CONFIG from a HISTORY file.
+
+        Args:
+            timestep (:py:class:`int`): Timestep of desired CONFIG.
+
+        Returns:
+            config_trajectory (:py:class:`polypy.read.Trajectory`): Trajectory object for desired CONFIG.
+        """
         if self.data_type == "DL_POLY CONFIG":
             raise ValueError("Only one timestep was found")
-        
         config_trajectory = Trajectory(self.atom_list, "DL_POLY CONFIG")
-        config_trajectory.cartesian_trajectory = np.split(self.cartesian_trajectory, self.timesteps)[timestep]
-        config_trajectory.fractional_trajectory = np.split(self.fractional_trajectory, self.timesteps)[timestep]
-        config_trajectory.atom_name = np.split(self.atom_name, self.timesteps)[timestep]
+        config_trajectory.cartesian_trajectory = np.split(
+                                                 self.cartesian_trajectory,
+                                                 self.timesteps)[timestep]
+        config_trajectory.fractional_trajectory = np.split(
+                                                  self.fractional_trajectory,
+                                                  self.timesteps)[timestep]
+        config_trajectory.atom_name = np.split(self.atom_name,
+                                               self.timesteps)[timestep]
         config_trajectory.reciprocal_lv = self.reciprocal_lv[timestep]
         config_trajectory.lv = self.lv[timestep]
-        config_trajectory.cell_lengths = np.split(self.cell_lengths, self.timesteps)[timestep]
+        config_trajectory.cell_lengths = np.split(self.cell_lengths,
+                                                  self.timesteps)[timestep]
         config_trajectory.atoms_in_history = self.total_atoms
         config_trajectory.timesteps = 1
         config_trajectory.total_atoms = self.total_atoms
         return config_trajectory
 
     def get_atom(self, atom):
+        """
+        Isolates the trajectory for a specific atom type.
+
+        Args:
+            atom (:py:class:`str`): Atom label.
+
+        Returns:
+            atom_trajectory (:py:class:`polypy.read.Trajectory`): Trajectory object for desired atom.
+        """
         if np.unique(self.atom_list).size == 1:
             raise ValueError("Only one atom type was found")
-
         atom_trajectory = Trajectory([atom], self.data_type)
-
         for i in range(0, self.atom_name.size):
             if self.atom_name[i] == atom:
-                atom_trajectory.cartesian_trajectory.append(self.cartesian_trajectory[i])
-                atom_trajectory.fractional_trajectory.append(self.fractional_trajectory[i])
+                atom_trajectory.cartesian_trajectory.append(
+                                            self.cartesian_trajectory[i])
+                atom_trajectory.fractional_trajectory.append(
+                                            self.fractional_trajectory[i])
                 atom_trajectory.atom_name.append(self.atom_name[i])
                 atom_trajectory.atoms_in_history = atom_trajectory.atoms_in_history + 1
-
         atom_trajectory.reciprocal_lv = self.reciprocal_lv
         atom_trajectory.lv = self.lv
         atom_trajectory.cell_lengths = self.cell_lengths
         atom_trajectory.timesteps = self.timesteps
         atom_trajectory.total_atoms = atom_trajectory.atoms_in_history / self.timesteps
-        atom_trajectory._list_to_arrays()
-
+        atom_trajectory._clean_data()
         return atom_trajectory
 
 class History():
+    """
+    The :py:class:`polypy.read.Trajectory` class evaluates the positions of all atoms in the simulation.
 
+    Args:
+        atom_list (:py:class:`list`): List of unique atom names in trajectory.
+        datatype (:py:attr:`str`): Datatype of the original dataset e.g. DL_POLY HISTORY or CONFIG.
+    """
     def __init__(self, file, atom_list):
         self.file = file
         if os.path.isfile(self.file) is False:
             raise ValueError("File does not exist")
         self.atom_list = atom_list
         self.data_type = "DL_POLY HISTORY"
-        self.trajectory = Trajectory(self.atom_list, 
+        self.trajectory = Trajectory(self.atom_list,
                                      self.data_type)
 
         self.read_history()
         self.trajectory.total_atoms = self.trajectory.atoms_in_history / self.trajectory.timesteps
         self._check_data()
-        self.trajectory._list_to_arrays()
+        self.trajectory._clean_data()
 
     def read_history(self):
         '''Read a DL_POLY HISTORY file.
@@ -88,7 +138,6 @@ class History():
         tstep = False
         current_lv = []
         history = open(self.file, 'r')
-
         for line in history:
             split_line = line.split()
             if c == 3:
@@ -112,7 +161,6 @@ class History():
                 frac = np.matmul(rcplvs, np.asarray(split_line, dtype=float))
                 frac = np.mod(frac, 1)
                 self.trajectory.fractional_trajectory.append(frac)
-
             if split_line[0] in self.atom_list:
                 self.trajectory.atom_name.append(split_line[0])
                 name = True
@@ -129,26 +177,22 @@ class History():
             raise ValueError("No Atoms of specified type exist within the HISTORY file")
 
 class Config():
-
     def __init__(self, file, atom_list):
         self.file = file
         if os.path.isfile(self.file) is False:
             raise ValueError("File does not exist")
         self.atom_list = atom_list
         self.data_type = "DL_POLY CONFIG"
-        self.trajectory = Trajectory(self.atom_list, 
+        self.trajectory = Trajectory(self.atom_list,
                                      self.data_type)
         self.read_config()
         self.trajectory.timesteps = 1
         self._check_data()
-        self.trajectory._list_to_arrays()
-
+        self.trajectory._clean_data()
 
     def read_config(self):
-
         config = open(self.file, 'r')
         name = False
-
         title = config.readline()
         stuff = config.readline()
         lv = []
@@ -165,20 +209,31 @@ class Config():
                 name = False
                 self.trajectory.cartesian_trajectory.append(split_line)
                 frac = np.matmul(rcplvs, np.asarray(split_line, dtype=float))
-                frac = np.mod(frac, 1 )
+                frac = np.mod(frac, 1)
                 self.trajectory.fractional_trajectory.append(frac.flatten())
             if split_line[0] in self.atom_list:
                 self.trajectory.atom_name.append(split_line[0])
                 name = True
                 self.trajectory.total_atoms = self.trajectory.total_atoms + 1
                 self.trajectory.atoms_in_history = self.trajectory.atoms_in_history + 1
-
         config.close()
 
     def _check_data(self):
         if self.trajectory.total_atoms == 0:
             raise ValueError("No Atoms of specified type exist within the CONFIG file")
-    
+
+class Archive():
+
+    def __init__(self, file, atom_list):
+        pass
+
+    def read_archive(self):
+        pass
+
+    def _check_data(self):
+        pass
+
+
 def read_archive(file, atom_list):
     '''Read a DL_MONTE ARCHIVE file
     Parameters

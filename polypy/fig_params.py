@@ -1,3 +1,11 @@
+"""
+Plot formatting
+"""
+
+# Copyright (c) Adam R. Symington
+# Distributed under the terms of the MIT License
+# author: Adam R. Symington
+
 from collections import OrderedDict
 from matplotlib import rcParams, cycler
 import seaborn as sns
@@ -29,7 +37,7 @@ MASTER_FORMATTING = {
     "mathtext.fontset": "custom",
     "font.size": FONTSIZE,
     "font.family": "sans-serif",
-    "font.serif" : "Helvetica",
+    "font.serif" : "Arial",
     "savefig.bbox": "tight",
     "axes.facecolor": LIGHT_GREY,
     "axes.labelpad": 10.0,
