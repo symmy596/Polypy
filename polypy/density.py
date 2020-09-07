@@ -1,5 +1,6 @@
 """
-Density functions
+Density functions included with `polypy`. The Density class will determine generate a three dimensional grid that stores the total number of times
+that an atom spends within a xyz grid point during the simulation.
 """
 
 # Copyright (c) Adam R. Symington
@@ -41,7 +42,7 @@ class Density:
 
     def find_limits(self):
         """
-        Determine the upper and lower limits of the simulation cell in all three dimensions
+        Determine the upper and lower limits of the simulation cell in all three dimensions.
         """
         self.x_lim = np.ceil(np.amax(self.lengths[:, 0]) / self.histogram_size).astype(int)
         self.y_lim = np.ceil(np.amax(self.lengths[:, 1]) / self.histogram_size).astype(int)
@@ -52,8 +53,8 @@ class Density:
 
     def build_map(self):
         """
-        Constructs three dimensional grid of histogram_size *  histogram_size * histogram_size 
-        containing a count for how many times an atom passes through each histogram_size ** 3 
+        Constructs three dimensional grid of histogram_size *  histogram_size * histogram_size.
+        containing a count for how many times an atom passes through each histogram_size ** 3
         cube. 
         """
         positions = self.data.fractional_trajectory.tolist()
@@ -72,19 +73,17 @@ class Density:
         zbox = (position[2] * self.z_lim).astype(int)
         self.coords_map[ybox, xbox, zbox] = self.coords_map[ybox, xbox, zbox] + 1
 
-
-
     def one_dimensional_density(self, direction="x"):
         """
         Calculate the particle density within one dimensional histograms of a structure.
 
         Args:
-            direction (:py:attr:`str`): The dimension perpendicular to the histograms
+            direction (:py:attr:`str`): The dimension perpendicular to the histograms.
 
         Returns:
-            x (:py:attr:`array_like`): Locations of histograms
-            y (:py:attr:`array_like`): Size of histograms
-            bin_volume (:py:attr:`float`): Volume of histograms
+            x (:py:attr:`array_like`): Locations of histograms.
+            y (:py:attr:`array_like`): Size of histograms.
+            bin_volume (:py:attr:`float`): Volume of histograms.
         """
         if direction == "x":
             val = [1, 2]
@@ -105,13 +104,13 @@ class Density:
         Calculate the particle density within two dimensional pixels of a structure.
 
         Args:
-            direction (:py:attr:`str`): The dimension normal to the pixels
+            direction (:py:attr:`str`): The dimension normal to the pixels.
 
         Returns:
-            x (:py:attr:`array_like`): Locations of one dimension of the pixels
-            y (:py:attr:`array_like`): Locations of one dimension of the pixels
-            z (:py:attr:`array_like`): Size of pixels
-            bin_volume (:py:attr:`float`): Volume of pixels
+            x (:py:attr:`array_like`): Locations of one dimension of the pixels.
+            y (:py:attr:`array_like`): Locations of one dimension of the pixels.
+            z (:py:attr:`array_like`): Size of pixels.
+            bin_volume (:py:attr:`float`): Volume of pixels.
         """
         if direction == "x":
             val = 0

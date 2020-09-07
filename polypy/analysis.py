@@ -13,7 +13,7 @@ from scipy import stats
 from scipy.constants import codata
 import pandas as pd
 from numpy import linalg as la
-from polypy import write as wr
+from polypy import plotting
 
 kb = codata.value('Boltzmann constant')
 ev = codata.value('electron volt')
@@ -38,7 +38,7 @@ class OneDimensionalChargeDensity:
         self.timesteps = timesteps
         self.scale = 14.3997584
 
-    def calculate_charge_density(self, plot=False):
+    def calculate_charge_density(self):
         """
         Calculates the charge density.
 
@@ -52,15 +52,9 @@ class OneDimensionalChargeDensity:
         charges = np.asarray(self.atom_charges)
         charge_density = np.sum(np.multiply(number_density, charges),
                             axis=1) / self.histogram_volume
-        if plot is True:
-            wr.line_plot(self.histogram_positions, charge_density, 
-                         xlab="Coordinate ($\AA$)",
-                         ylab="Charge Density", output=None,
-                         set_style="default", palette="tab10",
-                         figsize=None)
-        return charge_density
+        return self.histogram_positions, charge_density
 
-    def calculate_electric_field(self, plot=False):
+    def calculate_electric_field(self):
         """
         Calculates the electric field.
 
@@ -70,18 +64,12 @@ class OneDimensionalChargeDensity:
         Returns:
             e_field (:py:attr:`array_like`): Electric field.
         """
-        rho = self.calculate_charge_density()
+        rho = self.calculate_charge_density()[1]
         e_field = self.scale * integrate.cumtrapz(rho, self.histogram_positions, initial=0)
         e_field = e_field - np.mean(e_field)
-        if plot is True:
-            wr.line_plot(self.histogram_positions, e_field, 
-                         xlab="Coordinate ($\AA$)",
-                         ylab="Electric Field (V)", output=None,
-                         set_style="default", palette="tab10",
-                         figsize=None)
-        return e_field
+        return self.histogram_positions, e_field
 
-    def calculate_electrostatic_potential(self, plot=False):
+    def calculate_electrostatic_potential(self):
         """
         Calculates the electrostatic potential.
 
@@ -91,18 +79,12 @@ class OneDimensionalChargeDensity:
         Returns:
             potential (:py:attr:`array_like`): Electrostatic potential.
         """
-        rho = self.calculate_charge_density()
+        rho = self.calculate_charge_density()[1]
         e_field = self.scale * integrate.cumtrapz(rho, self.histogram_positions, initial=0)
         e_field = e_field - np.mean(e_field)
         potential = -integrate.cumtrapz(e_field, self.histogram_positions, initial=0)
         potential = potential / self.timesteps
-        if plot is True:
-            wr.line_plot(self.histogram_positions, potential, 
-                         xlab="Coordinate ($\AA$)",
-                         ylab="Electrostatic Potential (V)", output=None,
-                         set_style="default", palette="tab10",
-                         figsize=None)
-        return potential
+        return self.histogram_positions, potential
 
 def system_volume(data):
     """

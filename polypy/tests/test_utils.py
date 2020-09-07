@@ -1,6 +1,5 @@
 import numpy as np
 from polypy import utils as ut
-from polypy import read_dl_poly as dlppy
 from polypy import trajectory 
 import unittest
 from numpy.testing import assert_almost_equal

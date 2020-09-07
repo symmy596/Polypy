@@ -1,5 +1,7 @@
 """
-Msd functions
+MSD functions included with `polypy`. There are two MSD classes and one class to store the data generated from the MSD calculation.
+The first class performs a standard MSD calculation for the entire dataset while the second class will perform an MSD calculation
+within a specified region of the simulation cell.
 """
 
 # Copyright (c) Adam R. Symington
@@ -34,7 +36,8 @@ class MSDContainer():
 
     def clean_data(self):
         """
-        Converts the data into a user friendly format.
+        Post msd the data is a list of time vs msd for each run. This needs to be
+        normalised to give one continuous series of points.
         """
         time, self.msd = self.smooth_msd_data(self.time, self.msd)
         self.xymsd = self.smooth_msd_data(self.time, self.xymsd)[1]
@@ -52,11 +55,11 @@ class MSDContainer():
         order the data and average all y values with equivalent x values.
 
         Args:
-            x (:py:attr:`array_like`): Time data
-            y (:py:attr:`array_like`): MSD data
+            x (:py:attr:`array_like`): Time data.
+            y (:py:attr:`array_like`): MSD data.
         
         Returns:
-            z (:py:attr:`array_like`): Time / MSD data
+            z (:py:attr:`array_like`): Time / MSD data.
         """
         xy = np.column_stack((x, y))
         z = pd.DataFrame(xy).groupby(0, as_index=False)[1].mean().values
@@ -64,111 +67,85 @@ class MSDContainer():
 
     def xyz_diffusion_coefficient(self):
         """
-        Calculates the three dimensional xyz diffusion coefficient
+        Calculates the three dimensional xyz diffusion coefficient.
 
         Returns:
-            (:py:attr:`float`): xyx Diffusion coefficient
+            (:py:attr:`float`): xyx Diffusion coefficient.
         """
         gradient = stats.linregress(self.time, self.msd)[0]
         return (gradient / 6) * 10
 
     def xy_diffusion_coefficient(self):
         """
-        Calculates the two dimensional xy diffusion coefficient
+        Calculates the two dimensional xy diffusion coefficient.
 
         Returns:
-            (:py:attr:`float`): xy Diffusion coefficient
+            (:py:attr:`float`): xy Diffusion coefficient.
         """
         gradient = stats.linregress(self.time, self.xymsd)[0]
         return (gradient / 4) * 10
 
     def xz_diffusion_coefficient(self):
         """
-        Calculates the two dimensional xz diffusion coefficient
+        Calculates the two dimensional xz diffusion coefficient.
 
         Returns:
-            (:py:attr:`float`): xz Diffusion coefficient
+            (:py:attr:`float`): xz Diffusion coefficient.
         """
         gradient = stats.linregress(self.time, self.xzmsd)[0]
         return (gradient / 4) * 10
 
     def yz_diffusion_coefficient(self):
         """
-        Calculates the two dimensional yz diffusion coefficient
+        Calculates the two dimensional yz diffusion coefficient.
 
         Returns:
-            (:py:attr:`float`): yz Diffusion coefficient
+            (:py:attr:`float`): yz Diffusion coefficient.
         """
         gradient = stats.linregress(self.time, self.yzmsd)[0]
         return (gradient / 4) * 10
 
     def x_diffusion_coefficient(self):
         """
-        Calculates the one dimensional x diffusion coefficient
+        Calculates the one dimensional x diffusion coefficient.
 
         Returns:
-            (:py:attr:`float`): x Diffusion coefficient
+            (:py:attr:`float`): x Diffusion coefficient.
         """
         gradient = stats.linregress(self.time, self.xmsd)[0]
         return (gradient / 2) * 10
     
     def y_diffusion_coefficient(self):
         """
-        Calculates the one dimensional y diffusion coefficient
+        Calculates the one dimensional y diffusion coefficient.
 
         Returns:
-            (:py:attr:`float`): y Diffusion coefficient
+            (:py:attr:`float`): y Diffusion coefficient.
         """
         gradient = stats.linregress(self.time, self.ymsd)[0]
         return (gradient / 2) * 10
 
     def z_diffusion_coefficient(self):
         """
-        Calculates the one dimensional z diffusion coefficient
+        Calculates the one dimensional z diffusion coefficient.
 
         Returns:
-            (:py:attr:`float`): z Diffusion coefficient
+            (:py:attr:`float`): z Diffusion coefficient.
         """
         gradient = stats.linregress(self.time, self.zmsd)[0]
         return (gradient / 2) * 10
 
-    def msd_plot(self):
-        """
-        Plots the mean squared displacements
-        """
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        ax.set_ylim(ymin=0, ymax=np.amax(self.msd))
-        ax.set_xlim(xmin=0, xmax=np.amax(self.time))
-        ax.plot(self.time, self.msd, label="XYZMSD")
-        ax.plot(self.time, self.xymsd, label="XYMSD")
-        ax.plot(self.time, self.xzmsd, label="XZMSD")
-        ax.plot(self.time, self.yzmsd, label="YZMSD")
-        ax.plot(self.time, self.xmsd, label="XMSD")
-        ax.plot(self.time, self.ymsd, label="YMSD")
-        ax.plot(self.time, self.zmsd, label="ZMSD")
-        ax.tick_params()
-        ax.set_xlabel("Time (ps)")
-        ax.set_ylabel("MSD ($\AA$)")
-        plt.legend()
-        if output:
-            plt.savefig(output, dpi=600)
-        plt.show()
-        plt.close()
-
 
 class MSD():
     """
-    The :py:class:`polypy.msd.MSD` class calculates the mean squared displacements for a given atom
+    The :py:class:`polypy.msd.MSD` class calculates the mean squared displacements for a given atom.
 
     Args:
         data (:py:class:`polypy.read.Trajectory`): Object containing the information from the HISTORY or ARCHIVE files.
-        timestep (:py:attr:`float`): Simulation timestep
-        sweeps (:py:attr:`int`, optional): How many times should the starting timestep be changed.
+        sweeps (:py:attr:`int`, optional): How many times should the starting timestep be changed. Default is :py:attr:`1`. 
     """
-    def __init__(self, data, timestep, sweeps=1):
+    def __init__(self, data, sweeps=1):
         self.data = data
-        self.timestep = timestep
         self.sweeps = sweeps
         if self.data.timesteps == 1:
             raise ValueError("ERROR: - Only one timestep has been found")
@@ -182,7 +159,7 @@ class MSD():
         Calculates the mean squared displacement for the trajectory.
 
         Returns:
-            (:py:class:`polypy.msd.MSDContainer`): Object containing the information for the MSD
+            (:py:class:`polypy.msd.MSDContainer`): Object containing the information for the MSD.
         """
         for i in range(1, self.sweeps+1):
             trajectories = np.split(self.data.fractional_trajectory, self.data.timesteps)
@@ -198,12 +175,12 @@ class MSD():
         Calculates the distances.
 
         Args:
-            trajectories (:py:attr:`array_like`): Fractional coordinates
-            start (:py:attr:`float`): Timestep to start the calculation
+            trajectories (:py:attr:`array_like`): Fractional coordinates.
+            start (:py:attr:`float`): Timestep to start the calculation.
 
         Returns:
-            distances (:py:attr:`array_like`): Distances
-            timestamp (:py:attr:`array_like`): Timesteps
+            distances (:py:attr:`array_like`): Distances.
+            timestamp (:py:attr:`array_like`): Timesteps.
         """
         distances = []
         timestamp = []
@@ -225,7 +202,7 @@ class MSD():
                         fractional_distance[k, i] = r_new - r0[k, i]
                 cartesian_distance = np.matmul(self.data.lv[j], fractional_distance[k])
                 distances.append(cartesian_distance)
-            timestamp.append(j * self.timestep)
+            timestamp.append(j * self.data.simulation_timestep)
             r1 = np.asarray(r1)
             rOd = np.asarray(rOd)
             rOd = r1
@@ -236,8 +213,8 @@ class MSD():
         Calculates the squared distances.
 
         Args:
-            distances (:py:attr:`array_like`): Distances
-            run (:py:attr:`float`): Timestep to start the calculation
+            distances (:py:attr:`array_like`): Distances.
+            run (:py:attr:`float`): Timestep to start the calculation.
         """
         squared_displacements = distances ** 2
         self.three_dimension_square_distance(squared_displacements, run)
@@ -246,11 +223,11 @@ class MSD():
 
     def three_dimension_square_distance(self, distances, run):
         """
-        Calculate the MSD in three dimensions
+        Calculate the MSD in three dimensions.
 
         Args:
-            distances (:py:attr:`array_like`): Distances
-            run (:py:attr:`float`): Timestep to start the calculation
+            distances (:py:attr:`array_like`): Distances.
+            run (:py:attr:`float`): Timestep to start the calculation.
         """
         summed_distances = np.sum(distances, axis=1)
         reshaped_array = np.reshape(summed_distances, (self.data.timesteps-run, self.data.total_atoms))
@@ -259,11 +236,11 @@ class MSD():
 
     def two_dimension_square_distance(self, distances, run):
         """
-        Calculate the MSD in two dimensions
+        Calculate the MSD in two dimensions.
 
         Args:
-            distances (:py:attr:`array_like`): Distances
-            run (:py:attr:`float`): Timestep to start the calculation
+            distances (:py:attr:`array_like`): Distances.
+            run (:py:attr:`float`): Timestep to start the calculation.
         """
         xy_distances = np.sum(np.array([distances[:,0], distances[:,1]]), axis=0)
         xz_distances = np.sum(np.array([distances[:,0], distances[:,2]]), axis=0)
@@ -285,8 +262,8 @@ class MSD():
         Calculate the MSD in one dimension.
 
         Args:
-            distances (:py:attr:`array_like`): Distances
-            run (:py:attr:`float`): Timestep to start the calculation
+            distances (:py:attr:`array_like`): Distances.
+            run (:py:attr:`float`): Timestep to start the calculation.
         """
         x_array = np.reshape(distances[:,0], (self.data.timesteps-run, self.data.total_atoms))
         y_array = np.reshape(distances[:,1], (self.data.timesteps-run, self.data.total_atoms))
@@ -310,11 +287,10 @@ class RegionalMSD():
         data (:py:class:`polypy.read.Trajectory`): Object containing the information from the HISTORY or ARCHIVE files.
         lower_boundary (:py:attr:`float`): Coordinate of the lower limit of the region of interest.
         upper_boundary (:py:attr:`int`, optional): Coordinate of the upper limit of the region of interest.
-        timestep (:py:attr:`float`): Simulation timestep
-        dimension (:py:attr:`int`, optional): Direction perpedicular to the region of interest.
-        sweeps (:py:attr:`int`, optional): How many times should the starting timestep be changed.
+        dimension (:py:attr:`int`, optional): Direction perpedicular to the region of interest. Default is :py:attr:`'x'`.
+        sweeps (:py:attr:`int`, optional): How many times should the starting timestep be changed. Default is :py:attr:`1`.
     """
-    def __init__(self, data, lower_boundary, upper_boundary, timestep, dimension='x', sweeps=1):
+    def __init__(self, data, lower_boundary, upper_boundary, dimension='x', sweeps=1):
         self.data = data
         if self.data.timesteps == 1:
             raise ValueError("ERROR: - Only one timestep has been found")
@@ -323,7 +299,6 @@ class RegionalMSD():
         self.lower_boundary = lower_boundary
         self.upper_boundary = upper_boundary
         self.sweeps = sweeps
-        self.timestep = timestep
         if dimension == "x":
             self.dimension = 0
         elif dimension == "y":
@@ -333,10 +308,10 @@ class RegionalMSD():
 
     def analyse_trajectory(self):
         """
-        Analyse the trajectory object
+        Analyse the trajectory object.
 
         Returns:
-            msd_information (:py:class:`polypy.msd.MSDContainer`): MSDContainer object - MSD information
+            msd_information (:py:class:`polypy.msd.MSDContainer`): MSDContainer object - MSD information.
         """
         xc = np.reshape(self.data.fractional_trajectory[:, self.dimension], ((self.data.timesteps),
                         self.data.total_atoms))
@@ -354,9 +329,11 @@ class RegionalMSD():
         Create a new MSDContainer object, specific to slice of a trajectory.
 
         Returns:
-            new_trajectory (:py:class:`polypy.msd.MSDContainer`): MSDContainer object
+            new_trajectory (:py:class:`polypy.msd.MSDContainer`): MSDContainer object.
         """
         new_trajectory = Trajectory(self.data.atom_list, "DLPOLY HISTORY")
+        new_trajectory.record_number = self.data.record_number
+        new_trajectory.time = self.data.time
         new_trajectory.total_atoms = 1
         new_trajectory.timesteps = self.data.timesteps
         return new_trajectory
@@ -367,7 +344,7 @@ class RegionalMSD():
         of the whole trajectory.
 
         Args:
-            container (:py:class:`polypy.msd.MSDContainer`): MSDContainer object - single atom
+            container (:py:class:`polypy.msd.MSDContainer`): MSDContainer object - single atom.
         """       
         self.msd_information.msd = np.append(self.msd_information.msd, container.msd)
         self.msd_information.xymsd = np.append(self.msd_information.xymsd, container.xymsd)
@@ -380,10 +357,10 @@ class RegionalMSD():
 
     def check_trajectory(self, trajectory, xc):
         """
-        Analyse the trajectory of an individual atom
+        Analyse the trajectory of an individual atom.
 
         Args:
-            trajectory (:py:class:`polypy.read.Trajectory`): Trajectory object
+            trajectory (:py:class:`polypy.read.Trajectory`): Trajectory object.
             xc (:py:attr:`array_like`): Coordinates perpendicular to the region of interest.
         """
         ib = False
@@ -402,7 +379,7 @@ class RegionalMSD():
             elif xc[i] < self.lower_boundary or xc[i] > self.upper_boundary:
                 if count > 100 and ib is True:
                     new_trajectory._clean_data()
-                    atom_msd = MSD(new_trajectory, self.timestep, self.sweeps)
+                    atom_msd = MSD(new_trajectory, self.sweeps)
                     msd = atom_msd.msd()
                     self.update_msd_info(msd)
                     count = 0
@@ -414,6 +391,6 @@ class RegionalMSD():
 
         if count > 100 and ib is True:
             new_trajectory._clean_data()
-            atom_msd = MSD(new_trajectory, self.timestep, self.sweeps)
+            atom_msd = MSD(new_trajectory, self.sweeps)
             msd = atom_msd.msd()
             self.update_msd_info(msd)

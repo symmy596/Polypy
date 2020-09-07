@@ -1,5 +1,8 @@
 """
-Read functions
+Read functions of `polypy`. Herein contains classes to read DL_POLY HISTORY
+/ CONFIG files and DL_MONTE ARCHIVE files. All of the data that is
+extracted from these files is stored in a trajectory class that is compatible
+with all three file types.
 """
 
 # Copyright (c) Adam R. Symington
@@ -7,18 +10,19 @@ Read functions
 # author: Adam R. Symington
 
 import os as os
-import sys as sys
 import numpy as np
 from polypy import utils as ut
 
 
 class Trajectory():
     """
-    The :py:class:`polypy.read.Trajectory` class evaluates the positions of all atoms in the simulation.
+    The :py:class:`polypy.read.Trajectory` class evaluates the positions
+    of all atoms in the simulation.
 
     Args:
         atom_list (:py:class:`list`): List of unique atom names in trajectory.
-        datatype (:py:attr:`str`): Datatype of the original dataset e.g. DL_POLY HISTORY or CONFIG.
+        datatype (:py:attr:`str`): Datatype of the original dataset
+        e.g. DL_POLY HISTORY or CONFIG.
     """
     def __init__(self, atom_list, datatype):
         self.atom_list = atom_list
@@ -33,10 +37,13 @@ class Trajectory():
         self.timesteps = 0
         self.total_atoms = 0
         self.atoms_at_timestep = []
+        self.record_number = []
+        self.time = []
+        self.simulation_timestep = None
 
     def _clean_data(self):
         """
-        Converts the data into a more user friendly format.
+        Converts the data from lists / floats to numpy arrays / integers.
         """
         self.cartesian_trajectory = np.asarray(self.cartesian_trajectory,
                                                dtype=float)
@@ -48,6 +55,7 @@ class Trajectory():
         self.cell_lengths = np.asarray(self.cell_lengths, dtype=float)
         self.timesteps = int(self.timesteps)
         self.total_atoms = int(self.total_atoms)
+        self.simulation_timestep = (self.record_number[1] - self.record_number[0]) * self.time[0]
 
     def get_config(self, timestep):
         """
@@ -75,6 +83,9 @@ class Trajectory():
         config_trajectory.cell_lengths = np.split(self.cell_lengths,
                                                   self.timesteps)[timestep]
         config_trajectory.atoms_in_history = self.total_atoms
+        config_trajectory.record_number = self.record_number[timestep]
+        config_trajectory.time = self.time[timestep]
+        config_trajectory.simulation_timestep = self.simulation_timestep
         config_trajectory.timesteps = 1
         config_trajectory.total_atoms = self.total_atoms
         return config_trajectory
@@ -105,8 +116,12 @@ class Trajectory():
         atom_trajectory.cell_lengths = self.cell_lengths
         atom_trajectory.timesteps = self.timesteps
         atom_trajectory.total_atoms = atom_trajectory.atoms_in_history / self.timesteps
+        atom_trajectory.time = self.time
+        atom_trajectory.record_number = self.record_number
+        atom_trajectory.timesteps = 1
         atom_trajectory._clean_data()
         return atom_trajectory
+
 
 class History():
     """
@@ -114,7 +129,7 @@ class History():
 
     Args:
         atom_list (:py:class:`list`): List of unique atom names in trajectory.
-        datatype (:py:attr:`str`): Datatype of the original dataset e.g. DL_POLY HISTORY or CONFIG.
+        datatype (:py:attr:`str`): Datatype of the original dataset e.g. DL_POLY HISTORY.
     """
     def __init__(self, file, atom_list):
         self.file = file
@@ -131,8 +146,9 @@ class History():
         self.trajectory._clean_data()
 
     def read_history(self):
-        '''Read a DL_POLY HISTORY file.
-        '''
+        """
+        Reads a DL_POLY HISTORY file line by line and updates a :py:class:`polypy.read.Trajectory` object.
+        """
         c = 0
         name = False
         tstep = False
@@ -168,15 +184,28 @@ class History():
             if split_line[0] == "timestep":
                 self.trajectory.timesteps = self.trajectory.timesteps + 1
                 tstep = True
+                self.trajectory.record_number.append(float(split_line[1]))
+                self.trajectory.time.append(float(split_line[5]))
         history.close()
 
     def _check_data(self):
+        """
+        Error handling function.
+        """
         if self.trajectory.total_atoms == int(self.trajectory.total_atoms) is False:
             raise ValueError("The total number of atoms is not constant across each timestep")
         if self.trajectory.total_atoms == 0:
             raise ValueError("No Atoms of specified type exist within the HISTORY file")
 
-class Config():
+
+class Config:
+    """
+    The :py:class:`polypy.read.Trajectory` class evaluates the positions of all atoms in a CONFIG.
+
+    Args:
+        atom_list (:py:class:`list`): List of unique atom names in trajectory.
+        datatype (:py:attr:`str`): Datatype of the original dataset e.g. DL_POLY CONFIG.
+    """
     def __init__(self, file, atom_list):
         self.file = file
         if os.path.isfile(self.file) is False:
@@ -191,14 +220,17 @@ class Config():
         self.trajectory._clean_data()
 
     def read_config(self):
+        """
+        Read a DL_POLY HISTORY file line by line and updates a :py:class:`polypy.read.Trajectory` object.
+        """
         config = open(self.file, 'r')
         name = False
         title = config.readline()
         stuff = config.readline()
         lv = []
         for i in range(0, 3):
-            l = config.readline()
-            lv.append(l.split())
+            lline = config.readline()
+            lv.append(lline.split())
         lv = np.asarray(lv, dtype=float)
         rcplvs, length = ut.calculate_rcplvs(lv)
         self.trajectory.cell_lengths.append(length)
@@ -219,174 +251,88 @@ class Config():
         config.close()
 
     def _check_data(self):
+        """
+        Error handling function.
+        """
         if self.trajectory.total_atoms == 0:
             raise ValueError("No Atoms of specified type exist within the CONFIG file")
 
-class Archive():
 
+class Archive():
+    """
+    The :py:class:`polypy.read.Trajectory` class evaluates the positions of all atoms in a ARCHIVE.
+
+    Args:
+        atom_list (:py:class:`list`): List of unique atom names in trajectory.
+        datatype (:py:attr:`str`): Datatype of the original dataset e.g. DL_MONTE ARCHIVE.
+    """
     def __init__(self, file, atom_list):
-        pass
+        self.file = file
+        if os.path.isfile(self.file) is False:
+            raise ValueError("File does not exist")
+        self.atom_list = atom_list
+        self.data_type = "DL_POLY ARCHIVE"
+        self.trajectory = Trajectory(self.atom_list,
+                                     self.data_type)
+        self.read_archive()
+        self.trajectory.timesteps = 1
+        self._check_data()
+        self.trajectory._clean_data()
 
     def read_archive(self):
-        pass
-
-    def _check_data(self):
-        pass
-
-
-def read_archive(file, atom_list):
-    '''Read a DL_MONTE ARCHIVE file
-    Parameters
-    ----------
-    file : str
-        Name of the dlmonte ARCHIVE file
-    atom_list : list
-        list of atoms types to be read
-
-    Returns
-    -------
-    data : dict
-        Dictionary containing the atom labels, trajectories,
-        lattice vectors, timesteps and number of atoms
-    '''
-    if os.path.isfile(file):
-        trajectories = []
-        atname = []
-        lv = []
-        natoms_at_timestep = []
+        """
+        Read a DL_MONTE ARCHIVE file line by line and updates a :py:class:`polypy.read.Trajectory` object.
+        """
         count = 0
-        c = 0
-        atom_count = 0
-        timesteps = 1
+        lv_count = 0
+        timestep_atom_count = 0
         skipline = 1
-        name = False
-        tstep = True
-        archive = open(file, 'r')
-        config_label = archive.readline()
-        config_label = config_label.split()
+        current_lv = []
+        atom_name_encountered = False
+        timestep = True
+        archive = open(self.file, 'r')
+        config_label = archive.readline().split()
+
         for line in archive:
-            x = line.split()
-            if c == 3:
-                c = 0
+            split_line = line.split()
+            if lv_count == 3:
+                current_lv = np.asarray(current_lv, dtype=float)
+                rcplvs, length = ut.calculate_rcplvs(current_lv)
+                self.trajectory.cell_lengths.append(length)
+                self.trajectory.lv.append(current_lv)
+                self.trajectory.reciprocal_lv.append(rcplvs)
+                lv_count = 0
                 skipline = 0
-                tstep = False
-            if c < 3 and tstep is True and skipline == 2:
-                lv.append(line.split())
-                c = c + 1
-            if name:
-                name = False
-                trajectories.append(line.split())
-                atom_count = atom_count + 1
-            if x[0] in atom_list:
-                atname.append(x[0])
-                name = True
+                timestep = False
+                current_lv = []
+            if lv_count < 3 and timestep is True and skipline == 2:
+                current_lv.append(split_line)
+                lv_count = lv_count + 1
+            if atom_name_encountered:
+                atom_name_encountered = False
+                self.trajectory.cartesian_trajectory.append(split_line[:3])
+                frac = np.matmul(rcplvs, np.asarray(split_line[:3], dtype=float))
+                frac = np.mod(frac, 1)
+                self.trajectory.fractional_trajectory.append(frac)
+                timestep_atom_count = timestep_atom_count + 1
+            if split_line[0] in self.atom_list:
+                self.trajectory.atom_name.append(split_line[0])
+                atom_name_encountered = True
                 count = count + 1
-            if x[0] == config_label[0]:
-                timesteps = timesteps + 1
-                tstep = True
+            if split_line[0] == config_label[0]:
+                self.trajectory.timesteps = self.trajectory.timesteps + 1
+                timestep = True
                 skipline = 1
-                natoms_at_timestep.append(atom_count)
-                atom_count = 0
-            elif tstep is True:
+                self.trajectory.atoms_at_timestep.append(timestep_atom_count)
+                timestep_atom_count = 0
+            elif timestep is True:
                 skipline = 2
 
-        trajectories = np.asarray(trajectories, dtype=float)
-        atname = np.asarray(atname, dtype=str)
-        lv = np.asarray(lv, dtype=float)
-        natoms = count / timesteps
-        natoms = int(natoms)
-        vec = np.array([])
-        lv = np.split(lv, timesteps)
+        archive.close()
 
-        for i in range(0, timesteps):
-
-            vec = np.append(vec, (lv[i].sum(axis=0)))
-
-        lv = np.reshape(vec, (timesteps, 3))
-        data = {'label': atname,
-                'trajectories': trajectories,
-                'lv': lv,
-                'timesteps': timesteps,
-                'natoms': natoms,
-                "atoms_per_timestep": natoms_at_timestep}
-
-    else:
-        print("File cannot be found")
-        sys.exit(0)
-
-    if natoms == 0:
-        print("No Atoms of specified type exist within the ARCHIVE file")
-        sys.exit(0)
-
-    archive.close()
-    return data
-
-
-
-
-def get_atom(data, atom):
-    """Reads through the dictionary returned from the reading functions
-    and returns a given atom.
-
-    Parameters
-    ----------
-    data : dictionary
-        Dictionary containing atom labels, trajectories,
-        lattice vectors, total number of timesteps and atoms.
-    atom : str
-        atom type to be found
-
-    Returns
-    -------
-    atom_data : dictionary
-        Dictionary containing atom labels, trajectories,
-        lattice vectors, total number of timesteps and atoms.
-    """
-    if len(np.unique(data['label'])) == 1:
-        return data
-    frac_coords = []
-    coords = []
-    count = 0
-    for i in range(0, data['label'].size):
-        if data['label'][i] == atom:
-            coords.append(data['trajectories'][i])
-            frac_coords.append(data['frac_trajectories'][i])
-            count = count + 1
-
-    coords = np.asarray(coords)
-    frac_coords = np.asarray(frac_coords)
-    natoms = int(count / data['timesteps'])
-    atom_data = {'label': atom,
-                 'trajectories': coords,
-                 'frac_trajectories': frac_coords,
-                 'lv': data['lv'],
-                 'lengths': data['lengths'],
-                 'timesteps': data['timesteps'],
-                 'natoms': natoms}
-
-    return atom_data
-
-
-def get_config(data, timestep):
-    """Returns single config from entire trajectory
-
-    Parameters
-    ----------
-    data : dictionary
-        Dictionary containing atom labels, trajectories,
-        lattice vectors, total number of timesteps and atoms.
-    timestep : int
-        Timestep of desired config
-
-    Returns
-    -------
-    array like
-        Coordinates of desired config
-    """
-    configs = np.split(data['trajectories'], data['timesteps'])
-    return configs[timestep]
-
-def get_trajectory(data, atom):
-    configs = np.split(data['trajectories'], data['timesteps'])
-    configs = np.asarray(configs)
-    return configs[:,atom]
+    def _check_data(self):
+        """
+        Error handling function.
+        """
+        if self.trajectory.total_atoms == 0:
+            raise ValueError("No Atoms of specified type exist within the ARCHIVE file")
