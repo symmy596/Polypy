@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from polypy import fig_params
 
 def line_plot(x, y, xlab, ylab, 
-              figsize=(4, 3)):
+              figsize=(10, 6)):
     """
     Simple line plotting function. Designed to be generic and used in several different applications.
 
@@ -35,7 +35,7 @@ def line_plot(x, y, xlab, ylab,
 
 def msd_plot(msd_data, 
             show_all_dimensions=True,
-            figsize=(4, 3)):
+            figsize=(10, 6)):
     """
     Plotting function for the mean squared displacements (MSD).
 
@@ -67,7 +67,7 @@ def msd_plot(msd_data,
 def volume_plot(x, y, 
                 xlab="Timestep (ps)", 
                 ylab="System Volume ($\AA$)",
-                figsize=(4, 3)):
+                figsize=(10, 6)):
     """
     Gathers the data and creates a line plot for the system volume as a function of simulation timesteps
 
@@ -87,7 +87,7 @@ def volume_plot(x, y,
 def electric_field_plot(x, y,
                         xlab="X Coordinate ($\AA$)",
                         ylab="Electric Field (V)",
-                        figsize=(4, 3)):
+                        figsize=(10, 6)):
     """
     Gathers the data and creates a line plot for the electric field in one dimension.
 
@@ -107,7 +107,7 @@ def electric_field_plot(x, y,
 def electrostatic_potential_plot(x, y,
                                  xlab="X Coordinate ($\AA$)",
                                  ylab="Electrostatic Potential (V)",
-                                 figsize=(4, 3)):
+                                 figsize=(10, 6)):
     """
     Gathers the data and creates a line plot for the electrostatic potential in one dimension.
 
@@ -127,7 +127,7 @@ def electrostatic_potential_plot(x, y,
 def one_dimensional_charge_density_plot(x, y,
                                         xlab="X Coordinate ($\AA$)",
                                         ylab="Charge Density",
-                                        figsize=(4, 3)):
+                                        figsize=(10, 6)):
     """
     Gathers the data and creates a line plot for the charge density in one dimension.
 
@@ -147,7 +147,7 @@ def one_dimensional_charge_density_plot(x, y,
 def one_dimensional_density_plot(x, y, data_labels,
                                  xlab="X Coordinate ($\AA$)",
                                  ylab="Particle Density",
-                                 figsize=(4, 3)):
+                                 figsize=(10, 6)):
     """
     Plots the number density of all given species in one dimension. 
 

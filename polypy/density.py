@@ -44,9 +44,9 @@ class Density:
         """
         Determine the upper and lower limits of the simulation cell in all three dimensions.
         """
-        self.x_lim = np.ceil(np.amax(self.lengths[:, 0]) / self.histogram_size).astype(int)
-        self.y_lim = np.ceil(np.amax(self.lengths[:, 1]) / self.histogram_size).astype(int)
-        self.z_lim = np.ceil(np.amax(self.lengths[:, 2]) / self.histogram_size).astype(int)
+        self.x_lim = (np.amax(self.lengths[:, 0]) / self.histogram_size).astype(int)
+        self.y_lim = (np.amax(self.lengths[:, 1]) / self.histogram_size).astype(int)
+        self.z_lim = (np.amax(self.lengths[:, 2]) / self.histogram_size).astype(int)
         self.x = (np.arange(0, self.x_lim)) * self.histogram_size
         self.y = (np.arange(0, self.y_lim)) * self.histogram_size
         self.z = (np.arange(0, self.z_lim)) * self.histogram_size
@@ -71,7 +71,7 @@ class Density:
         xbox = (position[0] * self.x_lim).astype(int)
         ybox = (position[1] * self.y_lim).astype(int)
         zbox = (position[2] * self.z_lim).astype(int)
-        self.coords_map[ybox, xbox, zbox] = self.coords_map[ybox, xbox, zbox] + 1
+        self.coords_map[xbox, ybox, zbox] = self.coords_map[xbox, ybox, zbox] + 1
 
     def one_dimensional_density(self, direction="x"):
         """

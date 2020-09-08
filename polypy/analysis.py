@@ -42,9 +42,6 @@ class OneDimensionalChargeDensity:
         """
         Calculates the charge density.
 
-        Args:
-            plot (:py:attr:`bool`): To plot or not to plot.
-
         Returns:
             charge_density (:py:attr:`array_like`): Charge density.
         """
@@ -58,9 +55,6 @@ class OneDimensionalChargeDensity:
         """
         Calculates the electric field.
 
-        Args:
-            plot (:py:attr:`bool`): To plot or not to plot.
-
         Returns:
             e_field (:py:attr:`array_like`): Electric field.
         """
@@ -72,9 +66,6 @@ class OneDimensionalChargeDensity:
     def calculate_electrostatic_potential(self):
         """
         Calculates the electrostatic potential.
-
-        Args:
-            plot (:py:attr:`bool`): To plot or not to plot.
 
         Returns:
             potential (:py:attr:`array_like`): Electrostatic potential.

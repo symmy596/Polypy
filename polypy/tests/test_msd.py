@@ -1,46 +1,136 @@
 import numpy as np
 import os
-from polypy import read as rd
+from polypy import read
 from polypy import msd as msd
 import unittest
 from numpy.testing import assert_almost_equal
 
 test_history = os.path.join(os.path.dirname(__file__), 'HISTORY')
-test_config = os.path.join(os.path.dirname(__file__), 'CONFIG')
-test_archive = os.path.join(os.path.dirname(__file__), 'ARCHIVE')
-expected_z = os.path.join(os.path.dirname(__file__), 'Expected_Z')
+
+class testMSDContainer(unittest.TestCase):
+
+    def test_smooth_msd_data(self):
+        pass
+       # x_data = np.array([1, 2, 3, 4, 5, 1, 2, 3, 4, 5])
+       # y_data = np.array([5, 4, 3, 2, 1, 5, 4, 3, 2, 1])
+       # x, y = ut.smooth_msd_data(x_data, y_data)
+       # predicted_x = np.array([1, 2, 3, 4, 5])
+       # predicted_y = np.array([5, 4, 3, 2, 1])
+       # assert_almost_equal(x, predicted_x)
+       # assert_almost_equal(y, predicted_y)
 
 
-class TestMsd(unittest.TestCase):
+    def test_xyz_diffusion_coefficient(self):
+        data = read.History(test_history, ['CA'])
+        msd_data = msd.MSD(data.trajectory)
+        msds = msd_data.msd()
+        assert_almost_equal(msds.xyz_diffusion_coefficient(), 299.9999999)
+
+    def test_xy_diffusion_coefficient(self):
+        data = read.History(test_history, ['CA'])
+        msd_data = msd.MSD(data.trajectory)
+        msds = msd_data.msd()
+        assert_almost_equal(msds.xy_diffusion_coefficient(), 300.0)
+
+    def test_xz_diffusion_coefficient(self):
+        data = read.History(test_history, ['CA'])
+        msd_data = msd.MSD(data.trajectory)
+        msds = msd_data.msd()
+        assert_almost_equal(msds.xz_diffusion_coefficient(), 300.0)
+
+    def test_yz_diffusion_coefficient(self):
+        data = read.History(test_history, ['CA'])
+        msd_data = msd.MSD(data.trajectory)
+        msds = msd_data.msd()
+        assert_almost_equal(msds.yz_diffusion_coefficient(), 300.0)
+
+    def test_x_diffusion_coefficient(self):
+        data = read.History(test_history, ['CA'])
+        msd_data = msd.MSD(data.trajectory)
+        msds = msd_data.msd()
+        assert_almost_equal(msds.x_diffusion_coefficient(), 300.0)
+
+    def test_y_diffusion_coefficient(self):
+        data = read.History(test_history, ['CA'])
+        msd_data = msd.MSD(data.trajectory)
+        msds = msd_data.msd()
+        assert_almost_equal(msds.y_diffusion_coefficient(), 300.0)
+
+    def test_z_diffusion_coefficient(self):
+        data = read.History(test_history, ['CA'])
+        msd_data = msd.MSD(data.trajectory)
+        msds = msd_data.msd()
+        assert_almost_equal(msds.z_diffusion_coefficient(), 300.0)
+
+
+class TestMSD(unittest.TestCase):
 
     def test_msd(self):
-        test_data = rd.read_history(test_history, ["CA"])
-        msd_data = msd.msd(test_data, 0.1)
+        data = read.History(test_history, ['CA'])
+        msd_data = msd.MSD(data.trajectory)
+        msds = msd_data.msd()
+        expected_msd = np.array([3, 12, 27, 48, 75])
+        assert_almost_equal(msds.msd, expected_msd)
+
+    def test_calculate_distances(self):
+        data = read.History(test_history, ['CA'])
+        msd_data = msd.MSD(data.trajectory)
+        trajectories = np.split(data.trajectory.fractional_trajectory, data.trajectory.timesteps)
+        x, y = msd_data.calculate_distances(trajectories, 1)
+        x = np.asarray(x)**2
+        msd_ = np.sum(x, axis=1)
         expected_msd = np.array([3, 12, 27, 3, 12, 27, 48, 75, 108])
-        assert_almost_equal(msd_data['msd'], expected_msd)
+        assert_almost_equal(msd_, expected_msd)
 
-    def test_smooth_msd(self):
-        test_data = rd.read_history(test_history, ["CA"])
-        msd_data = msd.smooth_msd(test_data, 0.1)
-        expected_msd = np.array([14.25, 27.75, 49, 74, 120, 159, 108, 147])
-        assert_almost_equal(msd_data['msd'], expected_msd)
-
-    def test_square_distance(self):
-        sd1 = msd.square_distance(np.array([2, 2, 2]), n=0)
-        sd2 = msd.square_distance(np.array([[2, 2, 2],
-                                            [4, 4, 4]]), n=1)
-        expected_sd1 = 12
-        expected_sd2 = np.array([12, 48])
-        assert_almost_equal(sd1, expected_sd1)
-        assert_almost_equal(sd2, expected_sd2)
-
-    def test_run_msd(self):
-        test_data = rd.read_history(test_history, ["CA"])
-        msd_data = msd.run_msd(test_data['trajectories'],
-                               test_data['lv'],
-                               test_data['timesteps'],
-                               test_data['natoms'],
-                               1,
-                               0.1)
+    def test_squared_displacements(self):
+        data = read.History(test_history, ['CA'])
+        msd_data = msd.MSD(data.trajectory)
+        trajectories = np.split(data.trajectory.fractional_trajectory, data.trajectory.timesteps)
+        x, y = msd_data.calculate_distances(trajectories, 1)
+        x = np.asarray(x)
+        msd_data.squared_displacements(x, 1)
         expected_msd = np.array([3, 12, 27, 3, 12, 27, 48, 75, 108])
-        assert_almost_equal(msd_data['msd'], expected_msd)
+        assert_almost_equal(msd_data.msd_information.msd, expected_msd)
+
+    def test_three_dimension_square_distance(self):
+        data = read.History(test_history, ['CA'])
+        msd_data = msd.MSD(data.trajectory)
+        trajectories = np.split(data.trajectory.fractional_trajectory, data.trajectory.timesteps)
+        x, y = msd_data.calculate_distances(trajectories, 1)
+        x = np.asarray(x) ** 2
+        msd_data.three_dimension_square_distance(x, 1)
+        expected_msd = np.array([3, 12, 27, 3, 12, 27, 48, 75, 108])
+        assert_almost_equal(msd_data.msd_information.msd, expected_msd)
+
+    def test_two_dimension_square_distance(self):
+        data = read.History(test_history, ['CA'])
+        msd_data = msd.MSD(data.trajectory)
+        trajectories = np.split(data.trajectory.fractional_trajectory, data.trajectory.timesteps)
+        x, y = msd_data.calculate_distances(trajectories, 1)
+        x = np.asarray(x) ** 2
+        msd_data.two_dimension_square_distance(x, 1)
+        expected_msd = np.array([2,  8, 18,  2,  8, 18, 32, 50, 72])
+        assert_almost_equal(msd_data.msd_information.xymsd, expected_msd)
+
+    def test_one_dimension_square_distance(self):
+        data = read.History(test_history, ['CA'])
+        msd_data = msd.MSD(data.trajectory)
+        trajectories = np.split(data.trajectory.fractional_trajectory, data.trajectory.timesteps)
+        x, y = msd_data.calculate_distances(trajectories, 1)
+        x = np.asarray(x) ** 2
+        msd_data.one_dimension_square_distance(x, 1)
+        expected_msd = np.array([ 1,  4,  9,  1,  4,  9, 16, 25, 36])
+        assert_almost_equal(msd_data.msd_information.xmsd, expected_msd)
+
+class TestRegionalMSD(unittest.TestCase):
+
+    def test_analyse_trajectory(self):
+        pass
+
+    def test_initialise_new_trajectory(self):
+        pass
+
+    def test_check_trajectory(self):
+        pass
+
+    

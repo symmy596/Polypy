@@ -50,7 +50,7 @@ MASTER_FORMATTING = {
     "lines.scale_dashes": False,
     "xtick.labelsize": FONTSIZE * 0.8,
     "ytick.labelsize": FONTSIZE * 0.8,
-    "legend.fontsize": FONTSIZE * 0.6,
+    "legend.fontsize": FONTSIZE * 0.8,
     "lines.linewidth": 2,
 }
 

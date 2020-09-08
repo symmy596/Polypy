@@ -55,8 +55,9 @@ class Trajectory():
         self.cell_lengths = np.asarray(self.cell_lengths, dtype=float)
         self.timesteps = int(self.timesteps)
         self.total_atoms = int(self.total_atoms)
-        self.simulation_timestep = (self.record_number[1] - self.record_number[0]) * self.time[0]
-
+        if self.data_type == "DL_POLY HISTORY":
+            self.simulation_timestep = (self.record_number[1] - self.record_number[0]) * self.time[0]
+        
     def get_config(self, timestep):
         """
         Isolates a specific DL_POLY CONFIG from a HISTORY file.
@@ -271,7 +272,7 @@ class Archive():
         if os.path.isfile(self.file) is False:
             raise ValueError("File does not exist")
         self.atom_list = atom_list
-        self.data_type = "DL_POLY ARCHIVE"
+        self.data_type = "DL_MONTE ARCHIVE"
         self.trajectory = Trajectory(self.atom_list,
                                      self.data_type)
         self.read_archive()
@@ -292,9 +293,13 @@ class Archive():
         timestep = True
         archive = open(self.file, 'r')
         config_label = archive.readline().split()
+        self.trajectory.timesteps = self.trajectory.timesteps + 1
 
+        print(config_label[0])
         for line in archive:
             split_line = line.split()
+            print(split_line[0])
+
             if lv_count == 3:
                 current_lv = np.asarray(current_lv, dtype=float)
                 rcplvs, length = ut.calculate_rcplvs(current_lv)
@@ -334,5 +339,4 @@ class Archive():
         """
         Error handling function.
         """
-        if self.trajectory.total_atoms == 0:
-            raise ValueError("No Atoms of specified type exist within the ARCHIVE file")
+        pass
