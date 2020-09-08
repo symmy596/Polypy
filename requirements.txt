@@ -6,3 +6,4 @@ coverage
 seaborn
 pandas
 jupyter
+nbsphinx
