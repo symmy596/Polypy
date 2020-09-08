@@ -1,9 +1,9 @@
 __author__ = "Adam R. Symington"
 __copyright__ = "Copyright Adam R.Symington (2019)"
-__version__ = "0.3"
+__version__ = "0.4"
 __maintainer__ = "Adam R. Symington"
 __email__ = "ars44s@bath.ac.uk"
-__date__ = "19/03/2019"
+__date__ = "09/09/2020"
 
 from setuptools import setup
 import os
