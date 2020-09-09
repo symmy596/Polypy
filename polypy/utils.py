@@ -33,16 +33,15 @@ def pbc(rnew, rold):
     shift = round(shift, 0)
     shift = int(shift)
     cross = False
-
     if shift < 2:
-        if (rnew - rold) > 0.5:
+        if rnew - rold > 0.5:
             rnew = rnew - 1.0
             cross = True
         elif -(rnew - rold) > 0.5:
             rnew = rnew + 1.0
             cross = True
     else:
-        if (rnew - rold) > 0.5:
+        if rnew - rold > 0.5:
             rnew = rnew - shift
             cross = True
         elif -(rnew - rold) > 0.5:
