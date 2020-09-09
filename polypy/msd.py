@@ -163,10 +163,10 @@ class MSD():
         """
         for i in range(1, self.sweeps+1):
             trajectories = np.split(self.data.fractional_trajectory, self.data.timesteps)
-            distances, timestamp = self.calculate_distances(trajectories, i * 5)
+            distances, timestamp = self.calculate_distances(trajectories, i + 5)
             distances = np.asarray(distances)
             self.msd_information.time = np.append(self.msd_information.time, timestamp)
-            self.squared_displacements(distances, i * 5)
+            self.squared_displacements(distances, i + 5)
         self.msd_information.clean_data()
         return self.msd_information
 
@@ -202,7 +202,7 @@ class MSD():
                         fractional_distance[k, i] = r_new - r0[k, i]
                 cartesian_distance = np.matmul(self.data.lv[j], fractional_distance[k])
                 distances.append(cartesian_distance)
-            timestamp.append(j * self.data.simulation_timestep)
+            timestamp.append((j-start) * self.data.simulation_timestep)
             r1 = np.asarray(r1)
             rOd = np.asarray(rOd)
             rOd = r1

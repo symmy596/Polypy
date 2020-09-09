@@ -26,43 +26,43 @@ class testMSDContainer(unittest.TestCase):
         data = read.History(test_history, ['CA'])
         msd_data = msd.MSD(data.trajectory)
         msds = msd_data.msd()
-        assert_almost_equal(msds.xyz_diffusion_coefficient(), 299.9999999)
+        assert_almost_equal(msds.xyz_diffusion_coefficient(), 249.9999999)
 
     def test_xy_diffusion_coefficient(self):
         data = read.History(test_history, ['CA'])
         msd_data = msd.MSD(data.trajectory)
         msds = msd_data.msd()
-        assert_almost_equal(msds.xy_diffusion_coefficient(), 300.0)
+        assert_almost_equal(msds.xy_diffusion_coefficient(), 249.9999999)
 
     def test_xz_diffusion_coefficient(self):
         data = read.History(test_history, ['CA'])
         msd_data = msd.MSD(data.trajectory)
         msds = msd_data.msd()
-        assert_almost_equal(msds.xz_diffusion_coefficient(), 300.0)
+        assert_almost_equal(msds.xz_diffusion_coefficient(), 249.9999999)
 
     def test_yz_diffusion_coefficient(self):
         data = read.History(test_history, ['CA'])
         msd_data = msd.MSD(data.trajectory)
         msds = msd_data.msd()
-        assert_almost_equal(msds.yz_diffusion_coefficient(), 300.0)
+        assert_almost_equal(msds.yz_diffusion_coefficient(), 249.9999999)
 
     def test_x_diffusion_coefficient(self):
         data = read.History(test_history, ['CA'])
         msd_data = msd.MSD(data.trajectory)
         msds = msd_data.msd()
-        assert_almost_equal(msds.x_diffusion_coefficient(), 300.0)
+        assert_almost_equal(msds.x_diffusion_coefficient(), 249.9999999)
 
     def test_y_diffusion_coefficient(self):
         data = read.History(test_history, ['CA'])
         msd_data = msd.MSD(data.trajectory)
         msds = msd_data.msd()
-        assert_almost_equal(msds.y_diffusion_coefficient(), 300.0)
+        assert_almost_equal(msds.y_diffusion_coefficient(), 249.9999999)
 
     def test_z_diffusion_coefficient(self):
         data = read.History(test_history, ['CA'])
         msd_data = msd.MSD(data.trajectory)
         msds = msd_data.msd()
-        assert_almost_equal(msds.z_diffusion_coefficient(), 300.0)
+        assert_almost_equal(msds.z_diffusion_coefficient(), 249.9999999)
 
 
 class TestMSD(unittest.TestCase):
@@ -83,7 +83,7 @@ class TestMSD(unittest.TestCase):
         data = read.History(test_history, ['CA'])
         msd_data = msd.MSD(data.trajectory)
         msds = msd_data.msd()
-        expected_msd = np.array([3, 12, 27, 48, 75])
+        expected_msd = np.array([3, 12, 27, 48])
         assert_almost_equal(msds.msd, expected_msd)
 
     def test_calculate_distances(self):

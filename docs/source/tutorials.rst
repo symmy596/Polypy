@@ -24,8 +24,6 @@ The density module of polypy allows the particle density to be evaluated in one 
     :maxdepth: 1
 
     density_tutorial_1.rst
-    density_tutorial_2.rst
-    density_tutorial_3.rst
     
 Mean Squared Displacement (MSD)
 -------------------------------

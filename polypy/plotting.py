@@ -180,7 +180,7 @@ def two_dimensional_charge_density_plot(x, y, z,
                                         xlab="X Coordinate ($\AA$)",
                                         ylab="Y Coordinate ($\AA$)",
                                         palette="viridis",
-                                        figsize=None,
+                                        figsize=(10, 6),
                                         colorbar=True):
     """
     Plots the charge density in two dimensions. 
@@ -205,14 +205,14 @@ def two_dimensional_charge_density_plot(x, y, z,
     ax.tick_params()
     if colorbar:
         cbar = fig.colorbar(CM)
-        cbar.set_label('Charge Density', labelpad=-40, y=1.07, rotation=0)
+        cbar.set_label('Charge Density', labelpad=-40, y=1.1, rotation=0)
     return fig, ax
 
 def two_dimensional_density_plot(x, y, z,
                                  xlab="X Coordinate ($\AA$)",
                                  ylab="Y Coordinate ($\AA$)",
                                  palette="viridis",
-                                 figsize=None, 
+                                 figsize=(10, 6), 
                                  colorbar=True):
     """
     Plots the distribution of an atom species in two dimensions. 
@@ -243,9 +243,9 @@ def two_dimensional_density_plot(x, y, z,
 def combined_density_plot(x, y, z,
                           xlab="X Coordinate ($\AA$)",
                           ylab="Y Coordinate ($\AA$)",
-                          y2_lab="Particle Density",
+                          y2_lab="Number Density",
                           palette="viridis",
-                          figsize=None):
+                          figsize=(10, 6)):
     """
     Plots the distribution of an atom species in two dimensions. 
 
