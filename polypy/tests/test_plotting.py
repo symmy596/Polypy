@@ -49,3 +49,17 @@ class TestDensity(unittest.TestCase):
         assert_almost_equal(x, ax.lines[0].get_xydata().T[0] )
         assert_almost_equal(y, ax.lines[0].get_xydata().T[1] )
 
+    def test_one_dimensional_charge_density_plot(self):  
+        x = np.array([1, 2, 3, 4, 5, 6])
+        y = np.array([6, 5, 4, 3, 2, 1])
+        ax = plotting.one_dimensional_density_plot(x, y)
+        assert_almost_equal(x, ax.lines[0].get_xydata().T[0] )
+        assert_almost_equal(y, ax.lines[0].get_xydata().T[1] )
+
+    def test_one_dimensional_charge_density_plot(self):  
+        x = np.array([1, 2, 3, 4, 5, 6])
+        y = np.array([6, 5, 4, 3, 2, 1])
+        ax = plotting.one_dimensional_density_plot([x], [y], ["Ca"])
+        assert_almost_equal(x, ax.lines[0].get_xydata().T[0] )
+        assert_almost_equal(y, ax.lines[0].get_xydata().T[1] )
+    
