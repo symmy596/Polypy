@@ -56,7 +56,7 @@ class TestDensity(unittest.TestCase):
         assert_almost_equal(x, ax.lines[0].get_xydata().T[0] )
         assert_almost_equal(y, ax.lines[0].get_xydata().T[1] )
     
-    def test_one_dimensional_density_plot(self):  
+    def test_msd_plot(self):  
         data = read.History(test_history, ['CA'])
         msd_data = msd.MSD(data.trajectory)
         msds = msd_data.msd()
