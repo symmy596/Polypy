@@ -46,8 +46,9 @@ class TestArchive(unittest.TestCase):
         data = rd.Archive(test_archive, ["Ca"])
         assert_almost_equal(expected_traj, data.trajectory.cartesian_trajectory)
 
-class TestTrajectory(unittest.TestCase):
 
+class TestTrajectory(unittest.TestCase):
+    
     def test_get_config(self):
         data = rd.History(test_history, ["CA", "F"])
         expected_config = data.trajectory.get_config(0)

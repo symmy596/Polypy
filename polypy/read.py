@@ -277,7 +277,6 @@ class Archive():
                                      self.data_type)
         self.read_archive()
         self.trajectory.timesteps = 1
-        self._check_data()
         self.trajectory._clean_data()
 
     def read_archive(self):

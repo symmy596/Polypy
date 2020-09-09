@@ -69,13 +69,16 @@ class TestMSD(unittest.TestCase):
 
     def msd_fail_1(self):
         data = read.Config(test_history, ['CA'])
-        data.trajectory.timesteps = 1
-        with self.assertRaises(ValueError): msd.MSD(data.trajectory)
+        try:
+            data.trajectory.timesteps = 1
+        except ValueError as e: 
+            self.assertEqual(type(e), ValueError) 
 
     def msd_fail_2(self):
         data = read.Config(test_history, ['CA'])
         data.trajectory.atom_name.append('F')
-        with self.assertRaises(ValueError): msd.MSD(data.trajectory)
+        with self.assertRaises(ValueError): 
+            msd.MSD(data.trajectory)
 
     def test_msd(self):
         data = read.History(test_history, ['CA'])
