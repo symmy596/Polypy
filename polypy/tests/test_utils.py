@@ -39,9 +39,16 @@ class TestUtils(unittest.TestCase):
         assert_almost_equal(rclpvs, expected_rcplvs)
         assert_almost_equal(lengths, expected_lengths)
 
-    def test_cart_2_frac(self):
+    def test_cart_2_frac_1(self):
         coord = np.array([5, 5, 5])
         lv = np.array([[3, 0, 0],[0, 5, 0], [0, 0, 2]])
         rclpvs, lengths = ut.calculate_rcplvs(lv)
         coords = ut.cart_2_frac(coord, lengths, rclpvs)
         assert_almost_equal(coords, np.array([0.66666667, 0.0, 0.5]))
+
+    def test_cart_2_frac_2(self):
+        coord = np.array([[5, 5, 5], [8, 8, 8]])
+        lv = np.array([[3, 0, 0],[0, 5, 0], [0, 0, 2]])
+        rclpvs, lengths = ut.calculate_rcplvs(lv)
+        coords = ut.cart_2_frac(coord, lengths, rclpvs)
+        assert_almost_equal(coords, np.array([[0.66666667, 0.0, 0.5], [0.66666667, 0.6, 0.0]]))
