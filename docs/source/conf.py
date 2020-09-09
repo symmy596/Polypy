@@ -22,7 +22,7 @@ copyright = '2020, Adam R. Symington'
 author = 'Adam R. Symington'
 
 # The full version, including alpha/beta/rc tags
-release = '0.4'
+release = '0.5'
 
 
 # -- General configuration ---------------------------------------------------
