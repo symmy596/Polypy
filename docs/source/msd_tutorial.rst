@@ -29,111 +29,74 @@ Usage
 .. code-block:: python
 
     from polypy import read as rd
-    from polypy import msd as msd
+    from polypy.msd import MSD 
+    from polypy.msd import RegionalMSD 
+    from polypy import analysis
     from polypy import utils as ut
-    from polypy import write as wr
+    from polypy import plotting
     import numpy as np
+    import matplotlib.pyplot as plt
 
 This example will use a short (50,000 steps), pre-prepared trajectory of bulk $CaF_2$. In reality we probably want a considerably longer simulation (~10,000,000 steps). Such simulations generate huge files (5GB) and the analysis would take too long for this tutorial. 
 
-The first step is to read the history file to generate the data. The function read_history expects two things, the filename of the history file and a list of atoms to read. It will return a dictionary containing the atom labels, trajectories, lattice vectors, timesteps and number of atoms.
+The first step is to read the history file to generate the data. The `HISTORY` class expects two things, the filename of the history file and a list of atoms to read. It will return a `polypy.read.Trajectory` object, which stores the the atom labels (`Trajectory.atom_labels`), datatype (`Trajectory.data_type`), cartesian coordinates (`Trajectory.cartesian_coordinates`), fractiona coordinates (`Trajectory.fractional_coordinates`), reciprocal lattice vectors (`Trajectory.reciprocal_lv`), lattice vectors (`Trajectory.lv`) cell lengths (`Trajectory.cell_lengths`), total atoms in the file (`Trajectory.atoms_in_history`), timesteps (`Trajectory.timesteps`), total atoms per timestep (`Trajectory.total_atoms`).
 
 .. code-block:: python
 
-    data = {'label': Atom Names,
-            'trajectories': Atomic trajectories,
-            'lv': Lattice vectors,
-            'timesteps': Number of timesteps,
-            'natoms': Number of Atoms}
+    history = rd.History("../example_data/HISTORY", ["F"])
 
+Once the data has been read into the code the MSD calculation can be performed.
 
 .. code-block:: python
 
-    data = rd.read_history("../example_data/HISTORY", ["F"])
+    f_msd = MSD(history.trajectory, sweeps=2)
 
-Once the data has been read into the code the MSD calculation can be performed. The msd function requires the data and the time between records which in this case is 0.25ps. The msd function will then return a dictionary containing the time, 3D MSD and the directional components. 
+    output = f_msd.msd()
 
-.. code-block:: python
+    ax = plotting.msd_plot(output)
+    plt.show()
 
-    data = {'msd': 3D MSD,
-            'xmsd': MSD in the X direction,
-            'ymsd': MSD in the Y direction,
-            'zmsd': MSD in the Z direction,
-            'time': Time}
+.. image:: Figures/MSD_1.png
+    :align: center
 
 .. code-block:: python
 
-    timestep = 0.1
-    msd_data = msd.msd(data, timestep)
-    wr.msd_plot(msd_data)
+    f_msd = MSD(history.trajectory, sweeps=10)
 
-.. image:: Figures/Rough_MSD.png
-    :height: 300px
+    output = f_msd.msd()
+
+    ax = plotting.msd_plot(output)
+
+    plt.show()
+
+.. image:: Figures/MSD_2.png
     :align: center
 
 Using the data the diffusion coefficient can then be calculated from the slopes. 
 
 .. code-block:: python
 
-    Diff = ut.linear_regression(msd_data['time'], msd_data['msd'])[0]
-    Diffusion_Coefficient = ut.three_d_diffusion_coefficient(Diff)
+    print("Three Dimensional Diffusion Coefficient", output.xyz_diffusion_coefficient())
+    print("One Dimensional Diffusion Coefficient in X", output.x_diffusion_coefficient())
+    print("One Dimensional Diffusion Coefficient in Y", output.y_diffusion_coefficient())
+    print("One Dimensional Diffusion Coefficient in Z", output.z_diffusion_coefficient())
 
-    XDiff = ut.linear_regression(msd_data['time'], msd_data['xmsd'])[0]
-    XDiffusion_Coefficient = ut.three_d_diffusion_coefficient(XDiff)
+| Three Dimensional Diffusion Coefficient 1.6078332646337548
+| One Dimensional Diffusion Coefficient in X 1.6045620180115865
+| One Dimensional Diffusion Coefficient in Y 1.6856414148385679
+| One Dimensional Diffusion Coefficient in Z 1.5332963610511103
 
-    YDiff = ut.linear_regression(msd_data['time'], msd_data['ymsd'])[0]
-    YDiffusion_Coefficient = ut.three_d_diffusion_coefficient(YDiff)
 
-    ZDiff = ut.linear_regression(msd_data['time'], msd_data['zmsd'])[0]
-    ZDiffusion_Coefficient = ut.three_d_diffusion_coefficient(ZDiff)
+Arrhenius
+~~~~~~~~~
 
-    print("3D Diffusion Coefficient", Diffusion_Coefficient, "")
-    print("1D Diffusion Coefficient in X", XDiffusion_Coefficient)
-    print("1D Diffusion Coefficient in Y", YDiffusion_Coefficient)
-    print("1D Diffusion Coefficient in Z", ZDiffusion_Coefficient)
+It is then possible to take diffusion coefficients, calculated over a large temperature range and, using the Arrhenius equation calculate the activation energy for diffusion. Common sense and chemical intuition suggest that the higher the temperature, the faster a given chemical reaction will proceed. Quantitatively this relationship between the rate a reaction proceeds and its temperature is determined by the Arrhenius Equation. At higher temperatures, the probability that two molecules will collide is higher. This higher collision rate results in a higher kinetic energy, which has an effect on the activation energy of the reaction. The activation energy is the amount of energy required to ensure that a reaction happens.  
+  
+.. math::
+    k = A * e^{(-Ea / RT)}
+  
+where k is the rate coefficient, A is a constant, Ea is the activation energy, R is the universal gas constant, and T is the temperature (in kelvin).
 
-| 3D Diffusion Coefficient 1.5982842660277743 
-| 1D Diffusion Coefficient in X 0.5320682056322482
-| 1D Diffusion Coefficient in Y 0.5560502622454371
-| 1D Diffusion Coefficient in Z 0.510165798150089
-
-Smoothing the MSD
-~~~~~~~~~~~~~~~~~
-
-This example has used one sweep of the trajectory, meaning that the MSD has been calculated from one value of :math:`r_{i}^{0}`. In order to increase your statistics and sharpen your  MSD plot it is often better to use multiple values of :math:`r_{i}^{0}`. Basically, use multiple starting points. The smooth_msd function allows you to increase the number of runs with the runs parameter.
-
-.. code-block:: python
-
-    smsd_data = msd.smooth_msd(data, timestep, runs=10)
-    wr.msd_plot(smsd_data)
-
-.. image:: Figures/Smooth_MSD.png
-    :height: 300px
-    :align: center
-
-.. code-block:: python
-
-    Diff = ut.linear_regression(smsd_data['time'], smsd_data['msd'])[0]
-    Diffusion_Coefficient = ut.three_d_diffusion_coefficient(Diff)
-
-    XDiff = ut.linear_regression(smsd_data['time'], smsd_data['xmsd'])[0]
-    XDiffusion_Coefficient = ut.three_d_diffusion_coefficient(XDiff)
-
-    YDiff = ut.linear_regression(smsd_data['time'], smsd_data['ymsd'])[0]
-    YDiffusion_Coefficient = ut.three_d_diffusion_coefficient(YDiff)
-
-    ZDiff = ut.linear_regression(smsd_data['time'], smsd_data['zmsd'])[0]
-    ZDiffusion_Coefficient = ut.three_d_diffusion_coefficient(ZDiff)
-
-    print("3D Diffusion Coefficient", Diffusion_Coefficient, "")
-    print("1D Diffusion Coefficient in X", XDiffusion_Coefficient)
-    print("1D Diffusion Coefficient in Y", YDiffusion_Coefficient)
-    print("1D Diffusion Coefficient in Z", ZDiffusion_Coefficient)
-
-| 3D Diffusion Coefficient 1.6183029417202661 
-| 1D Diffusion Coefficient in X 0.5433783214892426
-| 1D Diffusion Coefficient in Y 0.567069634210256
-| 1D Diffusion Coefficient in Z 0.5078549860207675
 
 Ionic Conductivity
 ~~~~~~~~~~~~~~~~~~
@@ -150,31 +113,30 @@ The resitance can then be calculated according to
 .. math::
     \Omega = \frac{1}{\sigma} 
 
-So the first step is to calculate the volume, the system voume module will do this from the given data. 
+So the first step is to calculate the volume, the system volume module will do this from the given data. 
 
 .. code-block:: python
 
-    volume, time = ut.system_volume(data, timestep)
-    wr.volume_plot(time, volume)
-    Average_Volume = np.mean(volume[100:])
+    volume, step = analysis.system_volume(history.trajectory)
+    average_volume = np.mean(volume[:50])
 
-.. image:: Figures/Volume.png
-    :height: 300px
-    :align: center
+The number of charge carriers is just the total number of atoms.
 
 .. code-block:: python
 
-    Number_of_Charge_Carriers = data['natoms']
-    Ionic_Conductivity = ut.conductivity(Number_of_Charge_Carriers, Average_Volume, Diffusion_Coefficient, 1500)
-    print("Ionic Conductivity :", Ionic_Conductivity)
+    sigma = analysis.conductivity(history.trajectory.total_atoms, 
+                                  average_volume, 
+                                  output.xyz_diffusion_coefficient(), 
+                                  1500)
+    print("Ionic Conductivity :", sigma)
 
-Ionic Conductivity : 87.79838348237887
+Ionic Conductivity : 0.0008752727736501591
 
 .. code-block:: python
 
-    print("Resistivity :", (1 / Ionic_Conductivity)) 
+    print("Resistivity :", (1 / sigma))     
 
-Resistivity : 0.01138973134056278
+Resistivity : 1142.5009781004494
 
 Simulation Length
 ~~~~~~~~~~~~~~~~~
@@ -183,37 +145,28 @@ It is important to consider the lenght of your simulation (Number of steps). The
 
 .. code-block:: python
 
-    data_short = rd.read_history("../example_data/HISTORY_short", ["F"])
-    msd_data = msd.msd(data_short, timestep)
-    wr.msd_plot(msd_data)
+    data_short = rd.History("../example_data/HISTORY_short", atom_list=["F"])
+    f_msd_short = MSD(data_short.trajectory, sweeps=2)
 
-.. image:: Figures/Short_MSD.png
-    :height: 300px
+    output = f_msd_short.msd()
+
+    ax = plotting.msd_plot(output)
+    plt.show()
+
+.. image:: Figures/MSD_3.png
     :align: center
 
 .. code-block:: python
 
-    Diff = ut.linear_regression(msd_data['time'], msd_data['msd'])
-    Diffusion_Coefficient = ut.three_d_diffusion_coefficient(Diff)
+    print("Three Dimensional Diffusion Coefficient", output.xyz_diffusion_coefficient())
+    print("One Dimensional Diffusion Coefficient in X", output.x_diffusion_coefficient())
+    print("One Dimensional Diffusion Coefficient in Y", output.y_diffusion_coefficient())
+    print("One Dimensional Diffusion Coefficient in Z", output.z_diffusion_coefficient())
 
-    XDiff = ut.linear_regression(msd_data['time'], msd_data['xmsd'])
-    XDiffusion_Coefficient = ut.three_d_diffusion_coefficient(XDiff)
-
-    YDiff = ut.linear_regression(msd_data['time'], msd_data['ymsd'])
-    YDiffusion_Coefficient = ut.three_d_diffusion_coefficient(YDiff)
-
-    ZDiff = ut.linear_regression(msd_data['time'], msd_data['zmsd'])
-    ZDiffusion_Coefficient = ut.three_d_diffusion_coefficient(ZDiff)
-
-    print("3D Diffusion Coefficient", Diffusion_Coefficient, "")
-    print("1D Diffusion Coefficient in X", XDiffusion_Coefficient)
-    print("1D Diffusion Coefficient in Y", YDiffusion_Coefficient)
-    print("1D Diffusion Coefficient in Z", ZDiffusion_Coefficient)
-
-| 3D Diffusion Coefficient 0.5634151782976387 
-| 1D Diffusion Coefficient in X 0.3992597872198792
-| 1D Diffusion Coefficient in Y 0.3940545927718295
-| 1D Diffusion Coefficient in Z 0.3867199592864265
+| Three Dimensional Diffusion Coefficient 1.58656319093229
+| One Dimensional Diffusion Coefficient in X 1.5739020833099904
+| One Dimensional Diffusion Coefficient in Y 1.630216356788139
+| One Dimensional Diffusion Coefficient in Z 1.5555711326987387
 
 
 State of Matter
@@ -229,10 +182,46 @@ The Fluorine diffusion discussed already clearly shows that the fluorine sub lat
 
 .. code-block:: python
 
-    data = rd.read_history("../example_data/HISTORY", ["CA"])
-    msd_data = msd.msd(data, timestep)
-    wr.msd_plot(msd_data)
+    history = rd.History("../example_data/HISTORY", ["CA"])
 
-.. image:: Figures/Solid_MSD.png
-    :height: 300px
+    f_msd = MSD(history.trajectory, sweeps=2)
+
+    output = f_msd.msd()
+
+    ax = plotting.msd_plot(output)
+    plt.show()
+
+.. image:: Figures/MSD_4.png
     :align: center
+
+Regional MSD
+~~~~~~~~~~~~
+
+Often in solid state chemistry simulations involve defects, both structural e.g. grain boundaries, dislocations and surface, and chemical e.g. point defects. It is important to try and isolate the contributions of these defects to the overall properties. Regarding diffusion, it could be imagined that a certain region within a structure will have different properties compared with the stoichiometric bulk, e.g. a grain boundary vs the grains, or the surface vs the bulk. `polypy` has the capability to isolate trajectories that pass within certain regions of a structure and thus calculate a diffusion coefficient for those regions. 
+
+.. code-block:: python
+
+    history = rd.History("../example_data/HISTORY", atom_list=["F"])
+
+    f_msd = RegionalMSD(history.trajectory, -5, 5)
+    output = f_msd.analyse_trajectory()
+
+    ax = plotting.msd_plot(output)
+
+    plt.show()
+
+.. image:: Figures/MSD_5.png
+    :align: center
+
+
+.. code-block:: python
+
+    print("Three Dimensional Diffusion Coefficient", output.xyz_diffusion_coefficient())
+    print("One Dimensional Diffusion Coefficient in X", output.x_diffusion_coefficient())
+    print("One Dimensional Diffusion Coefficient in Y", output.y_diffusion_coefficient())
+    print("One Dimensional Diffusion Coefficient in Z", output.z_diffusion_coefficient())
+
+| Three Dimensional Diffusion Coefficient 1.597047044241002
+| One Dimensional Diffusion Coefficient in X 1.6120172452124801
+| One Dimensional Diffusion Coefficient in Y 1.671268658071343
+| One Dimensional Diffusion Coefficient in Z 1.5078552294391845

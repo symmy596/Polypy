@@ -6,14 +6,10 @@ polypy
 .. toctree::
    :maxdepth: 1
 
+   installation.rst
    theory.rst
    using_polypy.rst
    tutorials.rst
-   gallery.rst
-
-.. toctree::
-   :maxdepth: 2
-
    modules
 
 

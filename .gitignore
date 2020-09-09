@@ -11,3 +11,5 @@ examples/example_data/*
 polypy.egg-info/
 polypy/tests/__pycache__
 docs/build
+
+paper
