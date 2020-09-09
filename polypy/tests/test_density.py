@@ -19,6 +19,19 @@ class TestDensity(unittest.TestCase):
         assert test_density.z_lim == 10
         assert test_density.x.size == 10
 
+    def test_build_map(self):
+        data = read.History(test_history, ['CA'])
+        test_density = Density(data.trajectory, histogram_size=1.0)
+        assert np.sum(test_density.coords_map) == 10.0
+        test_density.build_map()
+        assert np.sum(test_density.coords_map) == 20.0
+
+    def test_update_map(self):
+        data = read.History(test_history, ['CA'])
+        test_density = Density(data.trajectory, histogram_size=1.0)
+        test_density.update_map([0.1, 0.1, 0.1])
+        assert test_density.coords_map[1, 1, 1] == 2.0
+
     def test_one_dimensional_density(self):
         data = read.History(test_history, ['CA'])
         test_density = Density(data.trajectory, histogram_size=1.0)
