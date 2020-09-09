@@ -81,7 +81,8 @@ def volume_plot(x, y,
     Returns:
         (:py:class:`matplotlib.axes.Axes`): The axes with new plots.
     """
-    line_plot(x, y, xlab, ylab, figsize)
+    ax = line_plot(x, y, xlab, ylab, figsize)
+    return ax
 
 
 def electric_field_plot(x, y,
@@ -101,7 +102,8 @@ def electric_field_plot(x, y,
     Returns:
         (:py:class:`matplotlib.axes.Axes`): The axes with new plots.
     """
-    line_plot(x, y, xlab, ylab, figsize)
+    ax = line_plot(x, y, xlab, ylab, figsize)
+    return ax
 
 
 def electrostatic_potential_plot(x, y,
@@ -121,7 +123,8 @@ def electrostatic_potential_plot(x, y,
     Returns:
         (:py:class:`matplotlib.axes.Axes`): The axes with new plots.
     """
-    line_plot(x, y, xlab, ylab, figsize)
+    ax = line_plot(x, y, xlab, ylab, figsize)
+    return ax
 
 
 def one_dimensional_charge_density_plot(x, y,
@@ -141,7 +144,8 @@ def one_dimensional_charge_density_plot(x, y,
     Returns:
         (:py:class:`matplotlib.axes.Axes`): The axes with new plots.
     """
-    line_plot(x, y, xlab, ylab, figsize)
+    ax = line_plot(x, y, xlab, ylab, figsize)
+    return ax
 
 
 def one_dimensional_density_plot(x, y, data_labels,
