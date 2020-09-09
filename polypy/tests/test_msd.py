@@ -6,19 +6,21 @@ import unittest
 from numpy.testing import assert_almost_equal
 
 test_history = os.path.join(os.path.dirname(__file__), 'HISTORY')
+test_config = os.path.join(os.path.dirname(__file__), 'CONFIG')
 
 class testMSDContainer(unittest.TestCase):
 
     def test_smooth_msd_data(self):
-        pass
-       # x_data = np.array([1, 2, 3, 4, 5, 1, 2, 3, 4, 5])
-       # y_data = np.array([5, 4, 3, 2, 1, 5, 4, 3, 2, 1])
-       # x, y = ut.smooth_msd_data(x_data, y_data)
-       # predicted_x = np.array([1, 2, 3, 4, 5])
-       # predicted_y = np.array([5, 4, 3, 2, 1])
-       # assert_almost_equal(x, predicted_x)
-       # assert_almost_equal(y, predicted_y)
-
+        data = read.History(test_history, ['CA'])
+        msd_data = msd.MSD(data.trajectory)
+        msds = msd_data.msd()
+        x_data = np.array([1, 2, 3, 4, 5, 1, 2, 3, 4, 5])
+        y_data = np.array([5, 4, 3, 2, 1, 5, 4, 3, 2, 1])
+        x, y = msds.smooth_msd_data(x_data, y_data)
+        predicted_x = np.array([1, 2, 3, 4, 5])
+        predicted_y = np.array([5, 4, 3, 2, 1])
+        assert_almost_equal(x, predicted_x)
+        assert_almost_equal(y, predicted_y)
 
     def test_xyz_diffusion_coefficient(self):
         data = read.History(test_history, ['CA'])
@@ -64,6 +66,16 @@ class testMSDContainer(unittest.TestCase):
 
 
 class TestMSD(unittest.TestCase):
+
+    def msd_fail_1(self):
+        data = read.Config(test_history, ['CA'])
+        data.trajectory.timesteps = 1
+        with self.assertRaises(ValueError): msd.MSD(data.trajectory)
+
+    def msd_fail_2(self):
+        data = read.Config(test_history, ['CA'])
+        data.trajectory.atom_name.append('F')
+        with self.assertRaises(ValueError): msd.MSD(data.trajectory)
 
     def test_msd(self):
         data = read.History(test_history, ['CA'])
