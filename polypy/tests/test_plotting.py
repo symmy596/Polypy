@@ -56,3 +56,16 @@ class TestDensity(unittest.TestCase):
         assert_almost_equal(x, ax.lines[0].get_xydata().T[0] )
         assert_almost_equal(y, ax.lines[0].get_xydata().T[1] )
     
+    def test_one_dimensional_density_plot(self):  
+        data = read.History(test_history, ['CA'])
+        msd_data = msd.MSD(data.trajectory)
+        msds = msd_data.msd()
+        ax = plotting.msd_plot(msds)
+        expected_x = np.array([0.5, 0.6, 0.7, 0.8, 0.9])
+        expected_y_3d = np.array([3, 12, 27, 48, 75])
+        expected_y_2d = np.array([2, 8, 18, 32, 50])
+        expected_y_1d = np.array([1, 4, 9, 16, 25])
+        assert_almost_equal(ax.lines[0].get_xydata()[:,0], expected_x)        
+        assert_almost_equal(ax.lines[0].get_xydata()[:,1], expected_y_3d)
+        assert_almost_equal(ax.lines[1].get_xydata()[:,1], expected_y_2d)
+        assert_almost_equal(ax.lines[4].get_xydata()[:,1], expected_y_1d)

@@ -336,6 +336,7 @@ class RegionalMSD():
         new_trajectory.time = self.data.time
         new_trajectory.total_atoms = 1
         new_trajectory.timesteps = self.data.timesteps
+        new_trajectory.simulation_timestep = self.data.simulation_timestep
         return new_trajectory
 
     def update_msd_info(self, container):
