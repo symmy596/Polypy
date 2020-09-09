@@ -40,13 +40,11 @@ class TestConfig(unittest.TestCase):
 class TestArchive(unittest.TestCase):
 
     def test_read_archive(self):
-        pass
-        #expected_traj = np.array([[1.0, 1.0, 1.0],
-        #                          [2.0, 2.0, 2.0],
-        #                          [3.0, 3.0, 3.0]])
-        #data = rd.Archive(test_archive, ["Ca"])
-        #assert_almost_equal(expected_traj, data.trajectory.cartesian_trajectory)
-        #assert data.trajectory.timesteps == 3
+        expected_traj = np.array([[1.0, 1.0, 1.0],
+                                  [2.0, 2.0, 2.0],
+                                  [3.0, 3.0, 3.0]])
+        data = rd.Archive(test_archive, ["Ca"])
+        assert_almost_equal(expected_traj, data.trajectory.cartesian_trajectory)
 
 class TestTrajectory(unittest.TestCase):
 

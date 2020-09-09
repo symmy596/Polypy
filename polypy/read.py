@@ -295,11 +295,8 @@ class Archive():
         config_label = archive.readline().split()
         self.trajectory.timesteps = self.trajectory.timesteps + 1
 
-        print(config_label[0])
         for line in archive:
             split_line = line.split()
-            print(split_line[0])
-
             if lv_count == 3:
                 current_lv = np.asarray(current_lv, dtype=float)
                 rcplvs, length = ut.calculate_rcplvs(current_lv)
@@ -334,9 +331,3 @@ class Archive():
                 skipline = 2
 
         archive.close()
-
-    def _check_data(self):
-        """
-        Error handling function.
-        """
-        pass
