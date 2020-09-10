@@ -9,6 +9,8 @@ Plotting functions included with `polypy`.
 import numpy as np
 import matplotlib.pyplot as plt
 from polypy import fig_params
+from matplotlib.gridspec import GridSpec
+from matplotlib import ticker
 
 def line_plot(x, y, xlab, ylab, 
               figsize=(10, 6)):
@@ -213,7 +215,7 @@ def two_dimensional_density_plot(x, y, z,
                                  ylab="Y Coordinate ($\AA$)",
                                  palette="viridis",
                                  figsize=(10, 6), 
-                                 colorbar=True):
+                                 colorbar=True, log=False):
     """
     Plots the distribution of an atom species in two dimensions. 
 
@@ -230,7 +232,10 @@ def two_dimensional_density_plot(x, y, z,
         (:py:class:`matplotlib.axes.Axes`): The axes with new plots.
     """
     fig, ax = plt.subplots(figsize=figsize)
-    CM = ax.contourf(x, y, z, cmap=palette)
+    if log:
+        CM = ax.contourf(x, y, z, cmap=palette, locator=ticker.LogLocator())
+    else:
+        CM = ax.contourf(x, y, z, cmap=palette)
     ax.set_xlabel(xlab)
     ax.set_ylabel(ylab)
     ax.tick_params()
@@ -245,7 +250,7 @@ def combined_density_plot(x, y, z,
                           ylab="Y Coordinate ($\AA$)",
                           y2_lab="Number Density",
                           palette="viridis",
-                          figsize=(10, 6)):
+                          figsize=(10, 6), log=False):
     """
     Plots the distribution of an atom species in two dimensions. 
 
@@ -261,16 +266,19 @@ def combined_density_plot(x, y, z,
     Returns:
         (:py:class:`matplotlib.axes.Axes`): The axes with new plots.
     """
-    y2 = np.sum(z, axis=1)
-    fig, ax1 = plt.subplots()
-    ax2 = ax1.twinx()
+    y2 = np.sum(z, axis=0)
+    fig = plt.figure(constrained_layout=True)
+    gs = GridSpec(5, 2, figure=fig)
+    gs.update(wspace=0.025, hspace=0.05)
+    ax2 = fig.add_subplot(gs[0,:])
+    ax1 = fig.add_subplot(gs[1:, :])
     ax1.contourf(x, y, z, cmap=palette)
     ax1.set_xlabel(xlab)
     ax1.set_ylabel(ylab)
     ax1.set_xlim([np.amin(x), np.amax(x)])
     ax1.tick_params()
     ax2.plot(x, y2)
-    ax2.set_ylabel(y2_lab)
-    ax2.tick_params()
+    ax2.set_xlim([np.amin(x), np.amax(x)])
+    ax2.axis('off')
     plt.tight_layout()
-    return fig, ax1
+    return fig, gs

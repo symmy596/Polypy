@@ -114,16 +114,16 @@ class Density:
         """
         if direction == "x":
             val = 0
-            x = self.y
-            y = self.z
+            x = self.z
+            y = self.y
         elif direction == "y":
             val = 1
-            x = self.x
-            y = self.z
+            x = self.z
+            y = self.x
         elif direction == "z":
             val = 2
-            x = self.x
-            y = self.y
+            x = self.y
+            y = self.x
         z = np.sum(self.coords_map, axis=val)
         box_volume = 0.1 * 0.1 * np.mean(self.data.cell_lengths[:,val])
         return x, y, z, box_volume
