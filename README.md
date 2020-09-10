@@ -35,7 +35,7 @@ The main features include:
    
 
 <p align="center"> 
-<img src="https://github.com/symmy596/PolyPy/blob/master/docs/source/Figures/Show_off.png?raw=true" width="40%"/>
+<img src="https://github.com/symmy596/PolyPy/blob/master/docs/source/Figures/Show_off.png?raw=true" width="100%"/>
 </p>
 
 
