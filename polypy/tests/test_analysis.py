@@ -32,7 +32,7 @@ class TestAnalysis(unittest.TestCase):
         atom_charges = [1.0, -1.0]
         charge_density = analysis.two_dimensional_charge_density(atoms_coords,
                                                            atom_charges,
-                                                           1.0)
+                                                           1.0, 1.0)
         assert_almost_equal(charge_density, np.array([[-1.0, -1.0, -1.0],
                                                       [-1.0, -1.0, -1.0]]))
 
@@ -42,7 +42,7 @@ class TestOneDimensionalChargeDensity(unittest.TestCase):
         data = read.History(test_history, ['CA'])
         test_density = Density(data.trajectory, histogram_size=1.0)
         xx, yx, vol = test_density.one_dimensional_density(direction="x")
-        charge = analysis.OneDimensionalChargeDensity(xx, [yx], [2.0], vol, data.trajectory.timesteps)
+        charge = analysis.OneDimensionalChargeDensity(xx, [yx], [2.0], vol, 1)
         dx, charge_density = charge.calculate_charge_density()
         expected = np.zeros(10) + 0.2
         assert_almost_equal(charge_density, expected)
@@ -51,7 +51,7 @@ class TestOneDimensionalChargeDensity(unittest.TestCase):
         data = read.History(test_history, ['CA'])
         test_density = Density(data.trajectory, histogram_size=1.0)
         xx, yx, vol = test_density.one_dimensional_density(direction="x")
-        charge = analysis.OneDimensionalChargeDensity(xx, [yx], [2.0], vol, data.trajectory.timesteps)
+        charge = analysis.OneDimensionalChargeDensity(xx, [yx], [2.0], vol, 1)
         dx, electric_field = charge.calculate_electric_field()
         expected = np.array([-12.95978256, -10.07983088,  -7.1998792,
                              -4.31992752,  -1.43997584, 1.43997584,
@@ -64,10 +64,9 @@ class TestOneDimensionalChargeDensity(unittest.TestCase):
         data = read.History(test_history, ['CA'])
         test_density = Density(data.trajectory, histogram_size=1.0)
         xx, yx, vol = test_density.one_dimensional_density(direction="x")
-        charge = analysis.OneDimensionalChargeDensity(xx, [yx], [2.0], vol, data.trajectory.timesteps)
+        charge = analysis.OneDimensionalChargeDensity(xx, [yx], [2.0], vol, 1)
         dx, electrostatic_potential = charge.calculate_electrostatic_potential()
-        expected = np.array([-0.00000000e+00, 1.15198067e+00, 2.01596618e+00,
-                             2.59195651e+00, 2.87995168e+00, 2.87995168e+00,
-                             2.59195651e+00, 2.01596618e+00, 1.15198067e+00,
-                              -1.77635684e-16])
-        assert_almost_equal(electrostatic_potential, expected)
+        expected = np.array([-0.0000000e+00,  1.1519807e+01,  2.0159662e+01,  2.5919565e+01,
+        2.8799517e+01,  2.8799517e+01,  2.5919565e+01,  2.0159662e+01,
+        1.1519807e+01, -1.7763568e-15])
+        assert_almost_equal(electrostatic_potential, expected, decimal=4)
