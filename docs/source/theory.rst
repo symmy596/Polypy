@@ -14,7 +14,7 @@ Using the density module you can calculate the number density of atoms
 where :math:`\rho_{i}` is the density of atom i and :math:`q_{i}` is its charge.    
 
 Electric Field and Electrostatic Potential
---------------
+------------------------------------------
 
 The charge density can be converted into the electric field and the electrostatic potential.
 

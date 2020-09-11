@@ -1,5 +1,5 @@
 polypy\.plotting
-=============
+================
 
 .. automodule:: polypy.plotting
     :members:

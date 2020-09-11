@@ -6,7 +6,7 @@
 [![Documentation Status](https://readthedocs.org/projects/polypy/badge/?version=latest)](https://polypy.readthedocs.io/en/latest/?badge=latest)
 <a href='https://coveralls.io/github/symmy596/PolyPy?branch=master'><img src='https://coveralls.io/repos/github/symmy596/PolyPy/badge.svg?branch=master' alt='Coverage Status' /></a> 
 
-This is the documentation for the open-source Python project - `polypy`.
+This is the documentation for the open-source Python project - `polypy`,
 A library designed to facilitate the analysis of [DL_POLY](https://www.scd.stfc.ac.uk/Pages/DL_POLY.aspx) and [DL_MONTE](https://www.ccp5.ac.uk/DL_MONTE) calculations.
 polypy is built on existing Python packages that those in the solid state physics/chemistry community should already be familiar with.
 It is hoped that this tool will bring some benfits to the solid state community and facilitate data analysis and the generation of publication ready plots (powered by Matplotlib.)
@@ -39,15 +39,14 @@ The main features include:
 </p>
 
 
-The code has been developed to analyse DL_POLY and DL_MONTE calculations however other codes can be incorporated if there is user demand. `polypy` is currently only equipped to deal with orthogonal unit cells, but future development will adress other unit cells. 
-`polypy` was developed during a PhD project and as such the functionality focuses on the research questions encountered during that project, which we should clarify
-are wide ranging. Code contributions aimed at expanding the code to new of problems are encouraged.
+The code has been developed to analyse DL_POLY and DL_MONTE calculations however other codes can be incorporated if there is user demand. 
+`polypy` was developed during a PhD project and as such the functionality focuses on the research questions encountered during that project, which we should clarify are wide ranging. Code contributions aimed at expanding the code to new of problems are encouraged.
 
 `polypy` is free to use.
 
 ## Usage
 
-A full list of examples can be found in the examples folder of the git repository, these include both the Python scripts and jupyter notebook tutorials which combine the full theory with code examples. It should be noted however that DL_POLY HISTORY files and DL_MONTE ARCHIVE files are sizable (1-5GB) and as such we would discourage the use of notebooks and encourage using `polypy` on the HPC resource used to generate the data. Notebooks are provided here to illustrate the theory but are not practicle.
+A full list of examples can be found in the examples folder of the git repository, these include both the Python scripts and jupyter notebook tutorials which combine the full theory with code examples. It should be noted however that DL_POLY HISTORY files and DL_MONTE ARCHIVE files are sizable (1-5GB) and as such only short example trajectories are included in this repository. Notebooks are provided here to illustrate the theory but are not practicle.
 
 ## Installation
 
@@ -67,7 +66,6 @@ Or alternatively install with pip
 
     pip install polypy
 
-
 ### Documentation
 
 To build the documentation from scratch
@@ -86,6 +84,8 @@ To build the documentation from scratch
 - Numpy
 - Scipy
 - Matplotlib
+- seaborn
+- pandas
 
 ## Contributing
 

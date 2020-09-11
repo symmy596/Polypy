@@ -11,5 +11,6 @@ examples/example_data/*
 polypy.egg-info/
 polypy/tests/__pycache__
 docs/build
-
+docs/source/Density.ipynb
+docs/source/.ipynb_checkpoints
 paper

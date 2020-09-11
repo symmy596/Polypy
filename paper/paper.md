@@ -11,13 +11,10 @@ authors:
 - name: Adam R. Symington
   orcid: 0000-0001-6059-497X
   affiliation: "1"
-- name: Stephen C. Parker
-  orcid: 0000-0003-3804-0975
-  affiliation: 1
 affiliations:
 - name: Department of Chemistry, University of Bath
   index: 1
-date: 25 March 2019
+date: 11 September 2020
 bibliography: paper.bib
 ---
 

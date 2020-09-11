@@ -9,5 +9,3 @@ jupyter
 nbsphinx
 jupyter-sphinx==0.2.4
 sphinx_rtd_theme
-coverage
-coveralls

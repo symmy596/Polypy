@@ -49,7 +49,7 @@ class OneDimensionalChargeDensity:
         charges = np.asarray(self.atom_charges)
         charge_density = np.sum(np.multiply(number_density, charges),
                             axis=1) / self.histogram_volume
-        return self.histogram_positions, charge_density
+        return self.histogram_positions, charge_density/self.timesteps
 
     def calculate_electric_field(self):
         """
@@ -117,7 +117,7 @@ def conductivity(charge_carriers, volume, diff, temperature):
     conductivity = ((diff * conc) * EV) / constants
     return conductivity
 
-def two_dimensional_charge_density(atoms_coords, atom_charges, bin_volume):
+def two_dimensional_charge_density(atoms_coords, atom_charges, bin_volume, timesteps):
     """
     Calculates the charge density in two dimensions.
 
@@ -133,4 +133,4 @@ def two_dimensional_charge_density(atoms_coords, atom_charges, bin_volume):
     charges = np.asarray(atom_charges)
     charge_density = np.sum(np.multiply(number_density,
                                         charges), axis=2) / bin_volume
-    return charge_density
+    return (charge_density / timesteps)
