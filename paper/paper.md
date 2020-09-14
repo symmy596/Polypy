@@ -1,5 +1,5 @@
 ---
-title: 'polypy - '
+title: 'polypy - Analysis Tools for Solid State Molecular Dynamics and Monte Carlo Trajectories'
 tags:
 - Chemistry
 - Physics
