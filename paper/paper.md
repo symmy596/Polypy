@@ -67,7 +67,7 @@ The `polypy` code is designed to solve the following problems.
 - Calculate the volume as a function of simulation timestep.
 - Generate publication ready plots.
 
-`polypy` has been used to study Li-ion diffusion in lithium lanthanum titanate [@LLTO], oxygen diffusion in cerium oxide [@CeO2] and oxygen diffusion / cation migration in uranium oxide [@UO2]. 
+`polypy` has been used to study Li-ion diffusion in lithium lanthanum titanate [@LLTO], oxygen diffusion in cerium oxide [@CeO2] and oxygen diffusion / cation migration in uranium oxide [@UO2]. There is thus a clear application and need for its publication. 
 
 <p align="center"> 
 <img src="fig_1.png" width="100%"/>
