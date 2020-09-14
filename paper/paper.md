@@ -71,6 +71,9 @@ The `polypy` code is designed to solve the following problems.
 
 <p align="center"> 
 <img src="fig_1.png" width="100%"/>
+<figcaption>Figure 1 - (a) Mean squared displacement for fluorine diffusion is calcium fluoride. The msd has been plotted in one, two and three dimensions. (b) The evolution of the system volume during a molecular dynamics simulation. (c) The number density of cerium (blue) and oxygen (orange) atoms at a grain boundary in  cerium oxide. (d) The electrostatic potential at a cerium oxide grain boundary. (e)
+The number density of cerium (blue) and oxygen (orange) atoms in two dimensions, at a grain boundary in cerium oxide.
+</figcaption>
 </p>
 
 # `polypy`
