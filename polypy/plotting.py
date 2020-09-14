@@ -196,9 +196,10 @@ def two_dimensional_charge_density_plot(x, y, z,
         fig_size (:py:class:`tuple`): Horizontal and veritcal size for figure (in inches). Default is :py:attr:`(10, 6)`.
         colorbar (:py:class:`bool`): Include the colorbar or not.
 
-
     Returns:
+        (:py:class:`matplotlib.Fig`): Figure object
         (:py:class:`matplotlib.axes.Axes`): The axes with new plots.
+
     """
     fig, ax = plt.subplots(figsize=figsize)
     if log:
@@ -230,8 +231,11 @@ def two_dimensional_density_plot(x, y, z,
         ylab (:py:attr:`str`): y axis label. Default is :py:attr:`"Y Coordinate ($\AA$)"`
         fig_size (:py:class:`tuple`): Horizontal and veritcal size for figure (in inches). Default is :py:attr:`(10, 6)`.
         colorbar (:py:class:`bool`): Include the colorbar or not.
+        log (:py:class:`bool`): Log the z data or not? This can sometimes be useful but obviously one needs to be careful
+        when drawing conclusions from the data. 
 
     Returns:
+        (:py:class:`matplotlib.Fig`): Figure object
         (:py:class:`matplotlib.axes.Axes`): The axes with new plots.
     """
     fig, ax = plt.subplots(figsize=figsize)
@@ -255,7 +259,9 @@ def combined_density_plot(x, y, z,
                           palette="viridis", linecolor="black",
                           figsize=(10, 6), log=False):
     """
-    Plots the distribution of an atom species in two dimensions. 
+    Plots the distribution of an atom species in two dimensions and overlays the one 
+    dimensional density on top. Think of it as a combination of the two_dimensional_density_plot
+    and one_dimensional_density_plot functions
 
     Args:
         x (:py:attr:`array like`): x axis points -  x axis coordinates.
@@ -265,17 +271,24 @@ def combined_density_plot(x, y, z,
         ylab (:py:attr:`str`): y axis label. Default is :py:attr:`"Y Coordinate ($\AA$)"`
         y2_lab (:py:attr:`str`): second y axis label. Default is :py:attr:`"Particle Density"`
         fig_size (:py:class:`tuple`): Horizontal and veritcal size for figure (in inches). Default is :py:attr:`(10, 6)`.
+        log (:py:class:`bool`): Log the z data or not? This can sometimes be useful but obviously one needs to be careful
+        when drawing conclusions from the data. 
 
     Returns:
-        (:py:class:`matplotlib.axes.Axes`): The axes with new plots.
+        (:py:class:`matplotlib.Fig`): Figure object
+        (:py:attr:`list`): List of axes objects.
     """
     y2 = np.sum(z, axis=0)
-    fig = plt.figure(constrained_layout=True)
+    fig = plt.figure(constrained_layout=True, figsize=figsize)
     gs = GridSpec(5, 2, figure=fig)
     gs.update(wspace=0.025, hspace=0.05)
     ax2 = fig.add_subplot(gs[0,:])
     ax1 = fig.add_subplot(gs[1:, :])
-    ax1.contourf(x, y, z, cmap=palette)
+    ax = [ax1, ax2]
+    if log:
+        ax1.contourf(x, y, z, cmap=palette, locator=ticker.LogLocator())
+    else:
+        ax1.contourf(x, y, z, cmap=palette)
     ax1.set_xlabel(xlab)
     ax1.set_ylabel(ylab)
     ax1.set_xlim([np.amin(x), np.amax(x)])
@@ -284,7 +297,7 @@ def combined_density_plot(x, y, z,
     ax2.set_xlim([np.amin(x), np.amax(x)])
     ax2.axis('off')
     plt.tight_layout()
-    return fig, gs
+    return fig, ax
 
 def two_dimensional_density_plot_multiple_species(x_list, y_list, z_list, palette_list,
                           xlab="X Coordinate ($\AA$)",
@@ -292,22 +305,28 @@ def two_dimensional_density_plot_multiple_species(x_list, y_list, z_list, palett
                           y2_lab="Number Density",
                           figsize=(10, 6), log=False):
     """
-    Plots the distribution of an atom species in two dimensions. 
+    Plots the distribution of a list of atom species in two dimensions. Returns
+    heatmaps for each species stacking on top of one another. This is limited
+    to four species.
 
     Args:
-        x (:py:attr:`array like`): x axis points -  x axis coordinates.
-        y (:py:attr:`array like`): y axis points -  y axis coordinates.
-        z (:py:attr:`array like`): z axis points -  2D array of points.
+        x_list (:py:attr:`array like`): x axis points -  x axis coordinates.
+        y_list (:py:attr:`array like`): y axis points -  y axis coordinates.
+        z_list (:py:attr:`array like`): z axis points -  2D array of points.
+        palette_list (:py:attr:`array like`): Color palletes for each atom species. 
         xlab (:py:attr:`str`): x axis label. Default is :py:attr:`"X Coordinate ($\AA$)"`
         ylab (:py:attr:`str`): y axis label. Default is :py:attr:`"Y Coordinate ($\AA$)"`
         y2_lab (:py:attr:`str`): second y axis label. Default is :py:attr:`"Particle Density"`
         fig_size (:py:class:`tuple`): Horizontal and veritcal size for figure (in inches). Default is :py:attr:`(10, 6)`.
+        log (:py:class:`bool`): Log the z data or not? This can sometimes be useful but obviously one needs to be careful
+        when drawing conclusions from the data. 
 
     Returns:
+        (:py:class:`matplotlib.Fig`): Figure object
         (:py:class:`matplotlib.axes.Axes`): The axes with new plots.
     """
     fig, ax1 = plt.subplots(figsize=figsize)
-    alphas = [1.0, 0.6, 0.3]
+    alphas = [1.0, 0.7, 0.5, 0.3]
     if log:
         for i in range(len(x_list)):
             ax1.contourf(x_list[i], y_list[i], z_list[i], cmap=palette_list[i], locator=ticker.LogLocator())
@@ -322,33 +341,36 @@ def two_dimensional_density_plot_multiple_species(x_list, y_list, z_list, palett
     plt.tight_layout()
     return fig, ax1
 
-def combined_density_plot_multiple_species(x_list, y_list, z_list, palette_list,
+def combined_density_plot_multiple_species(x_list, y_list, z_list, palette_list, label_list,
                           xlab="X Coordinate ($\AA$)",
                           ylab="Y Coordinate ($\AA$)",
-                          y2_lab="Number Density",
                           figsize=(10, 6), log=False):
     """
-    Plots the distribution of an atom species in two dimensions. 
-
+    Plots the distribution of a list of atom species in two dimensions. Returns
+    heatmaps for each species stacking on top of one another. It also plots the
+    same density in one dimension on top of the heatmaps. 
+    
     Args:
-        x (:py:attr:`array like`): x axis points -  x axis coordinates.
-        y (:py:attr:`array like`): y axis points -  y axis coordinates.
-        z (:py:attr:`array like`): z axis points -  2D array of points.
+        x (:py:attr:`list`): x axis points -  x axis coordinates.
+        y (:py:attr:`list`): y axis points -  y axis coordinates.
+        z (:py:attr:`list`): z axis points -  2D array of points.
+        palette_list (:py:attr:`list`): Color palletes for each atom species. 
+        label_list (:py:attr:`list`): List of species labels.
         xlab (:py:attr:`str`): x axis label. Default is :py:attr:`"X Coordinate ($\AA$)"`
         ylab (:py:attr:`str`): y axis label. Default is :py:attr:`"Y Coordinate ($\AA$)"`
-        y2_lab (:py:attr:`str`): second y axis label. Default is :py:attr:`"Particle Density"`
         fig_size (:py:class:`tuple`): Horizontal and veritcal size for figure (in inches). Default is :py:attr:`(10, 6)`.
 
     Returns:
-        (:py:class:`matplotlib.axes.Axes`): The axes with new plots.
+        (:py:class:`matplotlib.Fig`): Figure object
+        (:py:attr:`list`): List of axes objects.
     """
-    fig = plt.figure(constrained_layout=True)
+    fig = plt.figure(constrained_layout=True, figsize=figsize)
     gs = GridSpec(5, 2, figure=fig)
-    gs.update(wspace=0.025, hspace=0.05)   
+    gs.update(wspace=0.025, hspace=0.05)
     ax2 = fig.add_subplot(gs[0,:])
     ax1 = fig.add_subplot(gs[1:, :])
-
-    alphas = [1.0, 0.6, 0.3]
+    ax = [ax1, ax2]
+    alphas = [1.0, 0.7, 0.5, 0.3]
     if log:
         for i in range(len(x_list)):
             ax1.contourf(x_list[i], y_list[i], z_list[i], cmap=palette_list[i], locator=ticker.LogLocator())
@@ -362,9 +384,9 @@ def combined_density_plot_multiple_species(x_list, y_list, z_list, palette_list,
     ax1.set_xlim([np.amin(x_list[0]), np.amax(x_list[0])])
     ax1.tick_params()
     for i in range(len(x_list)):
-        ax2.plot(x_list[i], np.sum(z_list[i], axis=0))
+        ax2.plot(x_list[i], np.sum(z_list[i], axis=0), label=label_list[i])
     ax2.axis('off')
     ax2.set_xlim([np.amin(x_list[0]), np.amax(x_list[0])])
-
+    ax2.legend(loc=2, ncol=len(label_list), frameon=False, fontsize=12)
     plt.tight_layout()
-    return fig, gs
+    return fig, ax

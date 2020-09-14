@@ -14,6 +14,7 @@ This module of polypy allows the positions of atoms in a simulation to be evalua
     import numpy as np
     import matplotlib.pyplot as plt
 
+In this example we will analyse the :math:`\Sigma 19(331)` :math:`CeO_2` grain boundary. In this example an xlim has been added to the plots in order to make the grain boundary clearer. 
 The first step is to read the data. We want the data for both species so need to provide a list of the species - ["CE", "O"].
 
 .. code-block:: python
@@ -27,9 +28,10 @@ The next step is to create the density object for both species.
     ca_density = Density(history.trajectory, atom="CE")
     f_density = Density(history.trajectory, atom="O")
 
-The one_dimensional_density function will take a direction which corresponds to a dimension of the simulation cell. For example, 'x' corresponds to the first lattice vector. The code will calculate the total number of a species in 0.1 $AA$ histograms along the first cell dimension.
+The OneDimensionalChargeDensity class will take a direction which corresponds to a dimension of the simulation cell. For example, 'x' corresponds to the first lattice vector. The code will calculate the total number of a species in 0.1 A histograms along the first cell dimension.
 
 The function will return the positions of the histograms and the total number of species. To be clear These can then be plotted with the one_dimensional_plot function which takes a list of histograms values, a list of y values and a list of labels. 
+
 .. code-block:: python
 
     cx, cy, c_volume = ce_density.one_dimensional_density(direction="z")
@@ -69,7 +71,7 @@ The one_dimensional_charge_density function requires a list of particle densitie
 Electric Field and Electrostatic Potential
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The charge density can be converted into the electric field and the electrostatic potential.
+The charge density can be converted into the electric field :math:`E(z)` and the electrostatic potential :math:`\Delta_{\psi}(z)`.
 
 .. math::
     E(z) = \frac{1}{- \epsilon_{0}} \int_{z_{0}}^{z} \rho_{q}(z')dz'
@@ -77,7 +79,9 @@ The charge density can be converted into the electric field and the electrostati
 .. math::
     \Delta_{\psi}(z) = \int_{z_{0}}^{z} E(z')dz'
 
+where :math:`\rho_{i}` is the charge density and :math:`\epsilon_{0}` is the permittivity of free space
 The calculate_electric_field and calculate_electrostatic_potential functions will take the bin positions, and the charge density and return the electric field and the electrostatic potential. 
+
 .. code-block:: python
 
     dx, electric_field = charge.calculate_electric_field()
@@ -145,7 +149,7 @@ In the same fashion as the one dimensional case, the charge density can be evalu
 One and Two Dimensions
 ----------------------
 
-Finally, the contour plots can give a good understanding of the average positions of the atoms (or the location of the lattice sites) however it does not give a good representation of how many species are actually there. The one_and_two_dimensional_overlay function will evaluate the particle dnesity in one and two dimensions and then overlay the two on to a single plot, allowing both the lattice sites, and total density to be viewed. 
+The contour plots can give a good understanding of the average positions of the atoms (or the location of the lattice sites) however it does not give a good representation of how many species are actually there. The combined_density_plot function will evaluate the particle density in one and two dimensions and then overlay the two on to a single plot, allowing both the lattice sites, and total density to be viewed. 
 
 .. code-block:: python
 
@@ -166,6 +170,9 @@ Finally, the contour plots can give a good understanding of the average position
 All Together
 ------------
 
+Finally, :py:attr:`polypy.plotting` has some functions that will generate a single contour plot for all species. 
+
+
 .. code-block:: python
 
     fig, ax = plotting.two_dimensional_density_plot_multiple_species([cx_2d, ox_2d], [cy_2d, oy_2d], [cz_2d, oz_2d], ["Blues", "Oranges"], log=True)
@@ -174,6 +181,22 @@ All Together
 .. image:: Figures/Density_GB_10.png
     :align: center
 
+When analysing things like the electrostatic potetnial, it is useful to be able to view how the electrostatic potential changes with structure, it is very easy to use the :py:attr:`polypy.plotting` functions
+in conjunction with matplotlib to visualise the relationships.
+
+.. code-block:: python
+
+    fig, ax = plotting.two_dimensional_density_plot_multiple_species([cx_2d, ox_2d], [cy_2d, oy_2d], [cz_2d, oz_2d], ["Blues", "Oranges"], log=True)
+    ax.set_xlim(42, 82)
+    ax2 = ax.twinx()
+    ax2.plot(dx, electrostatic_potential, color="green")
+    ax2.set_ylabel("Electrostatic Potential (V)")
+    plt.show()
+
+.. image:: Figures/Density_GB_EP.png
+    :align: center
+
+Finally, :py:attr:`polypy.plotting` can generate a contour plot showing the number density in one and two dimensions in a single plot.
 
 .. code-block:: python
 

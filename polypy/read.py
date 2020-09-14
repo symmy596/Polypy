@@ -56,7 +56,8 @@ class Trajectory():
         self.timesteps = int(self.timesteps)
         self.total_atoms = int(self.total_atoms)
         if self.data_type == "DL_POLY HISTORY":
-            self.simulation_timestep = (self.record_number[1] - self.record_number[0]) * self.time[0]
+            self.simulation_timestep = (self.record_number[1] -
+                                        self.record_number[0]) * self.time[0]
         
     def get_config(self, timestep):
         """
@@ -66,7 +67,8 @@ class Trajectory():
             timestep (:py:class:`int`): Timestep of desired CONFIG.
 
         Returns:
-            config_trajectory (:py:class:`polypy.read.Trajectory`): Trajectory object for desired CONFIG.
+            config_trajectory (:py:class:`polypy.read.Trajectory`): 
+            Trajectory object for desired CONFIG.
         """
         if self.data_type == "DL_POLY CONFIG":
             raise ValueError("Only one timestep was found")
@@ -99,7 +101,8 @@ class Trajectory():
             atom (:py:class:`str`): Atom label.
 
         Returns:
-            atom_trajectory (:py:class:`polypy.read.Trajectory`): Trajectory object for desired atom.
+            atom_trajectory (:py:class:`polypy.read.Trajectory`):
+            Trajectory object for desired atom.
         """
         if np.unique(self.atom_list).size == 1:
             raise ValueError("Only one atom type was found")

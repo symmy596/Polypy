@@ -8,19 +8,17 @@ Analysis functions
 
 import numpy as np
 from scipy import integrate
-import numpy as np
-from scipy import stats
 from scipy.constants import codata
-import pandas as pd
-from numpy import linalg as la
-from polypy import plotting
 
 kb = codata.value('Boltzmann constant')
 ev = codata.value('electron volt')
 ev = -ev
+
+
 class OneDimensionalChargeDensity:
     """
-    The :py:class:`polypy.analysis.OneDimensionalChargeDensity` class converts one dimensional number densitie into
+    The :py:class:`polypy.analysis.OneDimensionalChargeDensity` 
+    class converts one dimensional number densitie into
     the charge density, electric field and electrostatic potential.
 
     Args:
@@ -40,8 +38,13 @@ class OneDimensionalChargeDensity:
 
     def calculate_charge_density(self):
         """
-        Calculates the charge density.
+        Calculates the charge density in one dimension.
 
+        .. math::
+            \rho_q(z) = \sum_{i} q_i \rho_i(z)
+
+        where :math:`\rho_{i}` is the density of atom i and :math:`q_{i}` is its charge.  
+        
         Returns:
             charge_density (:py:attr:`array_like`): Charge density.
         """
@@ -55,6 +58,11 @@ class OneDimensionalChargeDensity:
         """
         Calculates the electric field.
 
+        .. math::
+            E(z) = \frac{1}{- \epsilon_{0}} \int_{z_{0}}^{z} \rho_{q}(z')dz'
+
+        where :math:`\rho_{i}` is the charge density and :math:`\epsilon_{0}` is the permittivity of free space
+
         Returns:
             e_field (:py:attr:`array_like`): Electric field.
         """
@@ -67,6 +75,10 @@ class OneDimensionalChargeDensity:
         """
         Calculates the electrostatic potential.
 
+        .. math::
+            \Delta_{\psi}(z) = \int_{z_{0}}^{z} E(z')dz'
+        
+        where :math:`E_{x}` 
         Returns:
             potential (:py:attr:`array_like`): Electrostatic potential.
         """
@@ -96,15 +108,25 @@ def system_volume(data):
         step.append(i)
     return volume, step
 
-def conductivity(charge_carriers, volume, diff, temperature):
+def conductivity(charge_carriers, volume, diff, temperature, hr):
     """
     Calculate the ionic conductivity.
+
+    .. math::
+        \sigma = \frac{D C_F e^2}{k_B T} Hr 
+
+    where :math:`\sigma` is the ionic conductivity,
+    D is the diffusion coefficient,
+    :math:`C_F` is the concentration of charge carriers,
+    which in this case if F ions, :math:`e^2` is the charge of the diffusing species,
+    :math:`k_B` is the Boltzmann constant and T is the temperature. 
 
     Args:
         charge_carriers (:py:attr:`float`): Number of charge carriers.
         volume (:py:attr:`float`): Average cell volume.
         diff (:py:attr:`float`): Diffusion coefficient.
         temperature (:py:attr:`float`): Temperature.
+        hr (:py:attr:`float`): Haven ratio.
 
     Returns:
         conductivity (:py:attr:`float`): Ionic conductivity.
@@ -115,7 +137,7 @@ def conductivity(charge_carriers, volume, diff, temperature):
     EV = ev ** 2
     constants = kb * temperature
     conductivity = ((diff * conc) * EV) / constants
-    return conductivity
+    return conductivity * hr
 
 def two_dimensional_charge_density(atoms_coords, atom_charges, bin_volume, timesteps):
     """

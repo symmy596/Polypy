@@ -17,7 +17,6 @@ The main features include:
 
    - Generate a plot of the total number of species in bins perpendicular to a specified direction.  
    - Generate a plot of the total number of species in cuboids parallel to a specified direction.  
-   - Detertmine the total number of species within a specific area of the system.
 
 2. **Method calculate the charge density from the number density.**  
 

@@ -10,7 +10,6 @@ The main features include:
 
    - Generate a plot of the total number of species in bins perpendicular to a specified direction.  
    - Generate a plot of the total number of species in cuboids parallel to a specified direction.  
-   - Detertmine the total number of species within a specific area of the system.
 
 2. **Method calculate the charge density from the number density.**  
 
@@ -25,6 +24,10 @@ The main features include:
    - Carries out a mean squared displacement on an MD trajectory.
    - Calculates the diffusion coefficient.
    - Uses the density analysis and the diffusion coefficient to calculate the ionic conductivity. 
+
+
+.. image:: Figures/Show_off.png
+    :align: center
 
 The code has been developed to analyse DL_POLY and DL_MONTE calculations however other codes can be incorporated if there is user demand. 
 `polypy` is currently only equipped to deal with orthogonal unit cells, but future development will adress other unit cells. 
@@ -97,7 +100,7 @@ If you have questions regarding any aspect of the software then please get in to
 Alternatively you can create an issue on the `Issue Tracker <https://github.com/symmy596/PolyPy/issues>`_.
 
 Bugs
-~~~
+~~~~
 
 There may be bugs. If you think you've caught one, please report it on the `<Issue Tracker <https://github.com/symmy596/PolyPy/issues>`_.
 This is also the place to propose new ideas for features or ask questions about the design of `polypy`. Poor documentation is considered a bug

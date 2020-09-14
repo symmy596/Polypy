@@ -60,8 +60,7 @@ By adding the square of the distance we will always be adding positive numbers t
 
 The following example is for fluorine diffusion in :math:`CaF_2`.
 
-.. image:: Figures/MSD_Theory.png
-    :height: 300px
+.. image:: Figures/MSD_3.png
     :align: center
 
 
@@ -71,11 +70,11 @@ Ionic Conductivity
 Usefully, as we have the diffusion coefficient, the number of particles (charge carriers) and the ability to calculate the volume, we can convert this data into the ionic conductivity and then the resistance. 
 
 .. math::
-    \sigma = \frac{D C_F e^2}{k_B T} 
+    \sigma = \frac{D C_F e^2}{k_B T} Hr
 
-where :math:`\sigma` is the ionic conductivity, D is the diffusion coefficient,:math:`C_F` is the concentration of charge carriers, which in this case if F ions, :math:`e^2` is the charge of the diffusing species, :math:`k_B` is the Boltzmann constant and T is the temperature. 
+where :math:`\sigma` is the ionic conductivity, D is the diffusion coefficient,:math:`C_F` is the concentration of charge carriers, which in this case if F ions, :math:`e^2` is the charge of the diffusing species, :math:`k_B` is the Boltzmann constant, T is the temperature and Hr is the Haven ratio.
 
-The resitance can then be calculated according to 
+The resistance can then be calculated according to 
 
 .. math::
     \Omega = \frac{1}{\sigma} 

@@ -8,6 +8,7 @@ from numpy.testing import assert_almost_equal
 test_history = os.path.join(os.path.dirname(__file__), 'HISTORY')
 test_config = os.path.join(os.path.dirname(__file__), 'CONFIG')
 
+
 class testMSDContainer(unittest.TestCase):
 
     def test_smooth_msd_data(self):
@@ -70,13 +71,13 @@ class TestMSD(unittest.TestCase):
     def msd_fail_1(self):
         data = read.Config(test_history, ['CA'])
         data.trajectory.timesteps = 1
-        with self.assertRaises(ValueError): 
+        with self.assertRaises(ValueError):
             msd_data = msd.MSD(data.trajectory)
 
     def msd_fail_2(self):
         data = read.Config(test_history, ['CA'])
         data.trajectory.atom_name.append('F')
-        with self.assertRaises(ValueError): 
+        with self.assertRaises(ValueError):
             msd_data = msd.MSD(data.trajectory)
 
     def test_msd(self):
@@ -89,7 +90,8 @@ class TestMSD(unittest.TestCase):
     def test_calculate_distances(self):
         data = read.History(test_history, ['CA'])
         msd_data = msd.MSD(data.trajectory)
-        trajectories = np.split(data.trajectory.fractional_trajectory, data.trajectory.timesteps)
+        trajectories = np.split(data.trajectory.fractional_trajectory,
+                                data.trajectory.timesteps)
         x, y = msd_data.calculate_distances(trajectories, 1)
         x = np.asarray(x)**2
         msd_ = np.sum(x, axis=1)
@@ -99,7 +101,8 @@ class TestMSD(unittest.TestCase):
     def test_squared_displacements(self):
         data = read.History(test_history, ['CA'])
         msd_data = msd.MSD(data.trajectory)
-        trajectories = np.split(data.trajectory.fractional_trajectory, data.trajectory.timesteps)
+        trajectories = np.split(data.trajectory.fractional_trajectory,
+                                data.trajectory.timesteps)
         x, y = msd_data.calculate_distances(trajectories, 1)
         x = np.asarray(x)
         msd_data.squared_displacements(x, 1)
@@ -109,7 +112,8 @@ class TestMSD(unittest.TestCase):
     def test_three_dimension_square_distance(self):
         data = read.History(test_history, ['CA'])
         msd_data = msd.MSD(data.trajectory)
-        trajectories = np.split(data.trajectory.fractional_trajectory, data.trajectory.timesteps)
+        trajectories = np.split(data.trajectory.fractional_trajectory,
+                                data.trajectory.timesteps)
         x, y = msd_data.calculate_distances(trajectories, 1)
         x = np.asarray(x) ** 2
         msd_data.three_dimension_square_distance(x, 1)
@@ -119,7 +123,8 @@ class TestMSD(unittest.TestCase):
     def test_two_dimension_square_distance(self):
         data = read.History(test_history, ['CA'])
         msd_data = msd.MSD(data.trajectory)
-        trajectories = np.split(data.trajectory.fractional_trajectory, data.trajectory.timesteps)
+        trajectories = np.split(data.trajectory.fractional_trajectory,
+                                data.trajectory.timesteps)
         x, y = msd_data.calculate_distances(trajectories, 1)
         x = np.asarray(x) ** 2
         msd_data.two_dimension_square_distance(x, 1)
@@ -129,12 +134,14 @@ class TestMSD(unittest.TestCase):
     def test_one_dimension_square_distance(self):
         data = read.History(test_history, ['CA'])
         msd_data = msd.MSD(data.trajectory)
-        trajectories = np.split(data.trajectory.fractional_trajectory, data.trajectory.timesteps)
+        trajectories = np.split(data.trajectory.fractional_trajectory,
+                                data.trajectory.timesteps)
         x, y = msd_data.calculate_distances(trajectories, 1)
         x = np.asarray(x) ** 2
         msd_data.one_dimension_square_distance(x, 1)
-        expected_msd = np.array([ 1,  4,  9,  1,  4,  9, 16, 25, 36])
+        expected_msd = np.array([1, 4,  9,  1,  4,  9, 16, 25, 36])
         assert_almost_equal(msd_data.msd_information.xmsd, expected_msd)
+
 
 class TestRegionalMSD(unittest.TestCase):
 
@@ -146,5 +153,3 @@ class TestRegionalMSD(unittest.TestCase):
 
     def test_check_trajectory(self):
         pass
-
-    
