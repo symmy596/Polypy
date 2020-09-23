@@ -1,5 +1,5 @@
 <p align="center"> 
-<img src="https://github.com/symmy596/PolyPy/blob/master/docs/source/Figures/logo_1.png?raw=true"/>
+<img src="https://github.com/symmy596/Polypy/blob/master/docs/source/Figures/polypy_1.png?raw=true"/>
 </p>
 
 [![PyPI version](https://badge.fury.io/py/polypy.svg)](https://badge.fury.io/py/polypy)
