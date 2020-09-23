@@ -21,6 +21,7 @@ class Density:
         histogram_size (:py:attr:`float`, optional): Specifies the spacing between histograms.
         atom (:py:attr:`str`, optional): Specifies the atom to calculate the density for. 
     """
+
     def __init__(self, data, histogram_size=0.1, atom=None):
         self.data = data
         self.histogram_size = histogram_size

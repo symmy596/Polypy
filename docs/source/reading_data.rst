@@ -14,7 +14,7 @@ The HISTORY, ARCHIVE and CONFIG classes expects two things, the filename of the 
 - The timesteps (`Trajectory.timesteps`)
 - The total atoms per timestep (`Trajectory.total_atoms`)
 
-HISTROY Files
+HISTORY Files
 ~~~~~~~~~~~~~
 
 .. code-block:: python

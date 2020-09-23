@@ -28,6 +28,7 @@ class OneDimensionalChargeDensity:
         histogram_volume (:py:attr:`float`): Volume of the histograms.
         timesteps (:py:attr:`float`): Simulation timestep.
     """
+
     def __init__(self, histogram_positions, atom_densities, atom_charges, histogram_volume, timesteps):
         self.histogram_positions = histogram_positions
         self.atom_densities = atom_densities
@@ -37,14 +38,9 @@ class OneDimensionalChargeDensity:
         self.scale = 14.3997584
 
     def calculate_charge_density(self):
-        """
+        r"""
         Calculates the charge density in one dimension.
 
-        .. math::
-            \rho_q(z) = \sum_{i} q_i \rho_i(z)
-
-        where :math:`\rho_{i}` is the density of atom i and :math:`q_{i}` is its charge.  
-        
         Returns:
             charge_density (:py:attr:`array_like`): Charge density.
         """
@@ -55,13 +51,8 @@ class OneDimensionalChargeDensity:
         return self.histogram_positions, charge_density/self.timesteps
 
     def calculate_electric_field(self):
-        """
+        r"""
         Calculates the electric field.
-
-        .. math::
-            E(z) = \frac{1}{- \epsilon_{0}} \int_{z_{0}}^{z} \rho_{q}(z')dz'
-
-        where :math:`\rho_{i}` is the charge density and :math:`\epsilon_{0}` is the permittivity of free space
 
         Returns:
             e_field (:py:attr:`array_like`): Electric field.
@@ -72,13 +63,9 @@ class OneDimensionalChargeDensity:
         return self.histogram_positions, e_field
 
     def calculate_electrostatic_potential(self):
-        """
+        r"""
         Calculates the electrostatic potential.
 
-        .. math::
-            \Delta_{\psi}(z) = \int_{z_{0}}^{z} E(z')dz'
-        
-        where :math:`E_{x}` 
         Returns:
             potential (:py:attr:`array_like`): Electrostatic potential.
         """
@@ -111,15 +98,6 @@ def system_volume(data):
 def conductivity(charge_carriers, volume, diff, temperature, hr):
     """
     Calculate the ionic conductivity.
-
-    .. math::
-        \sigma = \frac{D C_F e^2}{k_B T} Hr 
-
-    where :math:`\sigma` is the ionic conductivity,
-    D is the diffusion coefficient,
-    :math:`C_F` is the concentration of charge carriers,
-    which in this case if F ions, :math:`e^2` is the charge of the diffusing species,
-    :math:`k_B` is the Boltzmann constant and T is the temperature. 
 
     Args:
         charge_carriers (:py:attr:`float`): Number of charge carriers.

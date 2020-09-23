@@ -1,5 +1,5 @@
 polypy\.analysis
-=============
+================
 
 .. automodule:: polypy.analysis
     :members:
