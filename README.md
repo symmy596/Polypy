@@ -1,4 +1,6 @@
-# Polypy
+<p align="center"> 
+<img src="https://github.com/symmy596/PolyPy/blob/master/docs/source/Figures/logo_1.png?raw=true"/>
+</p>
 
 [![PyPI version](https://badge.fury.io/py/polypy.svg)](https://badge.fury.io/py/polypy)
 [![Build Status](https://travis-ci.com/symmy596/PolyPy.svg?branch=master)](https://travis-ci.com/symmy596/PolyPy)

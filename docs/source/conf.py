@@ -174,7 +174,7 @@ epub_title = project
 epub_exclude_files = ['search.html']
 
 # Some logo things
-html_logo = "Figures/polypy.png"
+html_logo = "Figures/polypy_2.png"
 html_theme_options = {"logo_only": True}
 # Some logo things
 
