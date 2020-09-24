@@ -1,5 +1,3 @@
-polypy
-======
 
 .. include:: README.rst
 

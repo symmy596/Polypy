@@ -1,4 +1,7 @@
 
+.. image:: Figures/polypy_1.png
+    :align: center
+
 This is the documentation for the open-source Python project - `polypy`.
 A library designed to facilitate the analysis of `DL_POLY <https://www.scd.stfc.ac.uk/Pages/DL_POLY.aspx>`_ and `DL_MONTE <https://www.ccp5.ac.uk/DL_MONTE>`_ calculations.
 `polypy` is built on existing Python packages that those in the solid state physics/chemistry community should already be familiar with.
