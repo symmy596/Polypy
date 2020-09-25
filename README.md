@@ -41,6 +41,7 @@ The main features include:
 </p>
 
 
+
 The code has been developed to analyse DL_POLY and DL_MONTE calculations however other codes can be incorporated if there is user demand. 
 `polypy` was developed during a PhD project and as such the functionality focuses on the research questions encountered during that project, which we should clarify are wide ranging. Code contributions aimed at expanding the code to new of problems are encouraged.
 
@@ -86,8 +87,8 @@ To build the documentation from scratch
 - Numpy
 - Scipy
 - Matplotlib
-- seaborn
-- pandas
+- Seaborn
+- Pandas
 
 ## Contributing
 
@@ -109,7 +110,7 @@ We welcome help in improving and extending the package. This is managed through 
 workflow while core developers use branches in the main repository:
 
    1. First open an Issue to discuss the proposed contribution. This
-      discussion might include how the changes fit surfinpy's scope and a
+      discussion might include how the changes fit polypy's scope and a
       general technical approach.
    2. Make your own project fork and implement the changes
       there. Please keep your code style compliant with PEP8.
