@@ -126,4 +126,5 @@ For further information please contact Adam Symington, ars44@bath.ac.uk
   
 ## Acknowledgements
   
-* [Prof Stephen C.Parker](http://people.bath.ac.uk/chsscp/) - (Bath University)
+This package was written during a PhD project that was funded by AWE and EPSRC (EP/R010366/1). The `polypy` software package was developed to analyse data generated using the Balena HPC facility at the University of Bath. The author would like to thank Andrew R. McCluskey, Benjamin Morgan, Marco Molinari and Stephen C. Parker for their help and guidance during this PhD project.
+
