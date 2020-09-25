@@ -42,7 +42,7 @@ are wide ranging. Code contributions aimed at expanding the code to new of probl
 Usage
 -----
 
-A full list of examples can be found in the examples folder of the git repository, these include both the Python scripts and jupyter notebook tutorials which combine the full theory with code examples. It should be noted however that DL_POLY HISTORY files and DL_MONTE ARCHIVE files are sizable (1-5GB) and as such we would discourage the use of notebooks and encourage using `polypy` on the HPC resource used to generate the data. Notebooks are provided here to illustrate the theory but are not practicle.
+A full list of examples can be found in the examples folder of the git repository, these include both the Python scripts and jupyter notebook tutorials which combine the full theory with code examples. It should be noted however that DL_POLY HISTORY files and DL_MONTE ARCHIVE files are sizable (1-5GB) and as such only short example trajectories are included in this repository. Notebooks are provided here to illustrate the theory but are not practicle.
 
 Installation
 ------------

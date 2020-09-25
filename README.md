@@ -37,6 +37,7 @@ The main features include:
 
 <p align="center"> 
 <img src="https://github.com/symmy596/PolyPy/blob/master/docs/source/Figures/Show_off.png?raw=true" width="100%"/>
+<figcaption>(a) Mean squared displacement for calcuim fluoride. (b) System volume of calcium fluoride during a molecular dynamics simulation. (c) Cerium and oxygen number density at a grain boundary. (d) Electrostatic potential across a grain boundary of cerium oxide. (e) Center of mass of cerium (blue) and oxygen (orange) in a cerium oxide grain boundary in two dimensions.</figcaption>
 </p>
 
 
