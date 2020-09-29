@@ -106,7 +106,7 @@ so feel free to request improvements.
 ### Code contributions
 
 We welcome help in improving and extending the package. This is managed through Github pull requests; for external contributions we prefer the
-["fork and pull"](https://guides.github.com/activities/forking/)__
+["fork and pull"](https://guides.github.com/activities/forking/)
 workflow while core developers use branches in the main repository:
 
    1. First open an Issue to discuss the proposed contribution. This
@@ -126,9 +126,9 @@ For further information please contact Adam Symington, ars44@bath.ac.uk
   
 ## Research 
 
-- ["Defect segregation facilitates oxygen transport at fluorite UO2 grain boundaries"](https://royalsocietypublishing.org/doi/full/10.1098/rsta.2019.0026)__
-- ["The role of dopant segregation on the oxygen vacancy distribution and oxygen diffusion in CeO2 grain boundaries"](https://iopscience.iop.org/article/10.1088/2515-7655/ab28b5/meta)__
-- ["Quantifying the impact of disorder on Li-ion and Na-ion transport in perovskite titanate solid electrolytes for solid-state batteries"](https://pubs.rsc.org/en/content/articlehtml/2020/ta/d0ta05343k)__
+- [Defect segregation facilitates oxygen transport at fluorite UO2 grain boundaries](https://royalsocietypublishing.org/doi/full/10.1098/rsta.2019.0026)
+- [The role of dopant segregation on the oxygen vacancy distribution and oxygen diffusion in CeO2 grain boundaries](https://iopscience.iop.org/article/10.1088/2515-7655/ab28b5/meta)
+- [Quantifying the impact of disorder on Li-ion and Na-ion transport in perovskite titanate solid electrolytes for solid-state batteries](https://pubs.rsc.org/en/content/articlehtml/2020/ta/d0ta05343k)
 
 
 ## Acknowledgements
