@@ -124,6 +124,13 @@ For further information please contact Adam Symington, ars44@bath.ac.uk
 
 * Adam R.Symington
   
+## Research 
+
+- ["Defect segregation facilitates oxygen transport at fluorite UO2 grain boundaries"](https://royalsocietypublishing.org/doi/full/10.1098/rsta.2019.0026)__
+- ["The role of dopant segregation on the oxygen vacancy distribution and oxygen diffusion in CeO2 grain boundaries"](https://iopscience.iop.org/article/10.1088/2515-7655/ab28b5/meta)__
+- ["Quantifying the impact of disorder on Li-ion and Na-ion transport in perovskite titanate solid electrolytes for solid-state batteries"](https://pubs.rsc.org/en/content/articlehtml/2020/ta/d0ta05343k)__
+
+
 ## Acknowledgements
   
 This package was written during a PhD project that was funded by AWE and EPSRC (EP/R010366/1). The `polypy` software package was developed to analyse data generated using the Balena HPC facility at the University of Bath. The author would like to thank Andrew R. McCluskey, Benjamin Morgan, Marco Molinari and Stephen C. Parker for their help and guidance during this PhD project.
