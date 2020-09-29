@@ -151,6 +151,8 @@ class MSD():
             raise ValueError("ERROR: - Only one timestep has been found")
         if len(np.unique(data.atom_name)) > 1:
             raise ValueError("ERROR: MSD can only handle one atom type. Exiting")
+        if data.data_type == "DL_MONTE ARCHIVE":
+            raise ValueError("DLMONTE simulations are not time resolved")
         self.distances = []
         self.msd_information = MSDContainer()
 
@@ -296,6 +298,8 @@ class RegionalMSD():
             raise ValueError("ERROR: - Only one timestep has been found")
         if len(np.unique(data.atom_name)) > 1:
             raise ValueError("ERROR: MSD can only handle one atom type. Exiting")
+        if data.data_type == "DL_MONTE ARCHIVE":
+            raise ValueError("DLMONTE simulations are not time resolved")
         self.lower_boundary = lower_boundary
         self.upper_boundary = upper_boundary
         self.sweeps = sweeps

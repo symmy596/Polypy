@@ -279,7 +279,6 @@ class Archive():
         self.trajectory = Trajectory(self.atom_list,
                                      self.data_type)
         self.read_archive()
-        self.trajectory.timesteps = 1
         self.trajectory._clean_data()
 
     def read_archive(self):
@@ -328,6 +327,8 @@ class Archive():
                 timestep = True
                 skipline = 1
                 self.trajectory.atoms_at_timestep.append(timestep_atom_count)
+                self.trajectory.record_number.append(self.trajectory.timesteps)
+                self.trajectory.time.append(self.trajectory.timesteps)
                 timestep_atom_count = 0
             elif timestep is True:
                 skipline = 2

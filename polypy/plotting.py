@@ -341,7 +341,7 @@ def two_dimensional_density_plot_multiple_species(x_list, y_list, z_list, palett
     plt.tight_layout()
     return fig, ax1
 
-def combined_density_plot_multiple_species(x_list, y_list, z_list, palette_list, label_list,
+def combined_density_plot_multiple_species(x_list, y_list, z_list, palette_list, label_list, color_list,
                           xlab="X Coordinate ($\AA$)",
                           ylab="Y Coordinate ($\AA$)",
                           figsize=(10, 6), log=False):
@@ -356,6 +356,7 @@ def combined_density_plot_multiple_species(x_list, y_list, z_list, palette_list,
         z (:py:attr:`list`): z axis points -  2D array of points.
         palette_list (:py:attr:`list`): Color palletes for each atom species. 
         label_list (:py:attr:`list`): List of species labels.
+        color_list (:py:attr:`list`): List of colors for one dimensional plot.
         xlab (:py:attr:`str`): x axis label. Default is :py:attr:`"X Coordinate ($\AA$)"`
         ylab (:py:attr:`str`): y axis label. Default is :py:attr:`"Y Coordinate ($\AA$)"`
         fig_size (:py:class:`tuple`): Horizontal and veritcal size for figure (in inches). Default is :py:attr:`(10, 6)`.
@@ -384,9 +385,11 @@ def combined_density_plot_multiple_species(x_list, y_list, z_list, palette_list,
     ax1.set_xlim([np.amin(x_list[0]), np.amax(x_list[0])])
     ax1.tick_params()
     for i in range(len(x_list)):
-        ax2.plot(x_list[i], np.sum(z_list[i], axis=0), label=label_list[i])
+        ax2.plot(x_list[i], np.sum(z_list[i], axis=0), label=label_list[i], color=color_list[i])
     ax2.axis('off')
-    ax2.set_xlim([np.amin(x_list[0]), np.amax(x_list[0])])
+    ax2.set_ylim(np.amin(z_list[0]), np.amax(np.sum(z_list[0], axis=0)) * 1.4)
+    ax2.set_xlim(np.amin(x_list[0]), np.amax(x_list[0]))
+
     ax2.legend(loc=2, ncol=len(label_list), frameon=False, fontsize=12)
     plt.tight_layout()
     return fig, ax
