@@ -37,11 +37,7 @@ The `polypy` code is designed to solve the following problems.
 
 `polypy` has been used to study Li-ion diffusion in lithium lanthanum titanate, [@LLTO] oxygen diffusion and cation migration in both uranium oxide and cerium oxide, [@UO2; @CeO2] thus there is a clear research application. 
 
-<p align="center"> 
-<img src="fig_1.png" width="100%"/>
-<figcaption>Figure 1 - (a) Mean squared displacement for fluorine diffusion in calcium fluoride. The msd has been plotted in one, two and three dimensions. (b) The evolution of the system volume during a molecular dynamics simulation. (c) The particle density of cerium (blue) and oxygen (orange) atoms at a grain boundary in cerium oxide. (d) The electrostatic potential at a cerium oxide grain boundary. (e) The center of mass of cerium (blue) and oxygen (orange) atoms in two dimensions, at a grain boundary in cerium oxide.
-</figcaption>
-</p>
+![Figure 1 - (a) Mean squared displacement for fluorine diffusion in calcium fluoride. The msd has been plotted in one, two and three dimensions. (b) The evolution of the system volume during a molecular dynamics simulation. (c) The particle density of cerium (blue) and oxygen (orange) atoms at a grain boundary in cerium oxide. (d) The electrostatic potential at a cerium oxide grain boundary. (e) The center of mass of cerium (blue) and oxygen (orange) atoms in two dimensions, at a grain boundary in cerium oxide.{fig:example}](fig_1.png)
 
 # `polypy`
 
