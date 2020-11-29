@@ -7,7 +7,6 @@ examples/.ipynb_checkpoints
 examples/*.txt
 examples/*.png
 examples/notebooks/untitled.ipynb
-examples/example_data/*
 polypy.egg-info/
 polypy/tests/__pycache__
 docs/build
