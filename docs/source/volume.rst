@@ -9,7 +9,7 @@ Volume
     import matplotlib.pyplot as plt
 
 
-    history = rd.History("../example_data/HISTORY", ["CA"])
+    history = rd.History("../example_data/HISTORY_CaF2", ["CA"])
 
     volume, step = analysis.system_volume(history.trajectory)
 

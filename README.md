@@ -41,8 +41,8 @@ The main features include:
 </p>
 
 
+The code has been developed to analyse DL_POLY and DL_MONTE calculations however other codes can be incorporated if there is user demand. Other formats, such as pdb or xyz can be converted to `DL_POLY` format with codes such as [atomsk](https://atomsk.univ-lille.fr/) and then analysed with `polypy`. Users are welcome to increase the file coverage by adding a reading function for a different format. This can be accomplished by adding to the `read` module which has a class for each unique file type that converts it to a `polypy.read.trajectory` object. 
 
-The code has been developed to analyse DL_POLY and DL_MONTE calculations however other codes can be incorporated if there is user demand. 
 `polypy` was developed during a PhD project and as such the functionality focuses on the research questions encountered during that project, which we should clarify are wide ranging. Code contributions aimed at expanding the code to new of problems are encouraged.
 
 `polypy` is free to use.
@@ -63,11 +63,18 @@ To build from source:
 
     python setup.py install
 
-    python setup.py test
-
 Or alternatively install with pip
 
     pip install polypy
+
+### Tests
+
+Tests can be run by typing:
+
+    python setup.py test
+
+in the root directory. 
+
 
 ### Documentation
 
@@ -75,6 +82,9 @@ To build the documentation from scratch
   
     cd docs
     make html
+
+An online version of the documentation can be found [here](https://polypy.readthedocs.io/en/latest/index.html). The documentation contains an extensive explanation of the underlying theory, function documentation and tutorials. 
+
 
 ### License
 
@@ -84,11 +94,17 @@ To build the documentation from scratch
 
 `polypy` is compatible with Python 3.5+ and relies on a number of open source Python packages, specifically:
 
-- Numpy
-- Scipy
-- Matplotlib
-- Seaborn
-- Pandas
+- matplotlib
+- numpy
+- scipy
+- coveralls
+- coverage
+- seaborn
+- pandas
+- jupyter
+- nbsphinx
+- jupyter-sphinx==0.2.4
+- sphinx_rtd_theme
 
 ## Contributing
 
@@ -119,6 +135,15 @@ workflow while core developers use branches in the main repository:
       the changes are accepted.
 
 For further information please contact Adam Symington, ars44@bath.ac.uk
+
+## Future
+
+Listed below are a series of useful additions that we would like to make to the codebase. Users are encouraged to fork the repository and work on any of these problems. Indeed, if functionality is not listed below you are more than welcome to add it. 
+
+- RDF
+- Diagonal slices
+- Regional MSDs in a cube
+
 
 ## Author
 

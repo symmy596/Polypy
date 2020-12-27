@@ -126,6 +126,63 @@ class Trajectory():
         atom_trajectory._clean_data()
         return atom_trajectory
 
+    def remove_initial_timesteps(self, timesteps_to_exclude):
+        """
+        Removes timesteps from the beggining of a simulation
+
+        Args:
+            timesteps_to_exclude (:py:class:`int`): Number of timesteps to exclude
+
+        Returns:
+            new_trajectory (:py:class:`polypy.read.Trajectory`): 
+            Trajectory object.
+        """
+        rows_to_exclude = timesteps_to_exclude * self.total_atoms
+        if self.data_type == "DL_POLY CONFIG":
+            raise ValueError("Only one timestep was found")
+        new_trajectory = Trajectory(self.atom_list, self.data_type)
+        new_trajectory.cartesian_trajectory = self.cartesian_trajectory[rows_to_exclude:]
+        new_trajectory.fractional_trajectory = self.fractional_trajectory[rows_to_exclude:]
+        new_trajectory.atom_name = self.atom_name
+        new_trajectory.reciprocal_lv = self.reciprocal_lv[timesteps_to_exclude:]
+        new_trajectory.lv = self.lv[timesteps_to_exclude:]
+        new_trajectory.cell_lengths = self.cell_lengths[timesteps_to_exclude:]
+        new_trajectory.atoms_in_history = self.atoms_in_history - (self.total_atoms * timesteps_to_exclude)
+        new_trajectory.record_number = self.record_number[timesteps_to_exclude:]
+        new_trajectory.time = self.time[timesteps_to_exclude:]
+        new_trajectory.simulation_timestep = self.simulation_timestep
+        new_trajectory.timesteps = self.timesteps - timesteps_to_exclude
+        new_trajectory.total_atoms = self.total_atoms
+        return new_trajectory
+
+    def remove_final_timesteps(self, timesteps_to_exclude):
+        """
+        Removes timesteps from the end of a simulation
+
+        Args:
+            timesteps_to_exclude (:py:class:`int`): Number of timesteps to exclude
+
+        Returns:
+            new_trajectory (:py:class:`polypy.read.Trajectory`): 
+            Trajectory object.
+        """
+        rows_to_exclude = timesteps_to_exclude * self.total_atoms
+        if self.data_type == "DL_POLY CONFIG":
+            raise ValueError("Only one timestep was found")
+        new_trajectory = Trajectory(self.atom_list, self.data_type)
+        new_trajectory.cartesian_trajectory = self.cartesian_trajectory[:rows_to_exclude]
+        new_trajectory.fractional_trajectory = self.fractional_trajectory[:rows_to_exclude]
+        new_trajectory.atom_name = self.atom_name
+        new_trajectory.reciprocal_lv = self.reciprocal_lv[:timesteps_to_exclude]
+        new_trajectory.lv = self.lv[:timesteps_to_exclude]
+        new_trajectory.cell_lengths = self.cell_lengths[:timesteps_to_exclude]
+        new_trajectory.atoms_in_history = self.atoms_in_history - (self.total_atoms * timesteps_to_exclude)
+        new_trajectory.record_number = self.record_number[:timesteps_to_exclude]
+        new_trajectory.time = self.time[:timesteps_to_exclude]
+        new_trajectory.simulation_timestep = self.simulation_timestep
+        new_trajectory.timesteps = self.timesteps - timesteps_to_exclude
+        new_trajectory.total_atoms = self.total_atoms
+        return new_trajectory
 
 class History():
     """
