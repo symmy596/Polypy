@@ -23,7 +23,7 @@ bibliography: paper.bib
 
 A large number of research questions in solid state chemistry can be addressed using molecular dynamics and Monte Carlo simulations. These simulations allow many material properties to be calculated for direct comparison with experiment. These include, the diffusion coefficients, ionic conductivities, charge density, electric field and electrostatic potential. The diffusion coefficient and ionic conductivity are of particular importance for the study of battery materials (e.g. Li-ion / Na-ion diffusion [@LLTO]), solid oxide fuel cell materials (e.g. O-ion diffusion [@CeO2]) and many other applications in solid state chemistry. The charge density, electric field and electrostatic potential are of interest to problems relating to interfaces in solid state chemistry, e.g. space charge theory .[@Maier_BerBunsenges1984; @Maier_JPhysChemSol1985; @Maier_SolStatIonics2003; @ChiangEtAl_ApplPhysLett1996; @KimAndMaier_JElectrochemSoc2002] Finally, calculating the distribution of defects in a material is useful for the study of segregation behaviour [@UO2; @CeO2] or adsorption behaviour.[@Nora]
 
-A molecular dynamics trajectory is a snapshot of the positions occupied by each atom in the simulation as a function time. For example, the trajectory of a single atom would show, sequentially, all of the postiions occupied by that atom throughout the simulaton. A Monte Carlo trajectory is similar although the simulation is not time resolved and the atom positions are simply a function of simulation step, not simulation timestep. The positions of the atoms allow the particle density of each atom to be determined and from these, the electrostatic potential, electric field and charge density can be calculated. A mean squared displacement can be performed on the molecular dynamics trajectories and from these, the diffusion coefficients and ionic conductivites can be calculated. Diffusion coefficients and ionic conductivites can then be used to estimate the activation energy for diffusion using the Arrhenius relationship. 
+In a molecular dynamics simulation the positions of atoms throughout time are being simulated. A molecular dynamics trajectory is a snapshot of the positions occupied by each atom in the simulation as a function time. For example, the trajectory of a single atom would show, sequentially, all of the postiions occupied by that atom throughout the simulaton. In a Monte Carlo simulation the positions of atoms are updated randomly to provide a statistical ensemble describing the material. A Monte Carlo trajectory is similar although the simulation is not time resolved and the atom positions are simply a function of simulation step, not simulation timestep. The positions of the atoms allow the particle density of each atom to be determined and from these, the electrostatic potential, electric field and charge density can be calculated. A mean squared displacement can be performed on the molecular dynamics trajectories and from these, the diffusion coefficients and ionic conductivites can be calculated. Diffusion coefficients and ionic conductivites can then be used to estimate the activation energy for diffusion using the Arrhenius relationship. 
 
 The `polypy` code is designed to solve the following problems.
 
@@ -49,6 +49,19 @@ The `polypy.msd` module performs a mean squared displacement calculation. From t
 
 A module allowing easy generation of publication plots from the calculated data is available. The outputs are returned in a sensible form, allowing further manipulation and plotting.
 The repository contains examples of the core functionality as well as tutorials, implemented in Jupyter notebooks to explain the full theory. Furthermore, a detailed description of theory is also available within the documentation. `polypy` is aimed towards theoretical solid state physicists and chemists who have a basic familiarity with Python, although the examples contained in the repository are designed to help less experienced users make use of the code.
+
+# Statement of Need
+
+There are a number of codes designed to analyse molecular dynamics trajectories that currently exist. `MDAnalysis` [@mdanalysis] is the most widely used molecular dynamics analysis code and some of the functionality in `polypy` is already present in `MDAnalysis`. The `MDAnalysis.analysis.lineardensity` module calculates the charge density in different dimensions, although according to the documentation, is limited to orthorombic, fixed volume cells. `polypy` is designed to handle all cell types and will work for simulations ensembles, not just NPT. Furthermore, the calculation of the electric field and electrostatic potential is unique to `polypy`. `MDAnalysis` and `polypy` are both capable of calculating mean squared displacements. `polypy` goes a step further by allowing the calculation of diffusion coefficients and conductivities within localised regions of a structure e.g a grain boundary [@UO2: @CeO2] or local structural environments [@LLTO]. `polypy` is also unique in the sense that it is designed for the analysis of both molecular dynamics and Monte Carlo trjactories.
+
+There are a number of other packages that are available for the analysis of MD trajectories, DL_ANALYSER is also available under license for the analysis of DL_POLY simulations and chemfilles is available for the analysis of a wide range of file types [@chemfiles].
+
+In summary the features that are unique to `polypy` are as follows
+
+- The analysis of both molecular dynamics and Monte Carlo trajectories. 
+- The analysis of both orthogonal and non-orthogonal unit cells. 
+- The calculation of the electric field and electrostatic potential.
+- Regional mean squared displacements.
 
 # Acknowledgements
   

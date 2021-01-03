@@ -151,3 +151,8 @@ Listed below are a series of useful additions that we would like to make to the 
 - RDF
 - Diagonal slices
 - Regional MSDs in a cube
+
+Acknowledgements
+~~~~~~~~~~~~~~~~
+ 
+This package was written during a PhD project that was funded by AWE and EPSRC (EP/R010366/1). The `polypy` software package was developed to analyse data generated using the Balena HPC facility at the University of Bath and the ARCHER UK National Supercomputing Service (http://www.archer.ac.uk) via our membership of the UK's HEC Ma-terials Chemistry Consortium funded by EPSRC (EP/L000202).The author would like to thank Andrew R. McCluskey, Benjamin Morgan, Marco Molinari, James Grant and Stephen C. Parker for their help and guidance during this PhD project.
