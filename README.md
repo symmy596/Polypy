@@ -67,11 +67,21 @@ Or alternatively install with pip
 
     pip install polypy
 
+Using conda, 
+
+    conda skeleton pypi polypy
+
+    conda build polypy
+    
+    conda install --use-local polypy
+
+
 ### Tests
 
 Tests can be run by typing:
 
     python setup.py test
+
 
 in the root directory. 
 

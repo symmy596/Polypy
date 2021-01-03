@@ -65,6 +65,16 @@ Or alternatively install with pip
 
     pip install polypy
 
+Using conda, 
+
+.. code-block:: bash
+
+    conda skeleton pypi polypy
+
+    conda build polypy
+    
+    conda install --use-local polypy
+
 Tests
 -----
 

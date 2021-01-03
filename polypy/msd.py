@@ -292,7 +292,7 @@ class RegionalMSD():
         dimension (:py:attr:`int`, optional): Direction perpedicular to the region of interest. Default is :py:attr:`'x'`.
         sweeps (:py:attr:`int`, optional): How many times should the starting timestep be changed. Default is :py:attr:`1`.
     """
-    def __init__(self, data, lower_boundary, upper_boundary, dimension='x', sweeps=1):
+    def __init__(self, data, lower_boundary, upper_boundary, dimension='x', sweeps=1, trajectory_length=100):
         self.data = data
         if self.data.timesteps == 1:
             raise ValueError("ERROR: - Only one timestep has been found")
@@ -302,6 +302,7 @@ class RegionalMSD():
             raise ValueError("DLMONTE simulations are not time resolved")
         self.lower_boundary = lower_boundary
         self.upper_boundary = upper_boundary
+        self.trajectory_length = trajectory_length
         self.sweeps = sweeps
         if dimension == "x":
             self.dimension = 0
@@ -372,7 +373,6 @@ class RegionalMSD():
         count = 0
         conductivity_count = 0
         new_trajectory = self.initialise_new_trajectory()
-
         for i in range(0, xc.size):
             if xc[i] > self.lower_boundary and xc[i] < self.upper_boundary:
                 ib = True
@@ -382,7 +382,7 @@ class RegionalMSD():
                 new_trajectory.lv.append(self.data.lv[i])
 
             elif xc[i] < self.lower_boundary or xc[i] > self.upper_boundary:
-                if count > 100 and ib is True:
+                if count > self.trajectory_length and ib is True:
                     new_trajectory._clean_data()
                     atom_msd = MSD(new_trajectory, self.sweeps)
                     msd = atom_msd.msd()
@@ -390,11 +390,12 @@ class RegionalMSD():
                     count = 0
                     new_trajectory = self.initialise_new_trajectory()
                 else:
+
                     ib = False
                     new_trajectory = self.initialise_new_trajectory()
                     count = 0
 
-        if count > 100 and ib is True:
+        if count > self.trajectory_length and ib is True:
             new_trajectory._clean_data()
             atom_msd = MSD(new_trajectory, self.sweeps)
             msd = atom_msd.msd()

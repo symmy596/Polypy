@@ -146,10 +146,14 @@ class TestMSD(unittest.TestCase):
 class TestRegionalMSD(unittest.TestCase):
 
     def test_analyse_trajectory(self):
-        pass
+        data = read.History(test_history, ['CA'])
+        msd_data = msd.RegionalMSD(data.trajectory, -5, 5, trajectory_length=1)
+        msds = msd_data.analyse_trajectory()
+        expected_msd = np.array([3, 12, 27, 48])
+        assert_almost_equal(msds.msd, expected_msd)
 
     def test_initialise_new_trajectory(self):
-        pass
-
-    def test_check_trajectory(self):
-        pass
+        data = read.History(test_history, ['CA'])
+        msd_data = msd.RegionalMSD(data.trajectory, -5, 5, trajectory_length=1)
+        new_traj = msd_data.initialise_new_trajectory()
+        assert new_traj.total_atoms == 1
