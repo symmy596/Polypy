@@ -65,74 +65,74 @@ class MSDContainer():
         z = pd.DataFrame(xy).groupby(0, as_index=False)[1].mean().values
         return z[:, 0], z[:, 1]
 
-    def xyz_diffusion_coefficient(self):
+    def xyz_diffusion_coefficient(self, exclude_initial=0, exclude_final=1):
         """
         Calculates the three dimensional xyz diffusion coefficient.
 
         Returns:
             (:py:attr:`float`): xyx Diffusion coefficient.
         """
-        gradient = stats.linregress(self.time, self.msd)[0]
+        gradient = stats.linregress(self.time[exclude_initial:-exclude_final], self.msd[exclude_initial:-exclude_final])[0]
         return (gradient / 6) * 10
 
-    def xy_diffusion_coefficient(self):
+    def xy_diffusion_coefficient(self, exclude_initial=0, exclude_final=1):
         """
         Calculates the two dimensional xy diffusion coefficient.
 
         Returns:
             (:py:attr:`float`): xy Diffusion coefficient.
         """
-        gradient = stats.linregress(self.time, self.xymsd)[0]
+        gradient = stats.linregress(self.time[exclude_initial:-exclude_final], self.xymsd[exclude_initial:-exclude_final])[0]
         return (gradient / 4) * 10
 
-    def xz_diffusion_coefficient(self):
+    def xz_diffusion_coefficient(self, exclude_initial=0, exclude_final=1):
         """
         Calculates the two dimensional xz diffusion coefficient.
 
         Returns:
             (:py:attr:`float`): xz Diffusion coefficient.
         """
-        gradient = stats.linregress(self.time, self.xzmsd)[0]
+        gradient = stats.linregress(self.time[exclude_initial:-exclude_final], self.xzmsd[exclude_initial:-exclude_final])[0]
         return (gradient / 4) * 10
 
-    def yz_diffusion_coefficient(self):
+    def yz_diffusion_coefficient(self, exclude_initial=0, exclude_final=1):
         """
         Calculates the two dimensional yz diffusion coefficient.
 
         Returns:
             (:py:attr:`float`): yz Diffusion coefficient.
         """
-        gradient = stats.linregress(self.time, self.yzmsd)[0]
+        gradient = stats.linregress(self.time[exclude_initial:-exclude_final], self.yzmsd[exclude_initial:-exclude_final])[0]
         return (gradient / 4) * 10
 
-    def x_diffusion_coefficient(self):
+    def x_diffusion_coefficient(self, exclude_initial=0, exclude_final=1):
         """
         Calculates the one dimensional x diffusion coefficient.
 
         Returns:
             (:py:attr:`float`): x Diffusion coefficient.
         """
-        gradient = stats.linregress(self.time, self.xmsd)[0]
+        gradient = stats.linregress(self.time[exclude_initial:-exclude_final], self.xmsd[exclude_initial:-exclude_final])[0]
         return (gradient / 2) * 10
     
-    def y_diffusion_coefficient(self):
+    def y_diffusion_coefficient(self, exclude_initial=0, exclude_final=1):
         """
         Calculates the one dimensional y diffusion coefficient.
 
         Returns:
             (:py:attr:`float`): y Diffusion coefficient.
         """
-        gradient = stats.linregress(self.time, self.ymsd)[0]
+        gradient = stats.linregress(self.time[exclude_initial:-exclude_final], self.ymsd[exclude_initial:-exclude_final])[0]
         return (gradient / 2) * 10
 
-    def z_diffusion_coefficient(self):
+    def z_diffusion_coefficient(self, exclude_initial=0, exclude_final=1):
         """
         Calculates the one dimensional z diffusion coefficient.
 
         Returns:
             (:py:attr:`float`): z Diffusion coefficient.
         """
-        gradient = stats.linregress(self.time, self.zmsd)[0]
+        gradient = stats.linregress(self.time[exclude_initial:-exclude_final], self.zmsd[exclude_initial:-exclude_final])[0]
         return (gradient / 2) * 10
 
 

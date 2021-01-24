@@ -109,7 +109,8 @@ performed using the ``MSD`` class. The code will return a
 
 .. image:: Figures/output_6_0.png
 
-MSD calculations require a large number of statistics to be considered representative. A full msd will use every single frame of the trajectory as a starting point and effectively do a seperate msd from each starting point, these are then averaged to give the final result. The sweeps paramter is used to control the number of frames that are used as starting points in the calculation. For simulations with lots of diffusion events, a smaller number will be sufficient whereas simulations with a small number of diffusion events will require a larger number. 
+MSD calculations require a large number of statistics to be considered representative. A full msd will use every single frame of the trajectory as a starting point and effectively do a seperate msd from each starting point, these are then averaged to give the final result.  An MSD is technically an ensemble average over all sweeps and number of particles. 
+The sweeps paramter is used to control the number of frames that are used as starting points in the calculation. For simulations with lots of diffusion events, a smaller number will be sufficient whereas simulations with a small number of diffusion events will require a larger number. 
 
 .. code:: ipython3
 
@@ -139,6 +140,30 @@ MSD calculations require a large number of statistics to be considered represent
     One Dimensional Diffusion Coefficient in X 1.6045620180115865
     One Dimensional Diffusion Coefficient in Y 1.6856414148385679
     One Dimensional Diffusion Coefficient in Z 1.5332963610511103
+
+
+Note:
+An MSD is supposed to be linear only after a ballistic regime and it usually lacks statistics for longer times. Thus the linear fit to extract the slope and thus the diffusion coefficient should be done on a portion of the MSD only.
+This can be accomplished using the `exclude_initial` and `exclude_final` parameters
+
+.. code:: ipython3
+
+    print("Three Dimensional Diffusion Coefficient", output.xyz_diffusion_coefficient(exclude_initial=50, 
+                                                                                    exclude_final=50))
+    print("One Dimensional Diffusion Coefficient in X", output.x_diffusion_coefficient(exclude_initial=50, 
+                                                                                    exclude_final=50))
+    print("One Dimensional Diffusion Coefficient in Y", output.y_diffusion_coefficient(exclude_initial=50, 
+                                                                                    exclude_final=50))
+    print("One Dimensional Diffusion Coefficient in Z", output.z_diffusion_coefficient(exclude_initial=50, 
+                                                                                    exclude_final=50))
+
+
+.. parsed-literal::
+
+    Three Dimensional Diffusion Coefficient 1.5912662736409342
+    One Dimensional Diffusion Coefficient in X 1.5862517497696607
+    One Dimensional Diffusion Coefficient in Y 1.6753802400942055
+    One Dimensional Diffusion Coefficient in Z 1.5121668310589353
 
 
 Arrhenius
