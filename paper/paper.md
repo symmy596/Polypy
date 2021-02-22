@@ -57,7 +57,6 @@ There are a number of codes designed to analyse molecular dynamics trajectories 
 In summary the features that are unique to `polypy` are as follows
 
 - The analysis of both molecular dynamics and Monte Carlo trajectories. 
-- The analysis of both orthogonal and non-orthogonal unit cells. 
 - The calculation of the electric field and electrostatic potential.
 - Regional mean squared displacements.
 
