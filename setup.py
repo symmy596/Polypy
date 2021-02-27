@@ -1,9 +1,9 @@
 __author__ = "Adam R. Symington"
 __copyright__ = "Copyright Adam R.Symington (2019)"
-__version__ = "0.8.2"
+__version__ = "1.0.0"
 __maintainer__ = "Adam R. Symington"
 __email__ = "ars44s@bath.ac.uk"
-__date__ = "03/01/2021"
+__date__ = "27/02/2021"
 
 from setuptools import setup
 import os
@@ -13,7 +13,7 @@ module_dir = os.path.dirname(os.path.abspath(__file__))
 if __name__ == "__main__":
     setup(
         name='polypy',
-        version='0.8.2',
+        version='1.0.0',
         description='Molecular Dynamics analysis',
         long_description=open(os.path.join(module_dir, 'README.md')).read(),
         long_description_content_type='text/markdown', 
