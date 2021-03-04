@@ -166,7 +166,7 @@ Listed below are a series of useful additions that we would like to make to the 
 - [Defect segregation facilitates oxygen transport at fluorite UO2 grain boundaries](https://royalsocietypublishing.org/doi/full/10.1098/rsta.2019.0026)
 - [The role of dopant segregation on the oxygen vacancy distribution and oxygen diffusion in CeO2 grain boundaries](https://iopscience.iop.org/article/10.1088/2515-7655/ab28b5/meta)
 - [Quantifying the impact of disorder on Li-ion and Na-ion transport in perovskite titanate solid electrolytes for solid-state batteries](https://pubs.rsc.org/en/content/articlehtml/2020/ta/d0ta05343k)
-
+- [Elucidating the nature of grain boundary resistance in lithium lanthanum titanate](https://pubs.rsc.org/en/content/articlelanding/2021/TA/D0TA11539H#!divAbstract)
 
 ## Acknowledgements
   
