@@ -2,6 +2,7 @@
 <img src="https://github.com/symmy596/Polypy/blob/master/docs/source/Figures/polypy_1.png?raw=true"/>
 </p>
 
+[![status](https://joss.theoj.org/papers/e17ff370f6ef5fa95bea0fea24cb856c/status.svg)](https://joss.theoj.org/papers/e17ff370f6ef5fa95bea0fea24cb856c)
 [![PyPI version](https://badge.fury.io/py/polypy.svg)](https://badge.fury.io/py/polypy)
 [![Build Status](https://travis-ci.com/symmy596/PolyPy.svg?branch=master)](https://travis-ci.com/symmy596/PolyPy)
 [![Build status](https://ci.appveyor.com/api/projects/status/eo426m99lmkbh5rx?svg=true)](https://ci.appveyor.com/project/symmy596/polypy)
